@@ -1,0 +1,188 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BitPlayground from '@/components/BitPlayground.astro';
+import SemesterStrip from '@/components/SemesterStrip.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import { course, modules, href, getWeeksSorted, getLabsSorted, weekHref, labHref, formatDateObj, moduleColorVar, currentWeek } from '@/lib/site';
+import { getCollection } from 'astro:content';
+
+const weeks = await getWeeksSorted();
+const labs = await getLabsSorted();
+const thisWeek = weeks.find((w) => w.data.week === currentWeek()) ?? weeks[0];
+const thisLab = labs.find((l) => l.id === thisWeek.data.lab);
+const announcements = (await getCollection('announcements'))
+  .sort((a, b) => Number(b.data.pinned) - Number(a.data.pinned) || b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+// where the course shows up in the real world: one line per module
+const everywhere = [
+  { k: '01001000 01101001', t: 'Every photo, song and message', d: 'is bits. Week 2 shows you how text, color and sound become 0s and 1s, and why a byte can only count to 255.' },
+  { k: 'int main(void)', t: 'Linux, Windows, your browser, Python itself', d: 'are written in C. The language you learn in weeks 3–4 is the one under everything else.' },
+  { k: 'O(log n)', t: 'Searching a billion records in 30 steps', d: 'is binary search. Week 5 is why Google feels instant and why a bad algorithm can freeze an app.' },
+  { k: '*ptr = &x', t: 'Segfaults, memory leaks, buffer overflows', d: 'are the bugs behind most security headlines. Week 6 puts you inside memory so you can see them coming.' },
+  { k: 'SELECT … WHERE', t: 'Every app you use has a database', d: 'and talks to it in SQL. Week 11 is the language of data; week 10 is what AI does with that data.' },
+  { k: '<button onclick>', t: 'The web is HTML, CSS and JavaScript', d: 'plus a conversation over HTTP. Weeks 12–13 take you from a blank page to a working site and behind the wires.' },
+];
+
+const day = [
+  { t: `Part 1 · ${course.meeting.lecture}`, h: 'Lecture', d: 'One big idea, live coding on the projector, and questions. You have already watched the CS50 lecture, so we go deeper, faster, and into examples from industry.', glyph: '▶' },
+  { t: `Part 2 · from ${course.meeting.lab}`, h: 'Lab', d: 'Accept the week’s lab on Classroom 50, open it in VS Code in your browser and write C. The lab page is written so you can start on your own; tests tell you instantly how you are doing.', glyph: '>_' },
+  { t: 'After class', h: 'Push and prepare', d: 'Finish the lab, git push, read your autograded score. Then watch next week’s CS50 lecture and skim its notes before the next Monday.', glyph: '✓' },
+];
+---
+<BaseLayout title={`${course.title} (${course.code}) · ${course.university}`} bare>
+  <!-- HERO -->
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="grid-paper grid-fade pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <div class="wrap relative grid grid-cols-1 gap-12 py-14 md:py-20 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+      <div class="min-w-0">
+        <p class="eyebrow">{course.university} · {course.department} · {course.code}</p>
+        <h1 class="display mt-5 text-[3.2rem] leading-[0.95] text-ink sm:text-7xl md:text-[5.4rem]">
+          Introduction to<br /><span class="text-brand">Computer Science</span>
+        </h1>
+        <p class="lede mt-6 max-w-xl">
+          {course.tagline} Built on Harvard's CS50: you learn how computers think, then you make them do what you want,
+          <span class="font-semibold text-ink">in C first</span>, then Python, SQL and the web, with a lab every Monday and a project that is yours.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={weekHref(thisWeek.data.week)} class="btn-primary">Next class · Week {thisWeek.data.week} →</a>
+          {thisLab && <a href={labHref(thisLab.id)} class="btn-ghost"><span class="font-mono text-accent">&gt;_</span> Lab {thisLab.data.lab}</a>}
+          <a href={href('/guides/lab-setup')} class="btn-ghost">First-time setup</a>
+        </div>
+        <dl class="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-6">
+          <div><dt class="eyebrow">When</dt><dd class="mt-1 text-sm font-medium text-ink">{course.meeting.day}<br /><span class="font-mono text-ink-2">{course.meeting.time}</span></dd></div>
+          <div><dt class="eyebrow">Where</dt><dd class="mt-1 text-sm font-medium text-ink">{course.meeting.room}</dd></div>
+          <div><dt class="eyebrow">Who</dt><dd class="mt-1 text-sm font-medium text-ink">{course.instructor.name}</dd></div>
+        </dl>
+      </div>
+      <div class="relative min-w-0">
+        <p class="mb-3 font-mono text-xs text-ink-3"><span class="text-accent">try it ↓</span> type a word, click the bits</p>
+        <BitPlayground initial="Hi!" />
+      </div>
+    </div>
+  </section>
+
+  <!-- SEMESTER STRIP -->
+  <section class="wrap py-16 md:py-20">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <SectionHeading eyebrow="Fall 2026 · 15 Mondays" title="One semester, six chapters" lede="Each Monday is one lecture and one lab. Click any week to open its notes, the CS50 lecture to watch beforehand, and the lab." />
+      <a href={href('/schedule')} class="btn-ghost">Full schedule</a>
+    </div>
+    <div class="mt-10"><SemesterStrip weeks={weeks} /></div>
+
+    <ol class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {modules.map((m, i) => (
+        <li style={`--mod:${moduleColorVar(m)}`}>
+          <a href={href(`/schedule#${m.slug}`)} class="group flex h-full flex-col rounded-2xl border border-line bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-lift">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-xs font-semibold text-[var(--mod)]">{String(i + 1).padStart(2, '0')} · weeks {m.weeks[0]}–{m.weeks.at(-1)}</span>
+              <span class="font-mono text-sm text-ink-3 group-hover:text-[var(--mod)]">{m.glyph}</span>
+            </div>
+            <h3 class="display mt-4 text-2xl leading-tight text-ink">{m.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-2">{m.summary}</p>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- EVERYWHERE -->
+  <section class="border-y border-line bg-paper-2/60">
+    <div class="wrap py-16 md:py-24">
+      <p class="eyebrow">Why this course</p>
+      <h2 class="display mt-2 max-w-3xl text-4xl leading-[1.05] text-ink md:text-6xl">You use computer science all day. <span class="text-brand">This term you get to see inside.</span></h2>
+      <ul class="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+        {everywhere.map((e) => (
+          <li class="bg-card p-6">
+            <p class="inline-block rounded-md bg-brand-soft px-2 py-1 font-mono text-[13px] text-brand">{e.k}</p>
+            <p class="mt-3 font-semibold text-ink">{e.t}</p>
+            <p class="mt-1 text-[15px] leading-relaxed text-ink-2">{e.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- A CLASS DAY -->
+  <section class="wrap py-16 md:py-24">
+    <SectionHeading eyebrow="How a Monday works" title="Watch before, build during, push after" lede="The official slot is 13:15–17:00. We use it as a flipped classroom: the CS50 lecture is homework, the lecture hour is for depth and demos, and the lab is where you actually learn to program." />
+    <ol class="mt-12 grid gap-4 md:grid-cols-3">
+      {day.map((s, i) => (
+        <li class="card relative p-6">
+          <span class="font-mono text-3xl text-ink-3">{s.glyph}</span>
+          <p class="eyebrow mt-5">{s.t}</p>
+          <h3 class="display mt-1 text-3xl text-ink">{s.h}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-2">{s.d}</p>
+          {i < 2 && <span class="absolute -right-3 top-1/2 hidden size-6 -translate-y-1/2 place-items-center rounded-full border border-line bg-paper font-mono text-xs text-ink-3 md:grid" aria-hidden="true">→</span>}
+        </li>
+      ))}
+    </ol>
+    <div class="prep-box mt-8 grid gap-6 rounded-2xl border p-6 md:grid-cols-[auto_1fr] md:items-center">
+      <span class="grid size-14 place-items-center rounded-xl bg-ink font-mono text-lg font-bold text-paper">50</span>
+      <div>
+        <p class="font-semibold text-ink">Before every Monday: the CS50 lecture</p>
+        <p class="mt-1 text-[15px] leading-relaxed text-ink-2">
+          You are enrolled in <a class="link" href={course.cs50.edx} target="_blank" rel="noopener">CS50x 2026 on edX</a>. Each week page names the matching lecture by David J. Malan.
+          Watch it on YouTube, read the notes and skim the slides before class. Our Monday assumes you have. The <a class="link" href={course.cs50.playlist} target="_blank" rel="noopener">full playlist</a> is public.
+        </p>
+      </div>
+    </div>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={href('/guides/lab-setup')} class="btn-primary">First-time lab setup (10 min)</a>
+      <a href={href('/labs')} class="btn-ghost">How labs work</a>
+      <a href={href('/project')} class="btn-ghost">Semester project · 15% of final</a>
+    </div>
+  </section>
+
+  <!-- ANNOUNCEMENTS + LABS -->
+  <section class="border-t border-line bg-paper-2/50">
+    <div class="wrap grid gap-12 py-16 md:grid-cols-2 md:py-20">
+      <div>
+        <div class="flex items-baseline justify-between">
+          <p class="eyebrow">Announcements</p>
+          <a href={href('/announcements')} class="text-sm text-ink-3 hover:text-ink">All →</a>
+        </div>
+        <ul class="mt-4 space-y-3">
+          {announcements.map((a) => (
+            <li class="card p-4">
+              <p class="font-mono text-[11px] text-ink-3">{formatDateObj(a.data.date)} {a.data.pinned && <span class="ml-1 text-accent">· pinned</span>}</p>
+              <a href={href(`/announcements#${a.id}`)} class="mt-1 block font-semibold text-ink hover:text-brand">{a.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <div class="flex items-baseline justify-between">
+          <p class="eyebrow">Labs</p>
+          <a href={href('/labs')} class="text-sm text-ink-3 hover:text-ink">All labs →</a>
+        </div>
+        <ul class="mt-4 space-y-3">
+          {labs.filter((l) => l.data.status !== 'draft').slice(0, 3).map((l) => (
+            <li>
+              <a href={labHref(l.id)} class="card group flex items-center gap-4 p-4 hover:border-line-2">
+                <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-ink font-mono text-sm font-semibold text-paper">L{l.data.lab}</span>
+                <span class="min-w-0">
+                  <span class="block font-semibold text-ink group-hover:text-brand">{l.data.title}</span>
+                  <span class="block text-sm text-ink-3">Week {l.data.week} · {l.data.duration} · {l.data.status === 'open' ? 'open now' : l.data.status}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-8 rounded-2xl border border-line bg-card p-5">
+          <p class="eyebrow">Grading</p>
+          <div class="mt-3 flex h-3 overflow-hidden rounded-full bg-paper-2" role="img" aria-label="Midterm 40 percent, final 60 percent of which 15 percent is the project">
+            <span class="bg-brand" style="width:40%"></span>
+            <span class="bg-accent" style="width:51%"></span>
+            <span class="bg-true" style="width:9%"></span>
+          </div>
+          <div class="mt-3 flex flex-wrap justify-between gap-2 text-xs text-ink-2">
+            <span><span class="mr-1.5 inline-block size-2 rounded-sm bg-brand"></span>Midterm 40%</span>
+            <span><span class="mr-1.5 inline-block size-2 rounded-sm bg-accent"></span>Final exam</span>
+            <span><span class="mr-1.5 inline-block size-2 rounded-sm bg-true"></span>Project (15% of final)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

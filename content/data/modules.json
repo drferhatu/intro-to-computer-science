@@ -1,0 +1,14 @@
+[
+  { "id": "m1", "slug": "foundations", "title": "Foundations: Bits and Thinking", "short": "Foundations", "weeks": [1, 2], "color": "teal", "glyph": "0 1",
+    "summary": "What computer science is, how everything becomes bits, and your first programs in Scratch: the ideas of every language, without the syntax." },
+  { "id": "m2", "slug": "the-c-language", "title": "The C Language", "short": "C", "weeks": [3, 4], "color": "indigo", "glyph": "int main(void)",
+    "summary": "Source code to machine code. Variables, conditionals, loops, functions, then arrays, strings and command-line arguments. You start writing real programs." },
+  { "id": "m3", "slug": "algorithms-and-memory", "title": "Algorithms, Memory and Data Structures", "short": "Algorithms & Memory", "weeks": [5, 6, 7, 8], "color": "violet", "glyph": "*p → &x",
+    "summary": "Searching, sorting and Big O; pointers, the heap and hexadecimal; linked lists, hash tables and trees. The part of the course that makes you a real programmer." },
+  { "id": "m4", "slug": "python-ai-and-data", "title": "Python, AI and Data", "short": "Python · AI · SQL", "weeks": [9, 10, 11], "color": "amber", "glyph": "SELECT *",
+    "summary": "The same ideas in Python in a tenth of the lines; how machine learning and large language models actually work; and SQL, the language of data." },
+  { "id": "m5", "slug": "the-web", "title": "The Web and the Internet", "short": "Web", "weeks": [12, 13], "color": "rose", "glyph": "</>",
+    "summary": "HTML, CSS and JavaScript in the browser; then what happens between your laptop and a server: IP, TCP, DNS, HTTP, and how to stay safe." },
+  { "id": "m6", "slug": "humans-and-projects", "title": "Humans, Systems and Your Project", "short": "HCI & Projects", "weeks": [14, 15], "color": "emerald", "glyph": "v1.0",
+    "summary": "Human-computer interaction and how software is built in industry, then demo day: your project, live, from your own repository." }
+]

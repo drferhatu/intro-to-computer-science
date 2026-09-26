@@ -1,0 +1,153 @@
+{
+  "_note": "Semester project catalog. Students rank three preferences; the instructor assigns one project per student (at most two students per project, with different scopes). difficulty: 1 (approachable) … 3 (ambitious).",
+  "themes": [
+    {
+      "id": "text",
+      "title": "Text and ciphers",
+      "weeks": [3, 4],
+      "blurb": "Strings, loops and arrays in C. Small programs with a big history.",
+      "projects": [
+        { "id": "P01", "title": "Cipher toolkit", "difficulty": 1, "lang": "C",
+          "summary": "A command-line tool that encrypts and decrypts text with Caesar, Vigenère and substitution ciphers.",
+          "core": ["strings", "ASCII arithmetic", "command-line arguments"],
+          "min": "Caesar and Vigenère, both directions, with input validation and clear usage messages.",
+          "advanced": "A cracker: break a Caesar or substitution cipher automatically with letter-frequency analysis, and show the top three candidate plaintexts." },
+        { "id": "P02", "title": "Readability and word statistics", "difficulty": 1, "lang": "C",
+          "summary": "Read any text file and report its grade level (Coleman–Liau), word counts, longest words and sentence lengths.",
+          "core": ["file I/O", "strings", "arrays", "formulas"],
+          "min": "Coleman–Liau index, word/sentence/letter counts, the ten most frequent words.",
+          "advanced": "Compare two texts side by side and a histogram of word lengths drawn in the terminal; bonus: n-gram based next-word suggestion." },
+        { "id": "P03", "title": "Wordle in the terminal", "difficulty": 2, "lang": "C",
+          "summary": "The daily word game, playable in the terminal with colored feedback and a dictionary file.",
+          "core": ["strings", "arrays", "loops", "file I/O"],
+          "min": "Random secret word, six guesses, green/yellow/gray feedback, win/lose message, only dictionary words accepted.",
+          "advanced": "A solver that ranks candidate guesses by how much they narrow the remaining word list, and statistics over 100 simulated games." }
+      ]
+    },
+    {
+      "id": "algorithms",
+      "title": "Algorithms",
+      "weeks": [5],
+      "blurb": "Searching, sorting and problem solving, with running time you can measure.",
+      "projects": [
+        { "id": "P04", "title": "Sorting visualizer", "difficulty": 2, "lang": "C + HTML/JS",
+          "summary": "Implement sorting algorithms in C, log every step, and replay the steps as an animation in the browser.",
+          "core": ["bubble/selection/insertion/merge sort", "Big O", "file output", "JavaScript"],
+          "min": "Three sorts in C that write each comparison and swap to a file; a timing table for n = 1 000, 10 000, 100 000.",
+          "advanced": "A web page that animates the logged steps as bars; add quicksort and a chart of time versus n." },
+        { "id": "P05", "title": "Election simulator", "difficulty": 2, "lang": "C",
+          "summary": "Count ballots under plurality, instant-runoff and a pairwise (Condorcet) method, and show that the winner can differ.",
+          "core": ["arrays of structs", "sorting", "algorithms", "argv"],
+          "min": "Plurality and instant-runoff from a ballot file, with tie handling and a readable report.",
+          "advanced": "Tideman (ranked pairs) with cycle detection, and a generator of random elections where the three methods disagree." },
+        { "id": "P06", "title": "Maze generator and solver", "difficulty": 2, "lang": "C",
+          "summary": "Generate random mazes and solve them, printing the path in the terminal or as an image.",
+          "core": ["2D arrays", "recursion", "stacks and queues", "BFS/DFS"],
+          "min": "Random maze of any size (recursive backtracker), BFS solver, ASCII output with the path marked.",
+          "advanced": "A* with a heuristic, a step counter comparing BFS/DFS/A*, and PNG/BMP output." }
+      ]
+    },
+    {
+      "id": "memory",
+      "title": "Memory, files and images",
+      "weeks": [6],
+      "blurb": "Bytes, pointers and binary files. The most ‘under the hood’ projects.",
+      "projects": [
+        { "id": "P07", "title": "Image filters", "difficulty": 2, "lang": "C",
+          "summary": "Apply grayscale, sepia, mirror, blur and edge-detection filters to BMP images.",
+          "core": ["structs", "pointers", "2D arrays", "binary file I/O"],
+          "min": "Grayscale, sepia, reflect and blur on 24-bit BMP files, chosen with a command-line flag.",
+          "advanced": "Sobel edge detection, a pixelate/mosaic filter and an ASCII-art exporter." },
+        { "id": "P08", "title": "File recovery", "difficulty": 2, "lang": "C",
+          "summary": "Recover deleted JPEG files from a raw memory-card image by scanning for their signatures.",
+          "core": ["bytes and hexadecimal", "buffers", "file I/O", "malloc/free"],
+          "min": "Read a raw image in 512-byte blocks, detect JPEG headers, write each recovered file as NNN.jpg.",
+          "advanced": "Also recover PNG files, print a summary (count, total bytes) and verify with a checksum." },
+        { "id": "P09", "title": "Hexdump and file inspector", "difficulty": 2, "lang": "C",
+          "summary": "Your own `xxd`: show any file as hex and ASCII, and guess its type from magic bytes.",
+          "core": ["bytes", "hexadecimal", "pointers", "file formats"],
+          "min": "Hex + ASCII dump with offsets, options for width and range, detection of PNG/JPEG/PDF/ZIP/ELF by signature.",
+          "advanced": "Parse and print the header fields of BMP and PNG files, and a byte-frequency chart (entropy estimate)." }
+      ]
+    },
+    {
+      "id": "structures",
+      "title": "Data structures",
+      "weeks": [7],
+      "blurb": "Linked lists, hash tables and tries. Speed and memory trade-offs you can feel.",
+      "projects": [
+        { "id": "P10", "title": "Spell checker", "difficulty": 3, "lang": "C",
+          "summary": "Load a 140 000-word dictionary into a hash table and spell-check a text as fast as possible.",
+          "core": ["hash tables", "linked lists", "malloc/free", "valgrind"],
+          "min": "Load, check, size and unload with no memory leaks; report misspelled words and timings.",
+          "advanced": "Compare two hash functions and bucket counts with a timing table; suggest corrections with edit distance 1." },
+        { "id": "P11", "title": "Student records manager", "difficulty": 1, "lang": "C",
+          "summary": "Add, search, update and delete records kept in a linked list and saved to a file.",
+          "core": ["structs", "linked lists", "file I/O", "menus"],
+          "min": "Menu-driven CRUD on a linked list with save/load, sorted listing and search by name or ID.",
+          "advanced": "A binary search tree index for fast lookup, CSV import/export and simple statistics." },
+        { "id": "P12", "title": "Autocomplete with a trie", "difficulty": 2, "lang": "C",
+          "summary": "Type a prefix, get the words that start with it, instantly, from a trie built from a word list.",
+          "core": ["tries", "recursion", "pointers", "strings"],
+          "min": "Build a trie from a dictionary, print all completions of a prefix, free all memory.",
+          "advanced": "Rank completions by word frequency from a text corpus and support deletion." }
+      ]
+    },
+    {
+      "id": "python-ai-sql",
+      "title": "Python, AI and data",
+      "weeks": [9, 10, 11],
+      "blurb": "Higher-level languages and real data. For students who want to build tools they will actually use.",
+      "projects": [
+        { "id": "P13", "title": "Personal finance tracker", "difficulty": 2, "lang": "Python + SQLite",
+          "summary": "Import bank CSV exports, categorize spending and produce monthly reports.",
+          "core": ["Python", "SQL", "CSV", "dictionaries"],
+          "min": "CSV import into SQLite, category rules, monthly totals per category printed as a table.",
+          "advanced": "Charts with matplotlib, budget alerts and a tiny web dashboard with Flask." },
+        { "id": "P14", "title": "Unbeatable tic-tac-toe", "difficulty": 2, "lang": "C or Python",
+          "summary": "A game AI that never loses, using the minimax algorithm.",
+          "core": ["recursion", "game trees", "minimax", "2D arrays"],
+          "min": "Playable game against a minimax AI that never loses; a mode where the AI plays itself.",
+          "advanced": "Connect Four with alpha-beta pruning and a depth limit, plus a count of explored nodes." },
+        { "id": "P15", "title": "Handwritten digit classifier from scratch", "difficulty": 3, "lang": "Python",
+          "summary": "Recognize handwritten digits with k-nearest neighbors written by you, no ML library.",
+          "core": ["arrays", "distance metrics", "evaluation", "numpy"],
+          "min": "k-NN on a small MNIST CSV, accuracy on a test split, a confusion matrix.",
+          "advanced": "A tiny neural network (one hidden layer) trained with plain numpy, and a comparison with k-NN." },
+        { "id": "P16", "title": "Course assistant chatbot", "difficulty": 2, "lang": "Python",
+          "summary": "A chatbot that answers questions about this course using an LLM API and the course notes as context.",
+          "core": ["APIs", "prompt engineering", "text processing", "evaluation"],
+          "min": "Command-line chat with a system prompt, the week notes injected as context, and refusal when the answer is not in the notes.",
+          "advanced": "Simple retrieval (chunking + keyword or embedding search), a test set of 20 questions with scores, and a web interface." }
+      ]
+    },
+    {
+      "id": "web",
+      "title": "The web",
+      "weeks": [12, 13],
+      "blurb": "Things people can click. HTML, CSS and JavaScript, with an optional Python backend.",
+      "projects": [
+        { "id": "P17", "title": "Typing-speed trainer", "difficulty": 1, "lang": "HTML/CSS/JS",
+          "summary": "A web page that measures words per minute and accuracy, and remembers your progress.",
+          "core": ["DOM", "events", "timers", "localStorage"],
+          "min": "Random text, live WPM and accuracy, error highlighting, history saved in localStorage.",
+          "advanced": "Difficulty levels, a chart of progress over time, and a Flask + SQLite leaderboard." },
+        { "id": "P18", "title": "Password strength and breach checker", "difficulty": 2, "lang": "HTML/JS + C",
+          "summary": "Rate a password’s strength, estimate crack time, and check it against known breaches without ever sending it.",
+          "core": ["entropy", "hashing", "APIs", "security"],
+          "min": "Strength meter with entropy estimate and rules, crack-time estimate at several guess rates.",
+          "advanced": "k-anonymity breach check (Have I Been Pwned range API) and a C program that brute-forces short passwords to show the numbers are real." },
+        { "id": "P19", "title": "Campus event board", "difficulty": 3, "lang": "Flask + SQLite",
+          "summary": "A small web app where students post and browse campus events.",
+          "core": ["HTTP", "forms", "SQL", "templates"],
+          "min": "List, add and delete events stored in SQLite, with server-side validation.",
+          "advanced": "User accounts with sessions, search and filters, and an .ics export." },
+        { "id": "P20", "title": "Pixel-art editor", "difficulty": 2, "lang": "HTML/JS + C",
+          "summary": "Draw pixel art in the browser and export it as a real image file.",
+          "core": ["canvas", "events", "binary formats", "bytes"],
+          "min": "Grid editor with palette, undo and PNG export via canvas.",
+          "advanced": "Export/import the 24-bit BMP format written by your own C code (bridging week 6 and week 12)." }
+      ]
+    }
+  ]
+}

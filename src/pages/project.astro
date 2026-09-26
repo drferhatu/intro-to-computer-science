@@ -1,0 +1,139 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import catalog from '@content/data/projects.json';
+import { href, weekHref, scheduleOf, formatDate, course } from '@/lib/site';
+
+const milestones = [
+  { w: 2, t: 'Catalog published', d: 'Twenty projects across six themes, each with a minimum and an advanced scope. Read them all, try to picture the demo.' },
+  { w: 4, t: 'Preferences due', d: 'Send the instructor your three ranked choices by email (Monday 23:59). One line per choice, plus a sentence on why the first one.' },
+  { w: 5, t: 'Assignment and repository', d: 'You receive your project. Accept the project assignment on Classroom 50 and write a one-paragraph plan and a task list in the README. First commit.' },
+  { w: 11, t: 'Prototype check-in', d: 'The minimum scope runs end to end. Five-minute check in the lab: you show it, we look at the commit history together.' },
+  { w: 14, t: 'Project workshop', d: 'Lab time devoted to your project: polish, tests, README, rehearse the demo.' },
+  { w: 15, t: 'Demo day', d: 'Five-minute live demo from your repository, followed by two or three questions, and a tagged v1.0 release.' },
+];
+const rubric = [
+  { k: 'Correctness and completeness', p: 30, d: 'The minimum scope works without crashes on normal and edge inputs. Advanced scope earns the top of the range.' },
+  { k: 'Code quality and tests', p: 20, d: 'Readable names, small functions, comments where they help, no memory leaks (C), and a few tests or a check script.' },
+  { k: 'Demo and explanation', p: 20, d: 'You can explain every part of your code, why you built it that way, and answer questions about it.' },
+  { k: 'README and report', p: 15, d: 'A README that lets someone run it in five minutes, and a two-page report: problem, design, what you learned, limitations, sources.' },
+  { k: 'Process', p: 15, d: 'Steady commit history from week 5 on (at least one meaningful commit most weeks), milestones on time, tagged releases. One giant final push scores zero here.' },
+];
+const DIFF = ['', 'approachable', 'solid', 'ambitious'];
+---
+<BaseLayout title="Semester project" description="The Introduction to Computer Science semester project: 15% of the final grade, a catalog of twenty projects, milestones, commit tracking and rubric.">
+  <header class="relative overflow-hidden border-b border-line">
+    <div class="grid-paper grid-fade pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <div class="wrap relative py-14 md:py-20">
+      <p class="eyebrow">Semester project · 15% of the final grade</p>
+      <h1 class="display mt-3 max-w-4xl text-5xl leading-[1] text-ink md:text-7xl">Build something <span class="text-brand">real</span>, one commit at a time.</h1>
+      <p class="lede mt-6 max-w-2xl">
+        Pick a project from the catalog below, build it over ten weeks in your own GitHub repository, and demo it live on the last Monday.
+        Most projects are in C; a few use Python or the web so that every student finds one that excites them.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#catalog" class="btn-primary">Browse the catalog ↓</a>
+        <a href="#rules" class="btn-ghost">Rules and rubric</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="wrap py-16">
+    <div class="grid gap-6 md:grid-cols-3">
+      <div class="card p-6">
+        <p class="eyebrow">What counts</p>
+        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">The project is 15% of your <strong class="text-ink">final</strong> grade (the other 85% is the final exam). The final is 60% of the course, so the project is 9% of your overall grade, and the single best line on your CV from this course.</p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">How you get one</p>
+        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">Rank three projects and email them to <a class="link" href={`mailto:${course.instructor.email}`}>{course.instructor.email}</a> by <strong class="text-ink">Monday, {formatDate(scheduleOf(4)?.date, true)}</strong>. Assignments are announced in week 5. At most two students per project, with different advanced scopes.</p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">Where you work</p>
+        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">In your own private repository created by Classroom 50, with the same Codespaces workflow as the <a class="link" href={href('/labs')}>labs</a>. Your commit history is part of the grade, so commit small and often.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-paper-2/50">
+    <div class="wrap py-16">
+      <SectionHeading eyebrow="Timeline" title="Six milestones" lede="Dates are Mondays. Each milestone is checked in the lab or by looking at your repository." />
+      <ol class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {milestones.map((m, i) => (
+          <li class="card relative p-6">
+            <p class="font-mono text-xs text-accent">M{i}</p>
+            <h3 class="mt-2 text-lg font-semibold text-ink">{m.t}</h3>
+            <p class="mt-1 font-mono text-xs text-ink-3"><a href={weekHref(m.w)} class="hover:text-brand">week {m.w}</a> · {formatDate(scheduleOf(m.w)?.date)}</p>
+            <p class="mt-3 text-sm leading-relaxed text-ink-2">{m.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="catalog" class="wrap scroll-mt-20 py-16">
+    <SectionHeading eyebrow="Catalog" title="Twenty projects, six themes" lede="Every project has a minimum scope (what a passing project does) and an advanced scope (what a top project adds). Pick by curiosity, not by difficulty: an approachable project done superbly beats an ambitious one done halfway." />
+    <div class="mt-10 space-y-14">
+      {catalog.themes.map((t) => (
+        <section aria-labelledby={`theme-${t.id}`}>
+          <div class="flex flex-wrap items-baseline gap-3">
+            <h3 id={`theme-${t.id}`} class="display text-3xl text-ink">{t.title}</h3>
+            <span class="font-mono text-xs text-ink-3">builds on {t.weeks.map((w) => <a href={weekHref(w)} class="hover:text-brand">week {w}</a>).reduce((a: any[], b, i) => (i ? [...a, ', ', b] : [b]), [])}</span>
+          </div>
+          <p class="mt-1 text-[15px] text-ink-2">{t.blurb}</p>
+          <ul class="mt-5 grid gap-4 lg:grid-cols-3">
+            {t.projects.map((p) => (
+              <li class="card flex flex-col p-5">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="font-mono text-xs font-semibold text-brand">{p.id}</span>
+                  <span class="flex items-center gap-2 font-mono text-[11px] text-ink-3">
+                    <span aria-label={`difficulty ${p.difficulty} of 3`}>{'★'.repeat(p.difficulty)}<span class="text-line-2">{'★'.repeat(3 - p.difficulty)}</span></span>
+                    {DIFF[p.difficulty]} · {p.lang}
+                  </span>
+                </div>
+                <h4 class="mt-2 text-lg font-semibold leading-snug text-ink">{p.title}</h4>
+                <p class="mt-1 text-sm leading-relaxed text-ink-2">{p.summary}</p>
+                <p class="mt-3 flex flex-wrap gap-1.5">{p.core.map((c) => <span class="rounded bg-paper-2 px-1.5 py-0.5 font-mono text-[11px] text-ink-2">{c}</span>)}</p>
+                <dl class="mt-4 space-y-2 border-t border-line pt-3 text-sm">
+                  <div><dt class="eyebrow !text-true">Minimum</dt><dd class="mt-0.5 text-ink-2">{p.min}</dd></div>
+                  <div><dt class="eyebrow !text-accent">Advanced</dt><dd class="mt-0.5 text-ink-2">{p.advanced}</dd></div>
+                </dl>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+    <div class="callout callout-try mt-10">
+      <p class="callout-title">Your own idea?</p>
+      <p class="text-ink-2">Propose it in your preference email with the same structure: title, language, minimum scope, advanced scope. It must use at least two topics from weeks 3–13 and be demoable in five minutes. The instructor may accept it, resize it or suggest a catalog project instead.</p>
+    </div>
+  </section>
+
+  <section id="rules" class="wrap scroll-mt-20 grid gap-12 border-t border-line py-16 md:grid-cols-[1.2fr_1fr]">
+    <div>
+      <SectionHeading eyebrow="Rubric" title="How it is graded" />
+      <ul class="mt-8 space-y-3">
+        {rubric.map((r) => (
+          <li class="card grid grid-cols-[4rem_1fr] items-start gap-4 p-5">
+            <span class="display text-4xl leading-none text-ink">{r.p}</span>
+            <span><span class="block font-semibold text-ink">{r.k}</span><span class="mt-1 block text-sm text-ink-2">{r.d}</span></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <SectionHeading eyebrow="Commit tracking" title="How process is measured" />
+      <ul class="mt-8 space-y-4 text-[15px] leading-relaxed text-ink-2">
+        <li class="border-l-2 border-line-2 pl-4"><strong class="text-ink">Weekly commits.</strong> From week 5 to week 15, at least one commit that changes real code or documentation most weeks. Commit messages say what changed (“add blur filter”, not “update”).</li>
+        <li class="border-l-2 border-line-2 pl-4"><strong class="text-ink">Milestone tags.</strong> Tag <code class="font-mono text-sm">m3-prototype</code> by week 11 and <code class="font-mono text-sm">v1.0</code> before demo day. Tags are how the instructor finds the version you want graded.</li>
+        <li class="border-l-2 border-line-2 pl-4"><strong class="text-ink">Task list in the README.</strong> Keep a checklist of features; tick them as you go. It doubles as your progress report.</li>
+        <li class="border-l-2 border-line-2 pl-4"><strong class="text-ink">Deliverables.</strong> The repository (code, tests, README with setup and an example run), the two-page report (Markdown or PDF in the repo), and the five-minute live demo.</li>
+      </ul>
+      <aside class="callout callout-warn mt-8">
+        <p class="callout-title">AI tools and integrity</p>
+        <p>You may use AI assistants and the CS50 duck. You are graded on what <em>you</em> understand: expect questions about any line of your code. Cite tools, libraries and sources in the README. Copying another student's project is an integrity violation for both students.</p>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

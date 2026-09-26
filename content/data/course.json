@@ -1,0 +1,312 @@
+{
+  "title": "Introduction to Computer Science",
+  "code": "YMT113",
+  "shortTitle": "Intro to CS",
+  "tagline": "From bits to the web, one language at a time.",
+  "university": "Fırat University",
+  "faculty": "Faculty of Technology",
+  "department": "Software Engineering",
+  "program": "UOLP (International Joint Degree Program), taught in English",
+  "semester": "Fall",
+  "academicYear": "2026–2027",
+  "language": "English",
+  "instructor": {
+    "name": "Assoc. Prof. Ferhat Uçar",
+    "email": "fucar@firat.edu.tr"
+  },
+  "meeting": {
+    "day": "Monday",
+    "time": "13:15–17:00",
+    "lecture": "13:30–14:45",
+    "lab": "15:00 onwards",
+    "room": "B101 / YM LAB",
+    "format": "Part 1: lecture (13:30–14:45) · Part 2: hands-on lab in C (from 15:00)"
+  },
+  "channels": [
+    {
+      "name": "WhatsApp channel",
+      "note": "Urgent announcements",
+      "url": "https://whatsapp.com/channel/0029Va7485X6WaKnrgJdep2i"
+    },
+    {
+      "name": "Instagram · @docdrferhatucar.ai",
+      "note": "AI, software and course highlights",
+      "url": "https://www.instagram.com/docdrferhatucar.ai/"
+    }
+  ],
+  "classroom": {
+    "_note": "Classroom 50 settings. org = GitHub organization (Team plan), slug = classroom short name. Change here and every lab page updates.",
+    "org": "FiratUniversity-IJDP-SoftEng",
+    "slug": "ics-2026",
+    "web": "https://classroom50.org",
+    "editor": "https://github.com/codespaces"
+  },
+  "cs50": {
+    "_note": "We follow Harvard's CS50x 2026. Students are enrolled on edX; every week page links the matching CS50 lecture, notes and slides.",
+    "home": "https://cs50.harvard.edu/x/2026/",
+    "edx": "https://cs50.edx.org/",
+    "playlist": "https://www.youtube.com/playlist?list=PLhQjrBD2T380hlTqAU8HfvVepCcjCqTg6",
+    "ide": "https://cs50.dev",
+    "duck": "https://cs50.ai"
+  },
+  "description": "Introduction to Computer Science is a first course in computing for beginners with no prior programming experience, built on Harvard University's CS50 curriculum. Starting from how computers represent information, you learn to think algorithmically and to program in C, the language under every operating system, browser and database. You then meet arrays, algorithms, memory, data structures, Python, artificial intelligence, SQL and the web, and you finish by building and demoing a software project of your own.",
+  "philosophy": {
+    "intro": "What ultimately matters in this course is not where you end up relative to your classmates but where you end up relative to yourself when you began. We learn by doing: every Monday is one lecture and one lab, every lab is code you write and tests that check it instantly, and every idea is tied to something real, from the chip in your phone to the app you used this morning.",
+    "points": [
+      {
+        "t": "Bits first, then everything",
+        "d": "Numbers, text, images, sound and code are all bits. Once you see that, no technology is magic anymore."
+      },
+      {
+        "t": "C before comfort",
+        "d": "C shows you what the machine really does: memory, addresses, bytes. Every later language becomes easier because of it."
+      },
+      {
+        "t": "Every idea runs",
+        "d": "You do not read about programs, you write them, in a browser-based VS Code, with autograded feedback in a minute."
+      },
+      {
+        "t": "One wow moment a week",
+        "d": "Each week connects the topic to something surprising in the real world: a bug that cost millions, a trick behind Google, a line of code inside your phone."
+      },
+      {
+        "t": "Industry in view",
+        "d": "Git, GitHub, code review, testing and AI-assisted coding are part of the course from week 2, because they are part of the job."
+      },
+      {
+        "t": "Honest use of AI",
+        "d": "AI assistants are welcome as tutors. You are graded on what you can explain, and you will be asked to explain."
+      }
+    ]
+  },
+  "outcomes": [
+    {
+      "id": "LO1",
+      "text": "Explain how computers represent numbers, text, images and instructions as bits, and describe the input → algorithm → output model of computation.",
+      "weeks": [1, 2]
+    },
+    {
+      "id": "LO2",
+      "text": "Write, compile and debug C programs with variables, conditionals, loops, functions, arrays and strings.",
+      "weeks": [3, 4]
+    },
+    {
+      "id": "LO3",
+      "text": "Implement and compare searching and sorting algorithms and reason about running time with Big O.",
+      "weeks": [5]
+    },
+    {
+      "id": "LO4",
+      "text": "Use pointers and dynamic memory in C, read hexadecimal, and explain how strings, files and images live in memory.",
+      "weeks": [6]
+    },
+    {
+      "id": "LO5",
+      "text": "Build linked lists, hash tables and trees, and choose a data structure for a given problem.",
+      "weeks": [7]
+    },
+    {
+      "id": "LO6",
+      "text": "Translate C programs into Python and use libraries to solve practical problems quickly.",
+      "weeks": [9]
+    },
+    {
+      "id": "LO7",
+      "text": "Describe how machine learning and large language models work, prompt them effectively, and recognize their limits.",
+      "weeks": [10]
+    },
+    {
+      "id": "LO8",
+      "text": "Design relational tables and query them with SQL, and explain SQL injection.",
+      "weeks": [11]
+    },
+    {
+      "id": "LO9",
+      "text": "Explain how the Internet and the web work (IP, TCP, DNS, HTTP) and build a small interactive page with HTML, CSS and JavaScript.",
+      "weeks": [12, 13]
+    },
+    {
+      "id": "LO10",
+      "text": "Apply basic security hygiene and human-centered design principles, and present a working software project with a clean Git history.",
+      "weeks": [13, 14, 15]
+    }
+  ],
+  "assessment": {
+    "components": [
+      {
+        "name": "Midterm exam",
+        "weight": 40,
+        "note": "In-class written exam in week 8. The official date is announced by the faculty."
+      },
+      {
+        "name": "Final",
+        "weight": 60,
+        "note": "Final grade = 85% final exam + 15% semester project."
+      }
+    ],
+    "finalSplit": [
+      {
+        "name": "Final exam",
+        "weight": 85
+      },
+      {
+        "name": "Semester project",
+        "weight": 15
+      }
+    ],
+    "labsNote": "Weekly labs are autograded for instant feedback. They are the practice ground for the exams and the project, and completion is tracked."
+  },
+  "policies": [
+    {
+      "t": "Late work",
+      "d": "Assignments submitted after the due date are penalized 10% per day, including weekends. Nothing is accepted more than five days late unless a documented medical or personal emergency is provided."
+    },
+    {
+      "t": "Academic integrity",
+      "d": "Cheating, plagiarism and submitting someone else's work as your own lead to disciplinary action, which can include a failing grade and university sanctions. Reading others' code to learn is fine; submitting it is not."
+    },
+    {
+      "t": "AI tools",
+      "d": "You may use AI assistants (including CS50's duck at cs50.ai) to explain concepts, find bugs and generate practice problems. You may not submit code you cannot explain line by line. In labs and the project demo you will be asked to walk through your work."
+    },
+    {
+      "t": "Attendance and participation",
+      "d": "Regular attendance is crucial: the lab needs you in the room. If you cannot attend, email the instructor in advance."
+    },
+    {
+      "t": "Electronics",
+      "d": "Laptops and phones are for course work only. Anything that distracts others is not allowed."
+    },
+    {
+      "t": "Communication",
+      "d": "Official course communication is by email. Urgent announcements also go to the WhatsApp channel."
+    },
+    {
+      "t": "Accommodations",
+      "d": "If you need an accommodation for a disability or any other reason, contact the instructor as early as possible."
+    }
+  ],
+  "previousSite": {
+    "title": "Introduction to Computer Science YMT113, 2025–2026 course site (Notion)",
+    "url": "https://ferhatucar.notion.site/intro2compsci"
+  },
+  "books": [
+    {
+      "title": "CS50x 2026: Introduction to Computer Science",
+      "author": "David J. Malan, Harvard University",
+      "url": "https://cs50.harvard.edu/x/2026/",
+      "note": "Our primary source. Lecture videos, notes, slides, source code and problem sets, all free. You are enrolled on edX."
+    },
+    {
+      "title": "The C Programming Language, 2nd ed.",
+      "author": "Brian W. Kernighan, Dennis M. Ritchie",
+      "note": "The classic, written by the language's creators. Short and precise; chapters 1–6 cover everything we use."
+    },
+    {
+      "title": "Computer Science: An Overview, 13th ed.",
+      "author": "J. Glenn Brookshear, Dennis Brylow",
+      "note": "Broad, readable survey of the whole field. Good background for weeks 1, 2, 13 and 14."
+    },
+    {
+      "title": "Code: The Hidden Language of Computer Hardware and Software, 2nd ed.",
+      "author": "Charles Petzold",
+      "note": "How bits, gates and circuits become a computer. The best book to read alongside weeks 1–2 and 6."
+    },
+    {
+      "title": "Beej's Guide to C Programming",
+      "author": "Brian “Beej” Hall",
+      "url": "https://beej.us/guide/bgc/",
+      "note": "Free online. Friendly and complete; great as a second explanation of pointers."
+    },
+    {
+      "title": "Modern C, 3rd ed.",
+      "author": "Jens Gustedt",
+      "url": "https://gustedt.gitlabpages.inria.fr/modern-c/",
+      "note": "Free online. For the curious who want the current standard, not the 1980s dialect."
+    }
+  ],
+  "courses": [
+    {
+      "title": "CS50x 2026 on edX",
+      "org": "Harvard University",
+      "url": "https://cs50.edx.org/",
+      "note": "You are enrolled. Watch the lecture before each Monday; the week page tells you which one."
+    },
+    {
+      "title": "CS101 Introduction to Computing Principles",
+      "org": "Stanford University",
+      "url": "https://web.stanford.edu/class/cs101/",
+      "note": "Short readable chapters on hardware, images, networks and software. We use it in weeks 6, 13 and 14."
+    },
+    {
+      "title": "Missing Semester of Your CS Education",
+      "org": "MIT",
+      "url": "https://missing.csail.mit.edu/",
+      "note": "The shell, Git, editors and debugging: the tools professionals use every day."
+    },
+    {
+      "title": "CS50's Introduction to Cybersecurity",
+      "org": "Harvard University",
+      "url": "https://cs50.harvard.edu/cybersecurity/",
+      "note": "Free. Passwords, hashing, encryption and threats, explained for everyone. Week 13 reading."
+    },
+    {
+      "title": "CS50's Introduction to Programming with Python",
+      "org": "Harvard University",
+      "url": "https://cs50.harvard.edu/python/",
+      "note": "Free. If you want more Python after week 9."
+    }
+  ],
+  "tools": [
+    {
+      "title": "GitHub Codespaces",
+      "url": "https://github.com/codespaces",
+      "note": "VS Code in the browser, opened straight from your lab repository with clang, make and the tests ready. Our lab editor; free within your personal GitHub quota."
+    },
+    {
+      "title": "Classroom 50",
+      "url": "https://classroom50.org",
+      "note": "Where you accept labs and see your autograded scores. Built by the CS50 team."
+    },
+    {
+      "title": "cs50.dev",
+      "url": "https://cs50.dev",
+      "note": "Harvard's free VS Code in the browser with the CS50 library preinstalled. Perfect for following the CS50 lectures and for practice; graded labs use Codespaces."
+    },
+    {
+      "title": "CS50 Duck (cs50.ai)",
+      "url": "https://cs50.ai",
+      "note": "An AI teaching assistant that explains rather than solves. Ask it about error messages."
+    },
+    {
+      "title": "Google Colab",
+      "url": "https://colab.research.google.com/",
+      "note": "Runs our exploration notebooks (yes, even the C ones) with nothing installed."
+    },
+    {
+      "title": "Scratch",
+      "url": "https://scratch.mit.edu/",
+      "note": "MIT's block-based language. Week 2 starts here."
+    },
+    {
+      "title": "Python Tutor (C mode)",
+      "url": "https://pythontutor.com/c.html",
+      "note": "Visualize memory, pointers and the stack step by step. Invaluable in weeks 6 and 7."
+    },
+    {
+      "title": "Compiler Explorer",
+      "url": "https://godbolt.org/",
+      "note": "Paste C, see the assembly your compiler produces. The wow moment of week 3, on demand."
+    },
+    {
+      "title": "cppreference (C)",
+      "url": "https://en.cppreference.com/w/c",
+      "note": "The reference for every standard C function."
+    },
+    {
+      "title": "CS50 Manual Pages",
+      "url": "https://manual.cs50.io/",
+      "note": "Beginner-friendly documentation for C library functions."
+    }
+  ]
+}

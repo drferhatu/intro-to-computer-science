@@ -1,0 +1,188 @@
+---
+week: 2
+title: "Everything Is Bits: Representation, Algorithms and Scratch"
+description: "How 0 and 1 become numbers, letters, colors and sound; what an algorithm is and why some are dramatically faster; and your first programs in Scratch, which contain every idea C will use."
+module: m1
+status: ready
+lab: lab-01
+cs50:
+  week: "0"
+  title: "Scratch"
+  video: "https://youtu.be/UuIEbpQms8o"
+  notes: "https://cs50.harvard.edu/x/2026/notes/0/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/0/lecture0.pdf"
+  source: "https://cs50.harvard.edu/x/2026/weeks/0/"
+  pset: "https://cs50.harvard.edu/x/2026/psets/0/"
+prep:
+  - "Finish the <a href=\"/guides/lab-setup\">lab setup</a>: GitHub account, organization invitation accepted, one sign-in to Classroom 50."
+  - "Create a free account at <a href=\"https://scratch.mit.edu\" target=\"_blank\" rel=\"noopener\">scratch.mit.edu</a> and click <em>Create</em> once so the editor is familiar."
+  - "Bring a laptop if you have one. The lab PCs work too; everything runs in the browser."
+notebook:
+  file: "notebooks/week-02-bits.ipynb"
+  title: "Week 2 · Explore: bits, bytes, ASCII and pixels"
+objectives:
+  - "Convert small numbers between decimal and binary, and explain why 8 bits can hold 256 values."
+  - "Explain how text (ASCII, Unicode), colors (RGB), images, sound and video are all encoded as bits."
+  - "Define algorithm, and compare linear search with binary search on the phone-book problem."
+  - "Read and write pseudocode with conditions, loops and variables."
+  - "Build a Scratch program that uses functions (blocks), conditions, loops, variables and events, and explain abstraction."
+  - "Recognize the same five ideas in a first C program."
+wow:
+  title: "One hand can count to 31. Eight switches can store every letter you have ever typed."
+  text: "Counting on fingers the usual way stops at 5. Treat each finger as a bit (down = 0, up = 1) and one hand counts to 31, two hands to 1023. That is the whole trick behind computers: a switch is a bit, 8 switches are a byte, and the byte 01001000 is the letter H. The laptop in front of you has around 100 billion such switches, each smaller than a virus."
+industry:
+  - { "t": "Unicode and the emoji you sent today", "d": "Text is bytes under an agreement. ASCII (1963) had 128 characters; Unicode has about 150 000 and is maintained by a consortium where Apple, Google and Microsoft vote on new emoji. 😂 is code point 128 514, four bytes in UTF-8." }
+  - { "t": "Color on every screen", "d": "Every pixel is three bytes, red, green and blue, 0–255 each. #FF0000 in a designer's CSS, (255, 0, 0) in a game engine, and the LEDs in your phone all mean the same three bytes." }
+  - { "t": "Compression is why video works", "d": "A minute of raw 1080p video is about 9 GB. Netflix sends you a few dozen megabytes. The difference is algorithms that find repeated bits and throw away what your eye cannot see." }
+  - { "t": "Scratch is real", "d": "Block languages are how Lego robots, many industrial PLCs and Apple's Shortcuts are programmed. The ideas are identical to text languages; only the typing is missing." }
+resources:
+  - { "title": "CS50x 2026 · Week 0 notes", "url": "https://cs50.harvard.edu/x/2026/notes/0/", "note": "The written version of the lecture; excellent for review." }
+  - { "title": "ASCII table", "url": "https://www.asciitable.com/", "note": "Find your initials in binary." }
+  - { "title": "Unicode character table", "url": "https://symbl.cc/en/unicode-table/", "note": "Every character, its code point and its bytes." }
+  - { "title": "Scratch", "url": "https://scratch.mit.edu/", "note": "Create, and share your project link in the lab." }
+  - { "title": "Code, by Charles Petzold (book)", "url": "https://www.codehiddenlanguage.com/", "note": "Chapters 1–10: from Morse code to bytes. Free interactive companion site." }
+tags: ["binary", "bits", "bytes", "ASCII", "Unicode", "RGB", "algorithm", "binary search", "pseudocode", "Scratch", "abstraction"]
+---
+
+## Before we start: the lab
+
+From today on, every Monday ends in the lab. You can begin **without the instructor**: the [Lab 1 page](/labs/lab-01) is a numbered list of steps, from accepting the assignment to your first `git push`. If you did the [setup](/guides/lab-setup) at home, the first step takes two minutes.
+
+## What is computer science?
+
+> [!definition] Computation
+> **Input → algorithm → output.** Computer science is the study of information: how to represent it (the input and output) and how to process it (the algorithm).
+
+We spend this week on the two halves. First, representation: how a machine that has only *on* and *off* can hold a novel, a photograph or a song. Then, algorithms: what it means to solve a problem step by step, and why some ways are dramatically faster than others.
+
+## Representation: everything is bits
+
+### Counting with switches
+
+You count in **decimal** because you have ten fingers: digits 0–9, and each position is worth ten times the one to its right. A computer is made of transistors, tiny switches that are either off or on. So it counts in **binary**: digits 0 and 1, each position worth *two* times the one to its right.
+
+<table class="bits">
+<thead><tr><th>128</th><th>64</th><th>32</th><th>16</th><th>8</th><th>4</th><th>2</th><th>1</th><th>decimal</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>5</td></tr>
+<tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>73</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>255</td></tr>
+</tbody>
+</table>
+
+A single binary digit is a **bit**. Eight bits are a **byte**, and a byte can hold 2⁸ = 256 different values, 0 through 255. Try it: click the bits, then type your name.
+
+<BitPlayground initial="Firat" id="bits-w2" />
+
+> [!try] By hand
+> Write 13, 42 and 100 in binary. Then convert 1010 1010 to decimal. Check with the widget above.
+
+### Text: ASCII and Unicode
+
+Bits are just numbers; to store letters we need an *agreement*. **ASCII** (1963) says 65 is `A`, 66 is `B`, 97 is `a`, 48 is `0` (the character, not the number), 32 is a space. Eight bits per character, so a 1 000-word email is about 6 KB.
+
+ASCII has room for only 128 characters, which covers English and not much else. **Unicode** extends it to about 150 000 characters for every writing system and emoji, encoded as 1 to 4 bytes per character in **UTF-8**. `ş` is two bytes, `😂` is four. UTF-8 is backwards compatible: every ASCII file is already a valid UTF-8 file.
+
+> [!warning] The same bits, different meanings
+> 01001000 01101001 is `Hi` if you read it as text, 18 537 if you read it as a 16-bit number, and a slightly dark teal if you read it as the first two bytes of a pixel. Bits carry no meaning; **programs** do. That is why a program that misreads a file shows garbage.
+
+### Color, images, sound, video
+
+- A **pixel** is three bytes: red, green, blue, each 0–255. (255, 255, 255) is white, (0, 0, 0) is black, (255, 0, 0) pure red. A 1920 × 1080 image is 2 million pixels, about 6 MB raw.
+- An **image** is a grid of pixels plus a header that says how wide it is. A **video** is many images per second plus sound.
+- **Sound** is a wave sampled 44 100 times per second; each sample is a number (the pressure), typically 2 bytes.
+- **Programs** are bits too: instructions the processor understands. We meet them in week 3 when we compile C.
+
+The notebook at the bottom of this page draws a pixel-art image from a grid of numbers and plays with ASCII. Open it in Colab.
+
+## Algorithms
+
+> [!definition] Algorithm
+> A finite, precise, step-by-step procedure for solving a problem. The steps must be unambiguous enough for a machine that does not understand anything.
+
+CS50's phone book: find *John Harvard* in a 1 000-page book.
+
+1. **Page by page** from the front: correct, but up to 1 000 steps. This is *linear search*.
+2. **Two pages at a time**: twice as fast, but you can skip John; you need a fix-up step. Still linear.
+3. **Open the middle**, decide which half John is in, tear the other half away, repeat: about 10 steps for 1 000 pages, 20 for a million, 30 for a billion. This is *binary search*, and it only works because the book is **sorted**.
+
+| Pages | Linear search (worst case) | Binary search |
+|---|---|---|
+| 1 000 | 1 000 | 10 |
+| 1 000 000 | 1 000 000 | 20 |
+| 1 000 000 000 | 1 000 000 000 | 30 |
+
+Correctness is the first requirement; **efficiency** is what separates a program that works from one that is usable. Week 5 turns this into a science (Big O). For now, remember the shape: doubling the input adds one step to binary search and doubles the steps of linear search.
+
+### Pseudocode
+
+We write algorithms in **pseudocode** before code: English with structure.
+
+```text
+1  Pick up phone book
+2  Open to middle of phone book
+3  Look at page
+4  If person is on page
+5      Call person
+6  Else if person is earlier in book
+7      Open to middle of left half of book
+8      Go back to line 3
+9  Else if person is later in book
+10     Open to middle of right half of book
+11     Go back to line 3
+12 Else
+13     Quit
+```
+
+Notice the vocabulary, because every language has it:
+
+| Idea | In the pseudocode | In Scratch | In C (week 3) |
+|---|---|---|---|
+| **function** | pick up, open, look at, call | `say`, `move`, your own blocks | `printf`, `main`, your own functions |
+| **condition** | if / else if / else | `if … then … else` | `if (…) { } else { }` |
+| **boolean expression** | person is on page | `touching`, `=`, `<` | `x == 5`, `n < 10` |
+| **loop** | go back to line 3 | `forever`, `repeat`, `repeat until` | `while`, `for` |
+| **variable** | (the current page) | orange variable blocks | `int page = 500;` |
+
+## Scratch: the ideas without the syntax
+
+Scratch is a block language from MIT. You drag blocks instead of typing, so you cannot make a syntax error, and you can concentrate on the five ideas above.
+
+- **Functions**: `say hello` is a function with an *argument* ("hello"). `ask … and wait` is a function with a *return value* (`answer`).
+- **Conditions and booleans**: `if touching mouse-pointer then …`; `and`, `or`, `not`.
+- **Loops**: `forever`, `repeat 10`, `repeat until`.
+- **Variables**: `set score to 0`, `change score by 1`.
+- **Events**: `when green flag clicked`, `when space key pressed`. Programs react to the world.
+- **Abstraction**: `make a block` turns ten blocks into one named block, like `meow` or `bounce`. Once it works, you stop thinking about the inside. Every large program is abstraction on abstraction.
+
+> [!try] In the lab
+> Lab 1 asks for a small Scratch project with at least one custom block, one variable, one loop and one condition. Oscartime, Ivy's Hardest Game and the meowing cat from the lecture are the models; your own idea is better.
+
+## From Scratch to C: a preview
+
+The same program, twice:
+
+```text
+when green flag clicked
+say [hello, world]
+```
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    printf("hello, world\n");
+}
+```
+
+`main` is the green flag. `printf` is `say`. The semicolon ends a statement; the braces group statements into a block. Next week you write this yourself, and in Lab 1 today you already compile and run it once, so that week 3 starts with no fear.
+
+## Summary
+
+- Computers hold only bits. Numbers, text, color, sound, images and programs are all bits under an agreement (binary, ASCII/Unicode, RGB, …).
+- 8 bits = 1 byte = 256 values. n bits give 2ⁿ values.
+- An algorithm is a precise procedure; binary search needs a sorted input and takes about log₂ n steps.
+- Five ideas in every language: functions, conditions, loops, variables, events; plus abstraction to manage size.
+- Scratch is those ideas with blocks. C is the same ideas with text.

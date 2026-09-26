@@ -1,0 +1,41 @@
+# dependencies and build output
+node_modules/
+dist/
+.astro/
+
+# env and logs
+.env
+.env.*
+npm-debug.log*
+
+# python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# local claude settings
+.claude/
+
+# Only the instructor's own slide decks copied into public/slides/ are published.
+*.docx
+*.pdf
+!public/slides/*.pdf
+
+# rendered notebook views are generated at build time (scripts/build_notebooks.py)
+public/notebooks/
+
+# compiled lab binaries
+labs/templates/*/hello
+labs/templates/*/greet
+labs/templates/*/bits
+labs/templates/*/*.dSYM/
+
+# instructor-only material (solutions, roster notes): never published
+private/

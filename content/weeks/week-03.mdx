@@ -1,0 +1,239 @@
+---
+week: 3
+title: "C: Source Code, the Compiler and Your First Real Programs"
+description: "From Scratch blocks to text: how source code becomes machine code, and the C you need to write programs with variables, input, conditions, loops and functions."
+module: m2
+status: ready
+lab: lab-02
+reading: "K&R chapter 1"
+cs50:
+  week: "1"
+  title: "C"
+  video: "https://youtu.be/SlqjA04_dpk"
+  notes: "https://cs50.harvard.edu/x/2026/notes/1/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/1/lecture1.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/1/src1.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/1/"
+prep:
+  - "Make sure Lab 1 is pushed and you saw your score under <em>Releases</em>. If not, fix that first; the loop is the same every week."
+  - "Open <a href=\"https://cs50.dev\" target=\"_blank\" rel=\"noopener\">cs50.dev</a> once and run the lecture's <code>hello.c</code> yourself."
+objectives:
+  - "Explain what a compiler does and run the edit → compile → run cycle in the terminal."
+  - "Use int, float, double, char, bool and string, and choose printf format codes (%i, %f, %c, %s)."
+  - "Get input with the CS50 library (get_int, get_string) and validate it with a do-while loop."
+  - "Write conditions with if / else if / else and the comparison and logical operators."
+  - "Write while and for loops, and know when to use each."
+  - "Define and call your own functions with parameters and return values, and declare prototypes."
+  - "Explain integer overflow and floating-point imprecision, and why they caused real disasters."
+wow:
+  title: "The Boeing 787 had to be rebooted every 248 days because an integer ran out of room."
+  text: "In 2015 the FAA ordered airlines to power-cycle every 787 at least every 248 days: a 32-bit counter in the generator control units, counting in hundredths of a second, would overflow after 2³¹ ticks and shut down all four generators mid-flight. 2³¹ hundredths of a second is 248.55 days. Today you learn what an int is; by the end of the lab you will make one overflow on purpose."
+industry:
+  - { "t": "C is the substrate", "d": "Linux, Windows, macOS, the Python interpreter, SQLite, Git, most of your car's firmware and the code on the Mars rovers are C. Every language you learn later calls into C somewhere." }
+  - { "t": "Compilers are a career", "d": "clang, the compiler we use, is the core of Apple's and Google's toolchains. Compiler engineers are among the best-paid developers because everyone's code runs through their code." }
+  - { "t": "Input validation is security", "d": "The do-while loop that rejects a negative height is the same discipline that prevents most web vulnerabilities: never trust input." }
+  - { "t": "Floating-point cost real money", "d": "In 1991 a Patriot missile battery missed a Scud because 0.1 seconds cannot be stored exactly in binary and the rounding error grew for 100 hours. 28 soldiers died. Floats are approximations; know it." }
+resources:
+  - { "title": "CS50x 2026 · Week 1 notes", "url": "https://cs50.harvard.edu/x/2026/notes/1/", "note": "Every program from the lecture, explained." }
+  - { "title": "CS50 Manual Pages", "url": "https://manual.cs50.io/", "note": "Beginner-friendly docs for printf, get_int, and friends." }
+  - { "title": "Beej's Guide to C, chapters 1–4", "url": "https://beej.us/guide/bgc/html/split/", "note": "A second, friendlier explanation of the same material." }
+  - { "title": "Compiler Explorer", "url": "https://godbolt.org/", "note": "Paste hello.c, see the machine code your compiler produces." }
+  - { "title": "FAA airworthiness directive on the 787 (2015)", "url": "https://www.federalregister.gov/documents/2015/05/01/2015-10066/airworthiness-directives-the-boeing-company-airplanes", "note": "The primary source for the wow moment." }
+tags: ["C", "compiler", "clang", "make", "printf", "scanf", "get_int", "int", "float", "char", "string", "if", "while", "for", "function", "overflow", "floating point"]
+---
+
+## From blocks to text
+
+Last week's five ideas, in text. The cost: you can now make syntax errors, and the compiler will tell you about every one of them. The gain: you can write anything, and the result runs on every computer on Earth.
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    printf("hello, world\n");
+}
+```
+
+| Piece | Meaning |
+|---|---|
+| `#include <stdio.h>` | Use the standard input/output library, which is where `printf` lives. Like importing a Scratch extension. |
+| `int main(void)` | The program starts here. The green flag. |
+| `{ … }` | A block: the statements that belong to `main`. |
+| `printf("hello, world\n");` | Call the function `printf` with one argument. `\n` is a newline. The `;` ends the statement. |
+
+## Source code → machine code
+
+The processor understands only bits, so your text must be translated. That is the **compiler**'s job.
+
+<Terminal lines={['code hello.c', 'make hello', './hello']} out="hello, world" />
+
+`make hello` is a convenience: it really runs `clang -o hello hello.c` (plus `-lcs50` when you use the CS50 library). Three steps you will repeat a thousand times: **edit, compile, run**. When the compiler complains, read the *first* error, fix it, compile again. Most later errors are echoes of the first.
+
+> [!note] Correctness, design, style
+> CS50 grades code on three axes. **Correct**: does it do what it should? **Design**: is it written well, without needless repetition? **Style**: is it readable, consistently indented, sensibly named? The autograder checks the first; the instructor looks at the other two in your project.
+
+## Variables and types
+
+C wants to know what kind of value a variable holds, because different kinds take different numbers of bytes.
+
+| Type | Holds | Bytes | Example |
+|---|---|---|---|
+| `int` | integers | 4 | `int age = 19;` |
+| `long` | bigger integers | 8 | `long population = 8000000000;` |
+| `float` | real numbers, ~7 digits | 4 | `float pi = 3.14159;` |
+| `double` | real numbers, ~15 digits | 8 | `double e = 2.718281828459045;` |
+| `char` | one character | 1 | `char grade = 'A';` |
+| `bool` | true / false | 1 | `bool done = false;` (needs `<stdbool.h>` or `<cs50.h>`) |
+| `string` | text (CS50 library) | pointer | `string name = "Alice";` (needs `<cs50.h>`) |
+
+`=` is **assignment**, not equality. `int x = 5;` creates `x` and puts 5 in it. `x = x + 1;` (or `x++;`) puts the old value plus one back. Equality is `==`.
+
+### Output with printf
+
+`printf` prints a **format string** where placeholders are replaced by values:
+
+```c
+int age = 19;
+float gpa = 3.75;
+char initial = 'F';
+string name = "Firat";
+printf("%s is %i, initial %c, GPA %.2f\n", name, age, initial, gpa);
+```
+
+`%i` int, `%f` float/double (`%.2f` two decimals), `%c` char, `%s` string, `%li` long, `%%` a literal percent sign.
+
+### Input with the CS50 library
+
+```c
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
+{
+    string name = get_string("What's your name? ");
+    printf("hello, %s\n", name);
+}
+```
+
+`get_string`, `get_int`, `get_float`, `get_long`, `get_char` ask the user and **return** a value. They re-prompt on nonsense; you still have to reject values that are the wrong *size*, which is what loops are for. In week 6 we look inside `get_string`; for now it is an abstraction, like a Scratch block.
+
+## Conditions
+
+```c
+if (x < y)
+{
+    printf("x is less than y\n");
+}
+else if (x > y)
+{
+    printf("x is greater than y\n");
+}
+else
+{
+    printf("x is equal to y\n");
+}
+```
+
+Comparison operators: `<`, `<=`, `>`, `>=`, `==`, `!=`. Logical: `&&` (and), `||` (or), `!` (not). Parentheses are required around the condition, and the condition is a **boolean expression**: something true or false.
+
+> [!warning] The most common bug in C
+> `if (x = 5)` **assigns** 5 to x and is always true. You meant `if (x == 5)`. Compilers warn about this; read the warning.
+
+## Loops
+
+```c
+// while: repeat as long as the condition holds
+int i = 0;
+while (i < 3)
+{
+    printf("meow\n");
+    i++;
+}
+
+// for: the same, with init, condition and update in one line
+for (int i = 0; i < 3; i++)
+{
+    printf("meow\n");
+}
+
+// do-while: run once, then check. Perfect for input validation.
+int n;
+do
+{
+    n = get_int("Positive number: ");
+}
+while (n < 1);
+```
+
+Use `for` when you know how many times; `while` when you repeat until something happens; `do … while` when the body must run at least once. `while (true)` with a `break` inside is the "forever" block.
+
+## Functions
+
+Scratch's *make a block* is a **function** in C:
+
+```c
+#include <stdio.h>
+
+void meow(int n);          // prototype: tell the compiler it exists
+
+int main(void)
+{
+    meow(3);
+}
+
+void meow(int n)           // definition
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("meow\n");
+    }
+}
+```
+
+`void` means "returns nothing". A function can also **return** a value:
+
+```c
+int square(int x)
+{
+    return x * x;
+}
+```
+
+Functions are the unit of **abstraction**: once `meow` works, `main` reads like English. The prototype is needed because C reads top to bottom and `main` calls `meow` before `meow` is defined.
+
+> [!definition] Scope
+> A variable exists only inside the braces where it was declared. `int i` in a `for` loop is gone after the loop. This is why functions cannot see each other's variables, and why we pass **arguments** and get **return values**.
+
+## Where numbers break
+
+### Integer overflow
+
+An `int` is 32 bits: 4 294 967 296 values, split into −2 147 483 648 … 2 147 483 647. Add one to the maximum and the bits wrap around to the minimum, like a car odometer. That is the 787 bug in the wow moment, and the reason YouTube once had to change its view counter to a `long` when *Gangnam Style* passed 2³¹ views.
+
+```c
+int big = 2147483647;
+big = big + 1;
+printf("%i\n", big);      // -2147483648
+```
+
+Use `long` when values can be large, and think about the maximum whenever you count anything.
+
+### Floating-point imprecision
+
+```c
+float x = 1.0;
+float y = 10.0;
+printf("%.20f\n", x / y);  // 0.10000000149011611938
+```
+
+0.1 has no exact binary representation, just as ⅓ has no exact decimal one. A `float` keeps about 7 significant digits, a `double` about 15. Never compare floats with `==`; never store money in a float (banks use integers of cents).
+
+## Summary
+
+- Edit, compile (`make`), run (`./program`). Read the first compiler error.
+- Types: `int`, `long`, `float`, `double`, `char`, `bool`, `string`. `printf` with `%i %f %c %s`.
+- `get_int` and friends for input; `do … while` to validate it.
+- `if / else if / else`, `while`, `for`, `do … while`, and your own functions with prototypes.
+- Integers overflow, floats are approximate, and both have crashed real systems.
+- Next: arrays and strings (week 4), where you learn that a `string` is really a row of `char`s ending in a zero byte.
