@@ -39,7 +39,8 @@ export default function remarkCallouts() {
       if (!m) return;
       const kind = KINDS[m[1].toLowerCase()];
       if (!kind) return;
-      const title = m[2].trim() || kind.label;
+      const custom = m[2].trim();
+      const title = custom ? (m[1].toLowerCase() === 'demo' ? `Live demo · ${custom}` : custom) : kind.label;
       // ilk satırı kaldır
       text.value = nl === -1 ? '' : text.value.slice(nl + 1);
       if (!text.value) first.children.shift();
