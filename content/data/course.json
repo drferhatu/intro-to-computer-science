@@ -24,14 +24,36 @@
   },
   "channels": [
     {
+      "id": "whatsapp",
       "name": "WhatsApp channel",
       "note": "Urgent announcements",
-      "url": "https://whatsapp.com/channel/0029Va7485X6WaKnrgJdep2i"
+      "desc": "Quick announcements and reminders land here first. Everyone is expected to join.",
+      "url": "https://whatsapp.com/channel/0029Va7485X6WaKnrgJdep2i",
+      "cta": "Join the channel"
     },
     {
+      "id": "instagram",
       "name": "Instagram · @dr.ferhatucar",
       "note": "AI, software and course highlights",
-      "url": "https://www.instagram.com/dr.ferhatucar"
+      "desc": "Short, useful posts on AI, software and what we do in class.",
+      "url": "https://www.instagram.com/dr.ferhatucar",
+      "cta": "Follow"
+    },
+    {
+      "id": "calendar",
+      "name": "Public work calendar",
+      "note": "Weekly schedule",
+      "desc": "My weekly schedule: classes, meetings and when I am available.",
+      "url": "https://calendar.google.com/calendar/u/0?cid=ZDVmMWU1ZWFiNWM0ZTE2ZGVjMjU2NGI2M2ViYjNmYjI1YjkwOGI4ZjJlNmIyNTRhNzhmZWMwNjNmM2U4NWRjNUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t",
+      "cta": "Open calendar"
+    },
+    {
+      "id": "office",
+      "name": "Office hours booking",
+      "note": "Book a slot",
+      "desc": "Questions, your project or advice: pick a time that suits you.",
+      "url": "https://calendar.app.google/3woNnqLwS7RhtEBR7",
+      "cta": "Book a slot"
     }
   ],
   "classroom": {
@@ -83,52 +105,77 @@
     {
       "id": "LO1",
       "text": "Explain how computers represent numbers, text, images and instructions as bits, and describe the input → algorithm → output model of computation.",
-      "weeks": [1, 2]
+      "weeks": [
+        1,
+        2
+      ]
     },
     {
       "id": "LO2",
       "text": "Write, compile and debug C programs with variables, conditionals, loops, functions, arrays and strings.",
-      "weeks": [3, 4]
+      "weeks": [
+        3,
+        4
+      ]
     },
     {
       "id": "LO3",
       "text": "Implement and compare searching and sorting algorithms and reason about running time with Big O.",
-      "weeks": [5]
+      "weeks": [
+        5
+      ]
     },
     {
       "id": "LO4",
       "text": "Use pointers and dynamic memory in C, read hexadecimal, and explain how strings, files and images live in memory.",
-      "weeks": [6]
+      "weeks": [
+        6
+      ]
     },
     {
       "id": "LO5",
       "text": "Build linked lists, hash tables and trees, and choose a data structure for a given problem.",
-      "weeks": [7]
+      "weeks": [
+        7
+      ]
     },
     {
       "id": "LO6",
       "text": "Translate C programs into Python and use libraries to solve practical problems quickly.",
-      "weeks": [9]
+      "weeks": [
+        9
+      ]
     },
     {
       "id": "LO7",
       "text": "Describe how machine learning and large language models work, prompt them effectively, and recognize their limits.",
-      "weeks": [10]
+      "weeks": [
+        10
+      ]
     },
     {
       "id": "LO8",
       "text": "Design relational tables and query them with SQL, and explain SQL injection.",
-      "weeks": [11]
+      "weeks": [
+        11
+      ]
     },
     {
       "id": "LO9",
       "text": "Explain how the Internet and the web work (IP, TCP, DNS, HTTP) and build a small interactive page with HTML, CSS and JavaScript.",
-      "weeks": [12, 13]
+      "weeks": [
+        12,
+        13
+      ]
     },
     {
       "id": "LO10",
       "text": "Apply basic security hygiene and human-centered design principles, and present a working software project with a clean Git history.",
-      "weeks": [13, 14, 15]
+      "weeks": [
+        13,
+        14,
+        15
+      ]
     }
   ],
   "assessment": {
