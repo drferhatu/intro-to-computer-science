@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Publish a lab's starter code as a Classroom 50 template repository in the course organization.
+# Publish a lab's starter code as a template repository in the course organization.
 #
-#   scripts/publish_lab_template.sh lab01
+#   scripts/publish_lab_template.sh lab01 [--public]
 #
-# Creates (or updates) the PRIVATE repository  <ORG>/<CLASSROOM>-<lab>-template  from labs/templates/<lab>,
-# marks it as a template, and prints the next Classroom 50 step. Needs: gh (logged in as an org owner).
+# --public: anyone can "Use this template" (needed while labs are collected without Classroom 50, plan B).
+# Creates (or updates) the repository  <ORG>/<CLASSROOM>-<lab>-template  from labs/templates/<lab>,
+# marks it as a template, and prints the next step. Needs: gh (logged in as an org owner).
 set -euo pipefail
-LAB="${1:?usage: $0 labNN}"
+LAB="${1:?usage: $0 labNN [--public]}"
+VIS="--private"; [ "${2:-}" = "--public" ] && VIS="--public"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ORG=$(python3 -c "import json;print(json.load(open('$ROOT/content/data/course.json'))['classroom']['org'])")
 CLS=$(python3 -c "import json;print(json.load(open('$ROOT/content/data/course.json'))['classroom']['slug'])")
@@ -22,15 +24,14 @@ git add -A
 git commit -q -m "Starter code for $LAB"
 
 if gh repo view "$REPO" >/dev/null 2>&1; then
-  echo "· $REPO exists, pushing new starter code (students who already accepted keep their copy)"
+  echo "· $REPO exists, pushing new starter code (students who already copied it keep their copy)"
   git remote add origin "https://github.com/$REPO.git"
   git push -q --force origin main
 else
-  gh repo create "$REPO" --private --source . --push --description "Introduction to Computer Science $LAB starter code (Classroom 50 template)"
+  gh repo create "$REPO" "$VIS" --source . --push --description "Introduction to Computer Science $LAB starter code (template)"
 fi
 gh api -X PATCH "repos/$REPO" -f is_template=true >/dev/null
-echo "✓ https://github.com/$REPO is a template repository"
+echo "✓ https://github.com/$REPO is a template repository ($VIS)"
 echo
-echo "Next, on classroom50.org → $ORG → $CLS → New assignment:"
-echo "  slug: $LAB   template: $REPO   grading: Autograded"
-echo "  tests: paste labs/autograders/$LAB/tests.json  (or: gh teacher assignment test set $ORG $CLS $LAB --tests labs/autograders/$LAB/tests.json)"
+echo "Plan B (mode: template on the lab page): students open https://github.com/$REPO/generate"
+echo "Classroom 50: classroom50.org → $ORG → $CLS → New assignment: slug $LAB, template $REPO, tests labs/autograders/$LAB/tests.json"

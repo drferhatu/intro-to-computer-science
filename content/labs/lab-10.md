@@ -6,7 +6,7 @@ description: "Build a page with a form, style it with CSS, add JavaScript that r
 assignment: lab10
 status: draft
 acceptUrl: ""
-due: "2026-12-13 23:59"
+due: "2026-12-11 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "HTML/CSS/JS"

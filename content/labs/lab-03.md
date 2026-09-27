@@ -6,7 +6,7 @@ description: "Arrays and strings under the hood: count letters and words, judge 
 assignment: lab03
 status: draft
 acceptUrl: ""
-due: "2026-10-18 23:59"
+due: "2026-10-16 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "C"

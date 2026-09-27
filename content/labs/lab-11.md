@@ -6,7 +6,7 @@ description: "Hash passwords, crack the weak ones with a dictionary attack, add 
 assignment: lab11
 status: draft
 acceptUrl: ""
-due: "2026-12-20 23:59"
+due: "2026-12-18 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "Python"

@@ -6,7 +6,7 @@ description: "Your first real C programs: hello and a greeting that reads input,
 assignment: lab02
 status: draft
 acceptUrl: ""
-due: "2026-10-11 23:59"
+due: "2026-10-09 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "C"

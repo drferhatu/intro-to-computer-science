@@ -39,3 +39,4 @@ labs/templates/*/*.dSYM/
 
 # instructor-only material (solutions, roster notes): never published
 private/
+private/grades/

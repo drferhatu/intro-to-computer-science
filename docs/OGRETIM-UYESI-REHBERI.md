@@ -62,7 +62,7 @@ classroom50.org → `ics-2026` → **New assignment**:
 
 **Test öğrenci hesabıyla deneyin**: kabul → Codespace (ilk açılış ~1 dk) → `python3 check.py` → push → Releases'ta puan.
 
-### 2.4 Pazartesi Classroom 50 hazır değilse (yedek plan)
+### 2.4 (eski yedek plan; yerine 2b kullanılıyor)
 
 Lab sayfası ve duyuru bunu öngörüyor. O gün için:
 
@@ -71,6 +71,35 @@ Lab sayfası ve duyuru bunu öngörüyor. O gün için:
 3. `python3 check.py` yerelde çalışır; teslim için öğrenciler zip ya da kendi GitHub repolarına push eder; Classroom 50 açılınca aynı dosyaları oraya taşırlar (`acceptUrl` dolunca sayfadaki buton canlanır).
 
 ---
+
+## 2b. B planı: Classroom 50 olmadan (Lab 1'de kullanılıyor)
+
+Lab sayfasında `mode: template` yazıyorsa öğrenciler şu yolu izler: public şablondan kendi hesabında **özel**
+`ics-2026-labNN` deposunu açar ("Create your copy" düğmesi → GitHub'ın "Use this template" formu), `drferhatu`'yu
+collaborator ekler, README'ye ad/numara yazar, Codespaces'te (ya da doğrudan github.com'da kalemle) dosyaları düzenler, push eder.
+Şablondaki `.github/workflows/check.yml` her push'ta testleri öğrencinin reposunda çalıştırır (commit yanında ✅/❌).
+Org içindeki (Classroom 50) repolarda bu workflow kendini atlar. Lab 1'de C yok, sadece Python testleri; öğrencinin
+Codespaces kotası bitse bile üç dosya github.com'da düzenlenebilir.
+
+Hazırlık (yapıldı): `scripts/publish_lab_template.sh lab01 --public` → `FiratUniversity-IJDP-SoftEng/ics-2026-lab01-template` (public, template).
+
+Teslim tarihinden sonra (Cumartesi), tek komut:
+
+```bash
+/opt/miniconda3/envs/ferhat_ml/bin/python scripts/collect_lab.py lab01          # son teslim lab sayfasından okunur (Cuma 23:59)
+```
+
+- `ics-2026-lab01` adlı depoların bekleyen collaborator davetlerini kabul eder (başka davetlere dokunmaz).
+- Her depoda teslim tarihinden önceki **son push**'u GitHub'ın workflow kaydından bulur (commit tarihi taklit edilebilir, bu edilemez).
+- O commit'i klonlar, `tests/` klasörünü **resmi testlerle** değiştirir, pytest çalıştırır.
+- 5 güne kadar geç push'lara günlük %10 kesinti uygular (`--late-days`).
+- `private/grades/lab01.csv` yazar (GitHub'a gitmez): github, ad, numara, puan, teslim saati, not.
+- Scratch projelerine göz atmak için CSV'deki repo README'lerini açın; linkler oradadır.
+
+Öğrenci kodu sizin bilgisayarınızda (geçici klasörde, GitHub token'ı olmadan, zaman aşımıyla) çalışır.
+Belirli depoları denemek için: `--repos kullanici/ics-2026-lab01`.
+
+Classroom 50 açılınca: lab sayfasında `mode: template` satırını silin (varsayılan classroom50), `acceptUrl` doldurun. Şablon repo aynen kalır.
 
 ## 3. Haftalık akış
 

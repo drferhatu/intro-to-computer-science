@@ -6,7 +6,7 @@ description: "Rewrite three earlier labs in Python, use lists and dictionaries i
 assignment: lab07
 status: draft
 acceptUrl: ""
-due: "2026-11-22 23:59"
+due: "2026-11-20 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "Python"

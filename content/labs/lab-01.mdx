@@ -2,62 +2,80 @@
 lab: 1
 week: 2
 title: "Hello, Scratch"
-description: "Do the weekly loop once (accept, open, check, push), rebuild the meow program with a custom block, build a small Scratch project of your own, and answer seven questions about bits. No C yet."
+description: "Make your own copy of the lab on GitHub, rebuild the meow program with a custom block, build a small Scratch project of your own, and answer seven questions about bits. No C yet."
 assignment: lab01
+mode: template
 status: open
 acceptUrl: ""
-due: "2026-10-04 23:59"
+due: "2026-10-02 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "Scratch"
 files: ["README.md", "answers.txt", "pseudocode.txt"]
-topics: ["Classroom 50", "Codespaces", "Scratch", "custom blocks", "binary", "ASCII", "pseudocode"]
+topics: ["GitHub", "Codespaces", "Scratch", "custom blocks", "binary", "ASCII", "pseudocode"]
 ---
 
 ## Goal
 
-Two things happen today. You run the **weekly loop** for the first time: accept a lab, open it in VS Code in your browser, run the checks, push, see your score. And you turn CS50 Week 0 into your own work: a warm-up in Scratch, a project of your own, and a few questions about bits and algorithms. Everything is on this page, in order. C starts next week.
+Two things happen today. You run the **weekly loop** for the first time: get your own copy of the lab on GitHub, open it in VS Code in your browser, run the checks, push, see the result. And you turn CS50 Week 0 into your own work: a warm-up in Scratch, a project of your own, and a few questions about bits and algorithms. Everything is on this page, in order. C starts next week.
 
 > [!note] You can start without the instructor
-> Work top to bottom. Ask your neighbor first, then the instructor. If one step blocks you for more than 10 minutes, write down the exact error message and move on; steps 4 and 5 (Scratch) need nothing but a browser, so you can always do those.
+> Work top to bottom. Ask your neighbor first, then the instructor. If one step blocks you for more than 10 minutes, write down the exact error message and move on; steps 5 and 6 (Scratch) need nothing but a browser, so you can always do those.
 
-> [!warning] First lab? Do the setup first
-> You need a GitHub account and must have accepted the invitation to the course organization. If you have not, follow the [lab setup guide](/guides/lab-setup) (10 minutes), then come back here.
+> [!warning] This week only: how Lab 1 works
+> Our autograding platform (Classroom 50) opens from Lab 2. For Lab 1 you make **your own private copy** of the lab on GitHub, share it with the instructor, and submit by pushing. All you need is a GitHub account ([sign up](https://github.com/signup), 2 minutes). The whole route is below, step by step; the short version is in [How to submit](#how-to-submit).
 
 ## Steps
 
-<Step n={1} title="Accept the lab on Classroom 50" time="2 min" id="accept">
+<Step n={1} title="Make your own private copy" time="2 min" id="copy">
 
-1. Open [classroom50.org](https://classroom50.org) and click **Sign in with GitHub**.
-2. Open the organization **FiratUniversity-IJDP-SoftEng**, then the classroom **ics-2026**, then click **View assignments**.
-3. Find **lab01 · Hello, Scratch** and click **Accept assignment**, then **Accept assignment** again on the next page.
-4. Wait for the checklist to finish, then click **Open repository**.
+1. Sign in to [github.com](https://github.com). No account yet? [Create one](https://github.com/signup) first (2 minutes; use your university email).
+2. Click the orange **Create your copy** button at the top of this page. It opens GitHub's “Create a new repository” form, already set to the Lab 1 template.
+3. Fill in the form exactly like this:
 
-You now own a private repository called `ics-2026-lab01-yourusername`. Only you and the instructor can see it.
+| Field | Value |
+|---|---|
+| Owner | **your own username** |
+| Repository name | `ics-2026-lab01` (exactly this; the grader looks for this name) |
+| Visibility | **Private** |
 
-> [!note] If the accept button is not live yet
-> Do steps 4–7 in Scratch and on paper now; they need no repository. The instructor will tell you how to hand in the links and answers, and the loop (steps 1–3, 8) moves to next week.
+4. Click **Create repository**. You now have `your-username/ics-2026-lab01`.
 
 </Step>
 
-<Step n={2} title="Open it in Codespaces" time="2 min" id="codespace">
+<Step n={2} title="Share it with the instructor" time="1 min" id="share">
 
-On your repository page on GitHub:
+In your new repository:
+
+1. Click **Settings** (top right of the repository page), then **Collaborators** in the left menu.
+2. Click **Add people**, type `drferhatu`, choose **drferhatu** and click **Add to repository**.
+
+The instructor can only grade repositories shared with him. Your repository stays private: nobody else can see it.
+
+</Step>
+
+<Step n={3} title="Write your name in the README" time="1 min" id="name">
+
+Still on the repository page, open `README.md`, click the pencil icon ✎ and fill in the two lines under **Student**:
+
+```text
+- Name: Ada Lovelace
+- Student ID: 23xxxxxxx
+```
+
+Click **Commit changes…** and then **Commit changes**. This is how your GitHub username is matched to you in the grade list.
+
+</Step>
+
+<Step n={4} title="Open it in Codespaces and run the checks once" time="3 min" id="codespace">
+
+On your repository page:
 
 1. Click the green **Code** button.
 2. Choose the **Codespaces** tab.
 3. Click **Create codespace on main**.
 
-A VS Code editor opens in your browser. The first start takes about a minute; watch the terminal at the bottom until it shows a prompt ending in `$`.
-
-> [!tip] Next time
-> Your codespace is saved. Go to [github.com/codespaces](https://github.com/codespaces) and click it to continue where you left off.
-
-</Step>
-
-<Step n={3} title="Look around and run the checks once" time="2 min" id="look">
-
-In the file explorer on the left you see:
+A VS Code editor opens in your browser. The first start takes about a minute; watch the terminal at the bottom until it shows a prompt ending in `$`. In the file explorer on the left you see:
 
 | File | What it is |
 |---|---|
@@ -65,21 +83,24 @@ In the file explorer on the left you see:
 | `answers.txt` | Part C: seven short answers about bits |
 | `pseudocode.txt` | Part D: your algorithm in numbered steps |
 | `check.py` | the friendly test runner |
-| `tests/` | the tests the autograder runs (do not edit) |
+| `tests/` | the tests (grading uses the official copy, so editing them does not help) |
 
-In the terminal at the bottom, run the checks before doing anything:
+In the terminal, run the checks before doing anything:
 
 <Terminal cmd="python3 check.py" out={`:( Part A: README links your meow project
     no scratch.mit.edu/projects/ link after 'Meow:' in README.md (Share → Copy Link in Scratch)
 :( Part B: README links your own project
 ...
-0/8 checks passed`} />
+0/7 checks passed`} />
 
 Every check is `:(` because nothing is done yet. Your job is to turn them all into `:)`.
 
+> [!tip] Next time
+> Your codespace is saved. Go to [github.com/codespaces](https://github.com/codespaces) and click it to continue where you left off. No codespace? You can also edit the three files directly on github.com with the pencil icon; only `check.py` needs the codespace, and the ✅/❌ next to your commit shows the same result.
+
 </Step>
 
-<Step n={4} title="Part A · Warm-up: meow, with a custom block" time="10 min" id="part-a">
+<Step n={5} title="Part A · Warm-up: meow, with a custom block" time="10 min" id="part-a">
 
 Rebuild the last version of the lecture's meow program from memory, in a **new** Scratch project (sign in at [scratch.mit.edu](https://scratch.mit.edu) → **Create**):
 
@@ -99,7 +120,7 @@ Stuck? Load the lecture's [meow4.sb3](/scratch/meow4.sb3) into Scratch (**File �
 
 </Step>
 
-<Step n={5} title="Part B · Your own project" time="35 min" id="part-b">
+<Step n={6} title="Part B · Your own project" time="35 min" id="part-b">
 
 Build a small program of your own that has **all** of these:
 
@@ -115,7 +136,7 @@ When it runs: **Share → Copy Link**, paste it after `Project:` in `README.md`,
 
 </Step>
 
-<Step n={6} title="Part C · Bits and bytes" time="15 min" id="part-c">
+<Step n={7} title="Part C · Bits and bytes" time="15 min" id="part-c">
 
 Open `answers.txt`. Seven questions from the first half of the lecture: three numbers to write in binary, one binary number to read, two ASCII bytes to decode, and two facts. Write each answer after the `=` sign, nothing else on the line.
 
@@ -127,7 +148,7 @@ Do them **on paper first** with the place values 128 64 32 16 8 4 2 1, then chec
 
 </Step>
 
-<Step n={7} title="Part D · Pseudocode" time="10 min" id="part-d">
+<Step n={8} title="Part D · Pseudocode" time="10 min" id="part-d">
 
 Open `pseudocode.txt`. Pick **one** of the three problems in the file and write your algorithm as numbered steps, the way we wrote the phone-book algorithm: at least six lines, at least one `if`, and at least one loop (`go back to line N`, `repeat`, `while` or `until`). Delete the example first; the checks refuse it.
 
@@ -135,33 +156,34 @@ Be precise enough for a robot that understands nothing. "Find the biggest" is no
 
 </Step>
 
-<Step n={8} title="Run all checks, then submit" time="3 min" id="submit">
+<Step n={9} title="Submit" time="1 min" id="submit">
 
-<Terminal cmd="python3 check.py" out={`:) Part A: README links your meow project
-:) Part B: README links your own project
-:) Part B: README describes your project (at least 20 words after the link)
-:) Part C: 13, 42 and 100 in binary (q1–q3)
-:) Part C: 10101010 in decimal (q4) and the ASCII text 01001000 01101001 (q5)
-:) Part C: values in a byte (q6) and binary-search steps for a billion (q7)
-:) Part D: pseudocode has 6+ numbered steps, an 'if' and a loop, and is not the example
-
-8/8 checks passed
-All green. Submit with: git add -A && git commit -m "Lab 1" && git push`} />
-
-When you are green (or when you have done what you can), save your work to GitHub. **Every push is graded.**
+**Submitting = pushing your work to GitHub.** Type these three lines in the terminal:
 
 <Terminal lines={['git add -A', 'git commit -m "Lab 1"', 'git push']} />
 
-Prefer buttons? Use the **Source Control** icon on the left of VS Code: type a message, click **Commit**, then **Sync Changes**.
+Prefer buttons? Use the **Source Control** icon on the left of VS Code: type a message, click **Commit**, then **Sync Changes**. (If you edited the files on github.com with the pencil, each **Commit changes** already is a push.)
 
-About a minute after the push:
+Then check that it arrived:
 
-1. On your repository page, look under **Releases** on the right. The newest release shows your score and a table of passed and failed tests.
-2. Or on [classroom50.org](https://classroom50.org), open the assignment and click **My submission**.
-
-You can push as many times as you like before the deadline; the latest submission counts.
+1. Open your repository on github.com. Your latest commit message (“Lab 1”) is shown at the top of the file list.
+2. Next to it, after about a minute, a **✅** (all checks passed) or **❌** (some failed) appears. Click it, then **Details**, to see the same `:)` / `:(` list as `python3 check.py`.
 
 </Step>
+
+## How to submit
+
+> [!note] The short version
+> 1. Your repository is `your-username/ics-2026-lab01`, **private**, with **drferhatu** added as a collaborator.
+> 2. Your **name and student ID** are in `README.md`.
+> 3. You **push** before **Friday, October 2, 23:59**. Push as often as you like; your **last push before the deadline** is graded.
+
+Good to know:
+
+- **What is graded.** After the deadline the instructor runs the **official tests** on your last push, so changing the files in `tests/` does not change your grade. `python3 check.py` shows you exactly what the grader will see. The two Scratch projects are also opened and looked at.
+- **Late work.** Pushes up to five days late are graded with 10% off per day, as in the syllabus. After that, nothing is accepted.
+- **Time stamps.** The deadline is checked against the time GitHub **received** your push, not the clock on your computer.
+- **Working with others.** Discuss ideas, not solutions. The project and the answers must be yours, and you must be able to explain them.
 
 ## Explore: the notebook
 
@@ -175,14 +197,20 @@ The [week 2 notebook](/weeks/week-02#notebook) draws a pixel-art smiley from a g
 
 ## Troubleshooting
 
-> [!note] “This assignment isn't available to you” or “Not a member yet”
-> You have not accepted the organization invitation. Check your email (and spam) for an invitation from **FiratUniversity-IJDP-SoftEng**, accept it, then refresh classroom50.org. See the [setup guide](/guides/lab-setup#troubleshooting).
+> [!note] I cannot find “Create your copy”, or GitHub shows a 404
+> Sign in to GitHub first, then click the button again. You can also open [the template repository](https://github.com/FiratUniversity-IJDP-SoftEng/ics-2026-lab01-template) and click **Use this template → Create a new repository**.
+
+> [!note] I named my repository wrongly or made it public
+> Open **Settings → General**. Rename it to `ics-2026-lab01` at the top, and under **Danger Zone → Change visibility** make it **Private**. Your work is not lost.
+
+> [!note] I cannot find `drferhatu` when adding a collaborator
+> Type the username exactly, without `@`. If GitHub asks for your password or a code, that is a normal security check.
 
 > [!note] The Share button is greyed out in Scratch
 > New Scratch accounts need a confirmed email before sharing. Confirm it, or ask the instructor and hand in the project file instead (**File → Save to your computer**) for now.
 
 > [!note] `git push` says “rejected” or “fetch first”
-> Someone (usually Classroom 50 itself) added a commit to your repository. Run `git pull`, then `git push` again.
+> You edited the repository on github.com (for example the README) after opening the codespace. Run `git pull`, then `git push` again.
 
-> [!note] My score did not appear
-> Open the **Actions** tab of your repository to watch the grading run. If it is still yellow, wait a minute. If it is red, click it and read the log, or show it to the instructor.
+> [!note] I see ❌ next to my commit
+> Your push arrived; some checks still fail. Run `python3 check.py` to see which ones, fix them, and push again.

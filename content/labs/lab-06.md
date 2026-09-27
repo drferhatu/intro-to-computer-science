@@ -6,7 +6,7 @@ description: "From a linked list to a hash table for a word list: insert, search
 assignment: lab06
 status: draft
 acceptUrl: ""
-due: "2026-11-08 23:59"
+due: "2026-11-06 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "C"

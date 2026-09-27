@@ -6,7 +6,7 @@ description: "Implement linear and binary search and two sorting algorithms, the
 assignment: lab04
 status: draft
 acceptUrl: ""
-due: "2026-10-25 23:59"
+due: "2026-10-23 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "C"

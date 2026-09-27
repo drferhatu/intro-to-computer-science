@@ -2,6 +2,12 @@
 
 Introduction to Computer Science (YMT113) · Fall 2026 · Fırat University
 
+## Student
+
+<!-- Fill in both lines, then commit. This is how your work is matched to you. -->
+- Name:
+- Student ID:
+
 **Full instructions:** https://drferhatu.github.io/intro-to-computer-science/labs/lab-02
 
 | File | What it is |

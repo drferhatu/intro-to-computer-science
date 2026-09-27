@@ -27,6 +27,10 @@ const STATUS: Record<string, string> = { open: 'bg-true-soft text-true', closed:
   </header>
 
   <section class="wrap py-16">
+    <aside class="callout callout-warn mb-12 max-w-3xl">
+      <p class="callout-title">Lab 1 is the exception</p>
+      <p class="text-ink-2">Classroom 50 opens from Lab 2. For Lab 1 you create your own private copy from a template, share it with the instructor and submit by pushing. All you need is a GitHub account. <a class="link" href={labHref('lab-01') + '#how-to-submit'}>How to submit Lab 1 →</a></p>
+    </aside>
     <SectionHeading eyebrow="The loop" title="Four steps, every week" />
     <ol class="mt-10 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
       {flow.map((f) => (
@@ -49,7 +53,7 @@ const STATUS: Record<string, string> = { open: 'bg-true-soft text-true', closed:
       </div>
       <div class="card p-6">
         <p class="eyebrow">How labs count</p>
-        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">{course.assessment.labsNote} Labs are also where you build the skills for the <a class="link" href={href('/project')}>semester project</a>.</p>
+        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">Every lab is due on the <strong class="text-ink">Friday of its week at 23:59</strong>; late work loses 10% per day, up to five days. {course.assessment.labsNote} Labs are also where you build the skills for the <a class="link" href={href('/project')}>semester project</a>.</p>
       </div>
     </div>
   </section>

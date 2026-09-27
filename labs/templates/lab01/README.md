@@ -2,22 +2,28 @@
 
 Introduction to Computer Science (YMT113) · Fall 2026 · Fırat University
 
-**Full instructions:** https://drferhatu.github.io/intro-to-computer-science/labs/lab-01
+## Student
+
+<!-- Fill in both lines, then commit. This is how your work is matched to you. -->
+- Name:
+- Student ID:
+
+## Files
 
 | File | What it is |
 |---|---|
-| `README.md` | Part A and B: your two Scratch project links go on the lines below |
+| `README.md` | Parts A and B: your two Scratch project links go in the section below |
 | `answers.txt` | Part C: bits and bytes, seven short answers |
 | `pseudocode.txt` | Part D: your algorithm, in numbered pseudocode |
 | `check.py` | Runs the checks with friendly `:)` / `:(` output |
-| `tests/` | The tests. The autograder runs exactly these. Do not edit. |
+| `tests/` | The tests. Grading uses the official copy, so editing them does not help. |
 
 ```bash
-python3 check.py                                   # run all checks, as often as you like
-git add -A && git commit -m "Lab 1" && git push    # submit (every push is graded)
+python3 check.py                                   # as often as you like
+git add -A && git commit -m "Lab 1" && git push    # submit (your last push before the deadline counts)
 ```
 
-Your score appears a minute after you push, under **Releases** in this repository.
+**Full instructions:** https://drferhatu.github.io/intro-to-computer-science/labs/lab-01
 
 ## Part A · Warm-up: meow, with a custom block
 

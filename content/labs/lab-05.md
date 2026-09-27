@@ -6,7 +6,7 @@ description: "Swap through pointers, copy a string by hand, allocate and free me
 assignment: lab05
 status: draft
 acceptUrl: ""
-due: "2026-11-01 23:59"
+due: "2026-10-30 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "C"

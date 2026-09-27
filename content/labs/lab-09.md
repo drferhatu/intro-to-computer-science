@@ -6,7 +6,7 @@ description: "Design tables for a real CSV, load it into SQLite, answer question
 assignment: lab09
 status: draft
 acceptUrl: ""
-due: "2026-12-06 23:59"
+due: "2026-12-04 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "SQL + Python"

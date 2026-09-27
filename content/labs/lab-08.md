@@ -6,7 +6,7 @@ description: "Write an unbeatable tic-tac-toe player with minimax, then call a l
 assignment: lab08
 status: draft
 acceptUrl: ""
-due: "2026-11-29 23:59"
+due: "2026-11-27 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "Python"
