@@ -3,7 +3,7 @@
 
 - Writes each notebook from the cell definitions below (only if missing, unless --force).
 - Optionally executes them (--execute) and renders public/notebooks/<name>.html (embedded on week and lab pages).
-- C cells use `%%writefile` + `!clang`, so the notebooks run in Colab, in a codespace and in CI (clang required).
+- C cells use `%%writefile` + `!gcc`, so the notebooks run in Colab, in a codespace and in CI (gcc required).
 
 Usage:
   /opt/miniconda3/envs/ferhat_ml/bin/python scripts/build_notebooks.py [--execute] [--force]
@@ -103,17 +103,17 @@ md("""Eight billion people, 33 steps. That is the wow moment of week 5, seen fro
 ]
 
 # ---------------------------------------------------------------------------
-# LAB 1 · C in a notebook
+# LAB 2 · C in a notebook
 # ---------------------------------------------------------------------------
-LAB01 = [
-md("""# Lab 1 · Explore: C in a notebook
+LAB02 = [
+md("""# Lab 2 · Explore: C in a notebook
 
 **Introduction to Computer Science (YMT113)** · Fall 2026
 
-This notebook is the *playground* half of Lab 1. Nothing here is graded. It shows that you can write, compile and run **C** inside a
+This notebook is the *playground* half of Lab 2 (and a preview for week 3). Nothing here is graded. It shows that you can write, compile and run **C** inside a
 Jupyter notebook: a cell starting with `%%writefile hello.c` saves the cell as a file, and a cell starting with `!` runs a terminal command.
 
-> Where to run it: in Google Colab (the **Open in Colab** button on the lab page; clang is preinstalled) or in your codespace (pick the Python kernel)."""),
+> Where to run it: in Google Colab (the **Open in Colab** button on the lab page; gcc is preinstalled) or in your codespace (pick the Python kernel)."""),
 md("""## 1 · hello, world"""),
 code("""%%writefile hello.c
 #include <stdio.h>
@@ -122,8 +122,8 @@ int main(void)
 {
     printf("hello, world\\n");
 }"""),
-code("""!clang -o hello hello.c && ./hello"""),
-md("""Two commands joined by `&&`: compile (`clang -o hello hello.c`), and if that worked, run (`./hello`). Try removing the semicolon and running both cells again: read the error the compiler gives you."""),
+code("""!gcc -o hello hello.c && ./hello"""),
+md("""Two commands joined by `&&`: compile (`gcc -o hello hello.c`), and if that worked, run (`./hello`). Try removing the semicolon and running both cells again: read the error the compiler gives you."""),
 md("""## 2 · Types and printf
 
 Change the values, run again. What happens if you print an `int` with `%f`?"""),
@@ -139,8 +139,8 @@ int main(void)
     printf("an int takes %zu bytes, a float %zu, a char %zu, a double %zu\\n",
            sizeof(int), sizeof(float), sizeof(char), sizeof(double));
 }"""),
-code("""!clang -o types types.c && ./types"""),
-md("""## 3 · A byte as bits (the Part D program, explained)
+code("""!gcc -o types types.c && ./types"""),
+md("""## 3 · A byte as bits (the Part C program, explained)
 
 `(n >> i) & 1` shifts the number right by `i` places and keeps only the last bit. Watch it work for one number:"""),
 code("""%%writefile bits.c
@@ -155,7 +155,7 @@ int main(void)
         printf("i=%i  n>>i=%3i  bit=%i\\n", i, n >> i, bit);
     }
 }"""),
-code("""!clang -o bits bits.c && ./bits"""),
+code("""!gcc -o bits bits.c && ./bits"""),
 md("""## 4 · Integer overflow, on purpose
 
 An `int` has 32 bits. What happens one past the largest value? (We meet this properly in week 3.)"""),
@@ -173,7 +173,7 @@ int main(void)
     byte = byte + 1;
     printf("255 + 1 in one byte: %i\\n", byte);
 }"""),
-code("""!clang -Wno-integer-overflow -o overflow overflow.c && ./overflow"""),
+code("""!gcc -Wno-overflow -o overflow overflow.c && ./overflow"""),
 md("""The bits wrap around, like an odometer. This exact behavior grounded the Boeing 787 (week 3's wow moment).
 
 ## 5 · Your turn
@@ -183,7 +183,7 @@ Copy any cell, change the program, run it. Ideas: print your name and age; print
 
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
-    "lab01": (ROOT / "labs" / "templates" / "lab01" / "lab01.ipynb", LAB01),
+    "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
 }
 
 

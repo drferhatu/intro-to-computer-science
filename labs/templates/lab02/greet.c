@@ -1,4 +1,4 @@
-// Part C · greet.c
+// Part B · greet.c
 // Ask for a name and print "hello, " followed by the name and a newline.
 // get_string comes from cs50.h; it returns the text the user typed (a string).
 //

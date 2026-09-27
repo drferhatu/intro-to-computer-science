@@ -3,7 +3,7 @@ check.py · friendly test runner, in the spirit of CS50's check50.
 
     python3 check.py
 
-:) means a check passed, :( means it failed (with a hint).
+:) means a check passed, :( means it failed (with a hint), :| means it could not run.
 The autograder on GitHub runs exactly the same tests.
 """
 import sys
@@ -13,9 +13,9 @@ try:
 except ImportError:
     sys.exit("pytest is not installed. Run:  pip install -r requirements.txt")
 
-GREEN, RED, DIM, END = "\033[32m", "\033[31m", "\033[2m", "\033[0m"
+GREEN, RED, YELLOW, DIM, END = "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[0m"
 if not sys.stdout.isatty():
-    GREEN = RED = DIM = END = ""
+    GREEN = RED = YELLOW = DIM = END = ""
 
 
 class Reporter:
@@ -25,7 +25,10 @@ class Reporter:
 
     @staticmethod
     def describe(item):
-        return (getattr(item, "function", None).__doc__ or item.name).strip().splitlines()[0]
+        doc = (getattr(item, "function", None).__doc__ or item.name).strip().splitlines()[0]
+        if "[" in item.name:
+            doc += f"  {DIM}[{item.name.split('[', 1)[1]}{END}"
+        return doc
 
     def pytest_collection_modifyitems(self, items):
         self.items = {i.nodeid: i for i in items}
@@ -40,8 +43,9 @@ class Reporter:
             else:
                 self.failed += 1
                 msg = str(report.longrepr.reprcrash.message) if hasattr(report.longrepr, "reprcrash") else str(report.longrepr)
-                hint = msg.split("\n")[0].replace("AssertionError: ", "")
-                print(f"{RED}:( {desc}{END}\n    {DIM}{hint[:300]}{END}")
+                hint = msg.split("\n")[0].replace("AssertionError: ", "").replace("Failed: ", "")
+                mark = YELLOW + ":|" if "does not compile" in hint or "missing" in hint else RED + ":("
+                print(f"{mark} {desc}{END}\n    {DIM}{hint[:300]}{END}")
 
     def pytest_collectreport(self, report):
         if report.failed:
@@ -54,5 +58,5 @@ if __name__ == "__main__":
     total = r.passed + r.failed
     print(f"\n{r.passed}/{total} checks passed" if total else "\nno checks ran")
     if total and r.passed == total:
-        print(f"{GREEN}All green. Submit with:  git add -A && git commit -m \"Lab 1\" && git push{END}")
+        print(f"{GREEN}All green. Submit with:  git add -A && git commit -m \"Lab 2\" && git push{END}")
     sys.exit(0 if code == 0 else 1)

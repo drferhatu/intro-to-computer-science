@@ -1,5 +1,5 @@
 # make hello  → compiles hello.c (plus the CS50 library) into ./hello
-CC = clang
+CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -Wno-unused-parameter -g -I.
 
 PROGRAMS = hello greet bits

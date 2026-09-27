@@ -1,3 +1,3 @@
 [
-  { "name": "Lab 1 tests (hello.c, greet.c, bits.c, README)", "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests", "timeout": 180, "points": 10 }
+  { "name": "Lab 1 tests (README links, answers.txt, pseudocode.txt)", "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests", "timeout": 120, "points": 10 }
 ]

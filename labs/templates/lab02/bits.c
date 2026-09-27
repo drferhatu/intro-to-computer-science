@@ -1,4 +1,4 @@
-// Part D · bits.c
+// Part C · bits.c
 // Ask for a number from 0 to 255 and print it as 8 bits, most significant first.
 //
 //   $ make bits && ./bits

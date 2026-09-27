@@ -261,7 +261,7 @@
     {
       "title": "GitHub Codespaces",
       "url": "https://github.com/codespaces",
-      "note": "VS Code in the browser, opened straight from your lab repository with clang, make and the tests ready. Our lab editor; free within your personal GitHub quota."
+      "note": "VS Code in the browser, opened straight from your lab repository with gcc, make and the tests ready. Our lab editor; free within your personal GitHub quota."
     },
     {
       "title": "Classroom 50",

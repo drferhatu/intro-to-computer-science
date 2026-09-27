@@ -29,7 +29,7 @@ wow:
   text: "\"HI!\" is four bytes in memory: 72, 73, 33 and a 0 that marks the end. printf keeps printing until it meets that zero. Forget the zero and it prints whatever garbage comes next in memory, which is exactly how many real programs leaked passwords. The CS50 library's string type is just a nickname for 'the address of the first char', and by week 6 you will not need the nickname."
 industry:
   - { "t": "Buffer overflows", "d": "Writing past the end of an array is the single most exploited bug class in history (Morris worm 1988, Heartbleed 2014). C lets you do it silently; that is why memory-safe languages like Rust exist, and why C programmers test bounds religiously." }
-  - { "t": "argv is every CLI tool", "d": "git commit -m \"msg\", clang -o hello hello.c, ls -l: every command-line program parses argv exactly as you do this week." }
+  - { "t": "argv is every CLI tool", "d": "git commit -m \"msg\", gcc -o hello hello.c, ls -l: every command-line program parses argv exactly as you do this week." }
   - { "t": "Cryptography is arithmetic on characters", "d": "Caesar is a toy, but the pattern, shift each byte by a key, is the ancestor of the stream ciphers that encrypt your Wi-Fi." }
   - { "t": "Exit codes drive automation", "d": "return 0 for success, non-zero for failure. Continuous-integration systems, including the autograder, read this number to decide whether your build is green." }
 resources:

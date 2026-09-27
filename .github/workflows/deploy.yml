@@ -28,7 +28,6 @@ jobs:
           cache: pip
           cache-dependency-path: scripts/requirements-notebooks.txt
       - run: pip install -r scripts/requirements-notebooks.txt
-      - run: sudo apt-get install -y -qq clang
 
       - name: Execute notebooks and render HTML views
         run: python scripts/build_notebooks.py --execute

@@ -1,4 +1,4 @@
-# Lab 1 · Hello, Machine
+# Lab 1 · Hello, Scratch
 
 Introduction to Computer Science (YMT113) · Fall 2026 · Fırat University
 
@@ -6,22 +6,27 @@ Introduction to Computer Science (YMT113) · Fall 2026 · Fırat University
 
 | File | What it is |
 |---|---|
-| `README.md` | Part A: paste your Scratch project link on the line below |
-| `hello.c`, `greet.c`, `bits.c` | **Your work.** Each file has a `TODO`. |
-| `cs50.h`, `cs50.c` | The CS50 library (`get_string`, `get_int`). Do not edit. |
-| `Makefile` | `make hello` instead of the long compiler command |
-| `lab01.ipynb` | Playground notebook. Not graded. |
-| `check.py` | Runs the tests with friendly `:)` / `:(` output. |
+| `README.md` | Part A and B: your two Scratch project links go on the lines below |
+| `answers.txt` | Part C: bits and bytes, seven short answers |
+| `pseudocode.txt` | Part D: your algorithm, in numbered pseudocode |
+| `check.py` | Runs the checks with friendly `:)` / `:(` output |
 | `tests/` | The tests. The autograder runs exactly these. Do not edit. |
 
 ```bash
-make hello && ./hello          # compile and run one program
-python3 check.py               # run all checks, as often as you like
+python3 check.py                                   # run all checks, as often as you like
 git add -A && git commit -m "Lab 1" && git push    # submit (every push is graded)
 ```
 
 Your score appears a minute after you push, under **Releases** in this repository.
 
-## Part A · Scratch
+## Part A · Warm-up: meow, with a custom block
 
-Scratch: PASTE-YOUR-PROJECT-LINK-HERE
+Meow: PASTE-YOUR-PROJECT-LINK-HERE
+
+## Part B · Your own project
+
+Project: PASTE-YOUR-PROJECT-LINK-HERE
+
+One or two sentences on what it does and which custom block, variable, loop, condition and event it uses:
+
+(write here)

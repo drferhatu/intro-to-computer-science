@@ -1,26 +1,25 @@
 ---
 lab: 1
 week: 2
-title: "Hello, Machine"
-description: "Set up your lab workflow once, build a small Scratch project, and compile and run your first C programs: hello, a greeting that reads input, and a byte printed as bits."
+title: "Hello, Scratch"
+description: "Do the weekly loop once (accept, open, check, push), rebuild the meow program with a custom block, build a small Scratch project of your own, and answer seven questions about bits. No C yet."
 assignment: lab01
 status: open
 acceptUrl: ""
 due: "2026-10-04 23:59"
 duration: "90 min + finish at home"
 points: 10
-language: "Scratch + C"
-files: ["README.md", "hello.c", "greet.c", "bits.c"]
-topics: ["Classroom 50", "Codespaces", "Scratch", "compile", "printf", "get_string"]
-notebook: { file: "labs/templates/lab01/lab01.ipynb", title: "Lab 1 · Explore: C in a notebook" }
+language: "Scratch"
+files: ["README.md", "answers.txt", "pseudocode.txt"]
+topics: ["Classroom 50", "Codespaces", "Scratch", "custom blocks", "binary", "ASCII", "pseudocode"]
 ---
 
 ## Goal
 
-By the end of this lab you have done the whole weekly loop once: accepted a lab, opened it in VS Code in your browser, written code, run the checks, pushed, and seen your score. Along the way you build a Scratch project and compile three C programs, one week before we study C properly. The C parts are scaffolded: you change one or two lines each.
+Two things happen today. You run the **weekly loop** for the first time: accept a lab, open it in VS Code in your browser, run the checks, push, see your score. And you turn CS50 Week 0 into your own work: a warm-up in Scratch, a project of your own, and a few questions about bits and algorithms. Everything is on this page, in order. C starts next week.
 
 > [!note] You can start without the instructor
-> Everything you need is on this page. Work top to bottom. Ask your neighbor first, then the instructor. If one step blocks you for more than 10 minutes, write down the exact error message and go on to the next task.
+> Work top to bottom. Ask your neighbor first, then the instructor. If one step blocks you for more than 10 minutes, write down the exact error message and move on; steps 4 and 5 (Scratch) need nothing but a browser, so you can always do those.
 
 > [!warning] First lab? Do the setup first
 > You need a GitHub account and must have accepted the invitation to the course organization. If you have not, follow the [lab setup guide](/guides/lab-setup) (10 minutes), then come back here.
@@ -31,14 +30,17 @@ By the end of this lab you have done the whole weekly loop once: accepted a lab,
 
 1. Open [classroom50.org](https://classroom50.org) and click **Sign in with GitHub**.
 2. Open the organization **FiratUniversity-IJDP-SoftEng**, then the classroom **ics-2026**, then click **View assignments**.
-3. Find **lab01 · Hello, Machine** and click **Accept assignment**, then **Accept assignment** again on the next page.
+3. Find **lab01 · Hello, Scratch** and click **Accept assignment**, then **Accept assignment** again on the next page.
 4. Wait for the checklist to finish, then click **Open repository**.
 
 You now own a private repository called `ics-2026-lab01-yourusername`. Only you and the instructor can see it.
 
+> [!note] If the accept button is not live yet
+> Do steps 4–7 in Scratch and on paper now; they need no repository. The instructor will tell you how to hand in the links and answers, and the loop (steps 1–3, 8) moves to next week.
+
 </Step>
 
-<Step n={2} title="Open it in Codespaces" time="2–3 min the first time" id="codespace">
+<Step n={2} title="Open it in Codespaces" time="2 min" id="codespace">
 
 On your repository page on GitHub:
 
@@ -46,106 +48,104 @@ On your repository page on GitHub:
 2. Choose the **Codespaces** tab.
 3. Click **Create codespace on main**.
 
-A VS Code editor opens in your browser. The first start takes a minute or two while the C compiler and the tests are installed; watch the terminal at the bottom until it shows a prompt ending in `$`.
+A VS Code editor opens in your browser. The first start takes about a minute; watch the terminal at the bottom until it shows a prompt ending in `$`.
 
 > [!tip] Next time
 > Your codespace is saved. Go to [github.com/codespaces](https://github.com/codespaces) and click it to continue where you left off.
 
 </Step>
 
-<Step n={3} title="Look around and run the checks once" time="3 min" id="look">
+<Step n={3} title="Look around and run the checks once" time="2 min" id="look">
 
 In the file explorer on the left you see:
 
 | File | What it is |
 |---|---|
-| `README.md` | Where you paste your Scratch project link (Part A) |
-| `hello.c`, `greet.c`, `bits.c` | **your work** (Parts B–D); each has a `TODO` |
-| `cs50.h`, `cs50.c` | the CS50 library (`get_string`, `get_int`); do not edit |
-| `Makefile` | lets you type `make hello` instead of the long compiler command |
-| `lab01.ipynb` | playground notebook, not graded |
+| `README.md` | Parts A and B: where your two Scratch links go |
+| `answers.txt` | Part C: seven short answers about bits |
+| `pseudocode.txt` | Part D: your algorithm in numbered steps |
 | `check.py` | the friendly test runner |
 | `tests/` | the tests the autograder runs (do not edit) |
 
-In the terminal, run the checks before changing anything:
+In the terminal at the bottom, run the checks before doing anything:
 
-<Terminal cmd="python3 check.py" out={`:( README links a Scratch project
-    no scratch.mit.edu/projects/ link found in README.md
-:( hello.c prints "hello, world"
-    expected 'hello, world\\n', got 'hello, TODO\\n'
+<Terminal cmd="python3 check.py" out={`:( Part A: README links your meow project
+    no scratch.mit.edu/projects/ link after 'Meow:' in README.md (Share → Copy Link in Scratch)
+:( Part B: README links your own project
 ...
-0/6 checks passed`} />
+0/8 checks passed`} />
 
 Every check is `:(` because nothing is done yet. Your job is to turn them all into `:)`.
 
 </Step>
 
-<Step n={4} title="Part A: a Scratch project" time="30 min" id="part-a">
+<Step n={4} title="Part A · Warm-up: meow, with a custom block" time="10 min" id="part-a">
 
-Go to [scratch.mit.edu](https://scratch.mit.edu), sign in, click **Create**, and build a small program that has **all** of these:
+Rebuild the last version of the lecture's meow program from memory, in a **new** Scratch project (sign in at [scratch.mit.edu](https://scratch.mit.edu) → **Create**):
 
-- at least one **custom block** (*My Blocks → Make a Block*), for example `meow` or `bounce`;
-- at least one **variable** that changes while the program runs (a score, a counter);
-- at least one **loop** (`forever`, `repeat`, or `repeat until`);
-- at least one **condition** (`if … then`);
-- a reaction to the **user** (a key press, a click, or `ask … and wait`).
+1. *My Blocks → Make a Block*, name it `meow` and give it a number input called `n` (tick **Add an input · number or text**).
+2. Define it: `repeat n { play sound Meow until done; wait 1 seconds }`.
+3. Main script: `when green flag clicked` → `meow 3`.
 
-Ideas: a cat that meows every time you press space and counts the meows; a ball that bounces and scores when it touches a sprite; a quiz with three questions. Bigger is not better; working is better.
+Click the flag: three meows, one second apart. Change 3 to 5 without touching the definition. That is abstraction working for you.
 
-When it runs, click **Share**, then **Copy Link**. Open `README.md` in your codespace and replace the placeholder line so it reads:
+Then **Share → Copy Link**, open `README.md` in your codespace, and replace the placeholder after `Meow:` with your link:
 
 ```text
-Scratch: https://scratch.mit.edu/projects/123456789/
+Meow: https://scratch.mit.edu/projects/123456789/
 ```
 
-> [!note] Why Scratch in a C course?
-> Because your first C program next week will use the same five ideas, and it is easier to learn them without a compiler shouting at you. Every idea you used here has a C spelling in the [week 2 notes](/weeks/week-02#pseudocode).
+Stuck? Load the lecture's [meow4.sb3](/scratch/meow4.sb3) into Scratch (**File → Load from your computer**) and compare.
 
 </Step>
 
-<Step n={5} title="Part B: hello, world" time="5 min" id="part-b">
+<Step n={5} title="Part B · Your own project" time="35 min" id="part-b">
 
-Open `hello.c`. It is the program from the lecture with one word wrong. Fix the `printf` so it prints exactly `hello, world` followed by a newline. Then compile and run:
+Build a small program of your own that has **all** of these:
 
-<Terminal lines={['make hello', './hello']} out="hello, world" />
+- at least one **custom block** (with or without an input);
+- at least one **variable** that changes while the program runs (a score, a counter, a countdown);
+- at least one **loop** (`forever`, `repeat`, or `repeat until`);
+- at least one **condition** (`if … then`, ideally with `else`);
+- at least one **event** besides the green flag (a key press, a sprite click, `ask … and wait`, or a broadcast).
 
-`make hello` turns your source code into a program called `hello`; `./hello` runs it. If the compiler prints errors, read the **first** one: it names the line. Common ones: a missing semicolon, a missing closing quote.
+Ideas: a cat that meows and counts every time you press space; a ball that bounces and scores when it touches a sprite; a three-question quiz that keeps score; a simplified [Oscartime](/scratch/oscartime-6.sb3) with your own sprites. Bigger is not better; **working** is better. The lecture's projects are on the [week 2 page](/weeks/week-02#how-this-page-is-organized) if you want to open one and change it, but the submitted project must be your own build.
 
-</Step>
-
-<Step n={6} title="Part C: greet the user" time="10 min" id="part-c">
-
-Open `greet.c`. It asks for a name with `get_string` and stores it in a variable called `name`. The `printf` line is incomplete: make it print `hello, ` followed by the name and a newline. Hint: `%s` is the placeholder for a string, and the value goes after the format string, separated by a comma.
-
-<Terminal lines={['make greet', './greet']} out={`What's your name? Firat
-hello, Firat`} />
+When it runs: **Share → Copy Link**, paste it after `Project:` in `README.md`, and write one or two sentences under it saying what the program does and which custom block, variable, loop, condition and event it uses. The checks look for the link and at least twenty words.
 
 </Step>
 
-<Step n={7} title="Part D: a byte as bits" time="10 min" id="part-d">
+<Step n={6} title="Part C · Bits and bytes" time="15 min" id="part-c">
 
-Open `bits.c`. It asks for a number from 0 to 255 and has a loop that walks over the 8 bits from left to right. The loop already computes `bit`, which is 1 or 0. Your job is one line: print the character `'1'` when `bit` is 1 and `'0'` otherwise. The `?` placeholders show you where.
+Open `answers.txt`. Seven questions from the first half of the lecture: three numbers to write in binary, one binary number to read, two ASCII bytes to decode, and two facts. Write each answer after the `=` sign, nothing else on the line.
 
-<Terminal lines={['make bits', './bits']} out={`Number (0–255): 73
-01001001`} />
+Do them **on paper first** with the place values 128 64 32 16 8 4 2 1, then check yourself with the bit widget on the [week 2 page](/weeks/week-02#part-2-representation-everything-is-bits). The ASCII table is at [asciitable.com](https://www.asciitable.com/); case matters.
 
-Compare with the widget on the [week 2 page](/weeks/week-02): 73 is `I`. You just wrote, in C, the thing the widget does in JavaScript.
+<Terminal cmd="python3 check.py" out={`:) Part C: 13, 42 and 100 in binary (q1–q3)
+:) Part C: 10101010 in decimal (q4) and the ASCII text 01001000 01101001 (q5)
+:) Part C: values in a byte (q6) and binary-search steps for a billion (q7)`} />
 
-> [!try] Curious?
-> Change the loop to print a space after every four bits, or print the number in hexadecimal too (`%x`). The checks only look at the exact 8-bit output, so keep the original program working.
+</Step>
+
+<Step n={7} title="Part D · Pseudocode" time="10 min" id="part-d">
+
+Open `pseudocode.txt`. Pick **one** of the three problems in the file and write your algorithm as numbered steps, the way we wrote the phone-book algorithm: at least six lines, at least one `if`, and at least one loop (`go back to line N`, `repeat`, `while` or `until`). Delete the example first; the checks refuse it.
+
+Be precise enough for a robot that understands nothing. "Find the biggest" is not a step; "if this number is bigger than the one I remember, remember this one" is.
 
 </Step>
 
 <Step n={8} title="Run all checks, then submit" time="3 min" id="submit">
 
-<Terminal cmd="python3 check.py" out={`:) README links a Scratch project
-:) hello.c prints "hello, world"
-:) greet.c greets the name it reads
-:) greet.c works for a name with spaces
-:) bits.c prints 73 as 01001001
-:) bits.c prints 0 and 255 correctly
+<Terminal cmd="python3 check.py" out={`:) Part A: README links your meow project
+:) Part B: README links your own project
+:) Part B: README describes your project (at least 20 words after the link)
+:) Part C: 13, 42 and 100 in binary (q1–q3)
+:) Part C: 10101010 in decimal (q4) and the ASCII text 01001000 01101001 (q5)
+:) Part C: values in a byte (q6) and binary-search steps for a billion (q7)
+:) Part D: pseudocode has 6+ numbered steps, an 'if' and a loop, and is not the example
 
-6/6 checks passed
+8/8 checks passed
 All green. Submit with: git add -A && git commit -m "Lab 1" && git push`} />
 
 When you are green (or when you have done what you can), save your work to GitHub. **Every push is graded.**
@@ -163,31 +163,26 @@ You can push as many times as you like before the deadline; the latest submissio
 
 </Step>
 
-## Explore: C in a notebook
+## Explore: the notebook
 
-`lab01.ipynb` is not graded. It shows that a Jupyter notebook can write a C file, compile it and run it, cell by cell, so you can experiment with `printf`, types and overflow without creating files. Open it in your codespace (choose the Python kernel when asked) or in Colab with the button below; in Colab nothing needs installing.
-
-<NotebookEmbed file="labs/templates/lab01/lab01.ipynb" title="Lab 1 · Explore: C in a notebook" />
+The [week 2 notebook](/weeks/week-02#notebook) draws a pixel-art smiley from a grid of numbers, converts your name to bytes, and counts binary-search steps for the whole world's population. Open it in Colab; nothing to install, nothing graded.
 
 ## Challenges (optional, not graded)
 
-1. **Countdown.** Write `count.c` that prints 10 down to 1 and then `Liftoff!`. You will need a `for` loop; the week 3 notes show one.
-2. **Two names.** Make `greet.c` ask for a first and a last name and print them in the other order.
-3. **Scratch, bigger.** Add a second sprite that reacts to the first one with a `broadcast` message.
+1. **Two sprites talking.** Use `broadcast` so that when one sprite finishes, the other reacts.
+2. **Level up.** Add a second level to your project that starts when the score reaches 10.
+3. **Binary on the stage.** Make a sprite that asks for a number from 0 to 255 and says its 8 bits. (Hint: repeat 8 times; use `mod 2` and division.)
 
 ## Troubleshooting
 
 > [!note] “This assignment isn't available to you” or “Not a member yet”
 > You have not accepted the organization invitation. Check your email (and spam) for an invitation from **FiratUniversity-IJDP-SoftEng**, accept it, then refresh classroom50.org. See the [setup guide](/guides/lab-setup#troubleshooting).
 
-> [!note] `make: clang: command not found`
-> The codespace is still installing. Wait for the terminal to finish, or run `bash .devcontainer/setup.sh` once.
+> [!note] The Share button is greyed out in Scratch
+> New Scratch accounts need a confirmed email before sharing. Confirm it, or ask the instructor and hand in the project file instead (**File → Save to your computer**) for now.
 
 > [!note] `git push` says “rejected” or “fetch first”
 > Someone (usually Classroom 50 itself) added a commit to your repository. Run `git pull`, then `git push` again.
 
 > [!note] My score did not appear
 > Open the **Actions** tab of your repository to watch the grading run. If it is still yellow, wait a minute. If it is red, click it and read the log, or show it to the instructor.
-
-> [!note] `error: expected ';'`
-> C ends every statement with a semicolon. The compiler names the line; the missing `;` is usually on the line **before** it.

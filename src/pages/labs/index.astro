@@ -5,7 +5,7 @@ import { getLabsSorted, labHref, href, course } from '@/lib/site';
 const labs = await getLabsSorted();
 const flow = [
   { k: '01', t: 'Accept the lab', d: 'On classroom50.org, one click creates your own private repository with the starter code, the tests and a notebook for that week.', code: 'classroom50.org' },
-  { k: '02', t: 'Open it in Codespaces', d: 'VS Code in your browser, the same experience as Harvard’s cs50.dev. clang, make, the CS50 library and the tests are installed for you. Nothing to install on the lab PCs.', code: 'Code → Codespaces' },
+  { k: '02', t: 'Open it in Codespaces', d: 'VS Code in your browser, the same experience as Harvard’s cs50.dev. gcc, make, the CS50 library and the tests are installed for you. Nothing to install on the lab PCs.', code: 'Code → Codespaces' },
   { k: '03', t: 'Write C, compile, self-check', d: 'Fill in the TODOs, compile with make, run your program. Then run the checks as often as you like: :) means correct, :( tells you exactly what is wrong.', code: 'make hello · python3 check.py' },
   { k: '04', t: 'Push to submit', d: 'Every push is graded by GitHub Actions within a minute or two, and your score is published as a Release in your repository.', code: 'git push' },
 ];
@@ -45,7 +45,7 @@ const STATUS: Record<string, string> = { open: 'bg-true-soft text-true', closed:
       </div>
       <div class="card p-6">
         <p class="eyebrow">Notebooks, even for C</p>
-        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">Every lab has an exploration notebook that runs in Google Colab with nothing installed: it writes C files, compiles them with clang and runs them, cell by cell. Not graded, great for playing.</p>
+        <p class="mt-2 text-[15px] leading-relaxed text-ink-2">Every lab has an exploration notebook that runs in Google Colab with nothing installed: it writes C files, compiles them with gcc and runs them, cell by cell. Not graded, great for playing.</p>
       </div>
       <div class="card p-6">
         <p class="eyebrow">How labs count</p>

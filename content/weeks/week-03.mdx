@@ -17,6 +17,9 @@ cs50:
 prep:
   - "Make sure Lab 1 is pushed and you saw your score under <em>Releases</em>. If not, fix that first; the loop is the same every week."
   - "Open <a href=\"https://cs50.dev\" target=\"_blank\" rel=\"noopener\">cs50.dev</a> once and run the lecture's <code>hello.c</code> yourself."
+notebook:
+  file: "labs/templates/lab02/lab02.ipynb"
+  title: "Lab 2 · Explore: C in a notebook"
 objectives:
   - "Explain what a compiler does and run the edit → compile → run cycle in the terminal."
   - "Use int, float, double, char, bool and string, and choose printf format codes (%i, %f, %c, %s)."
@@ -30,7 +33,7 @@ wow:
   text: "In 2015 the FAA ordered airlines to power-cycle every 787 at least every 248 days: a 32-bit counter in the generator control units, counting in hundredths of a second, would overflow after 2³¹ ticks and shut down all four generators mid-flight. 2³¹ hundredths of a second is 248.55 days. Today you learn what an int is; by the end of the lab you will make one overflow on purpose."
 industry:
   - { "t": "C is the substrate", "d": "Linux, Windows, macOS, the Python interpreter, SQLite, Git, most of your car's firmware and the code on the Mars rovers are C. Every language you learn later calls into C somewhere." }
-  - { "t": "Compilers are a career", "d": "clang, the compiler we use, is the core of Apple's and Google's toolchains. Compiler engineers are among the best-paid developers because everyone's code runs through their code." }
+  - { "t": "Compilers are a career", "d": "gcc and clang, the two compilers behind nearly all C code (we use gcc in the labs; cs50.dev uses clang), are decades-old open-source projects that Apple, Google and Linux depend on. Compiler engineers are among the best-paid developers because everyone's code runs through their code." }
   - { "t": "Input validation is security", "d": "The do-while loop that rejects a negative height is the same discipline that prevents most web vulnerabilities: never trust input." }
   - { "t": "Floating-point cost real money", "d": "In 1991 a Patriot missile battery missed a Scud because 0.1 seconds cannot be stored exactly in binary and the rounding error grew for 100 hours. 28 soldiers died. Floats are approximations; know it." }
 resources:
@@ -39,7 +42,7 @@ resources:
   - { "title": "Beej's Guide to C, chapters 1–4", "url": "https://beej.us/guide/bgc/html/split/", "note": "A second, friendlier explanation of the same material." }
   - { "title": "Compiler Explorer", "url": "https://godbolt.org/", "note": "Paste hello.c, see the machine code your compiler produces." }
   - { "title": "FAA airworthiness directive on the 787 (2015)", "url": "https://www.federalregister.gov/documents/2015/05/01/2015-10066/airworthiness-directives-the-boeing-company-airplanes", "note": "The primary source for the wow moment." }
-tags: ["C", "compiler", "clang", "make", "printf", "scanf", "get_int", "int", "float", "char", "string", "if", "while", "for", "function", "overflow", "floating point"]
+tags: ["C", "compiler", "gcc", "make", "printf", "scanf", "get_int", "int", "float", "char", "string", "if", "while", "for", "function", "overflow", "floating point"]
 ---
 
 ## From blocks to text
@@ -68,7 +71,7 @@ The processor understands only bits, so your text must be translated. That is th
 
 <Terminal lines={['code hello.c', 'make hello', './hello']} out="hello, world" />
 
-`make hello` is a convenience: it really runs `clang -o hello hello.c` (plus `-lcs50` when you use the CS50 library). Three steps you will repeat a thousand times: **edit, compile, run**. When the compiler complains, read the *first* error, fix it, compile again. Most later errors are echoes of the first.
+`make hello` is a convenience: it really runs the compiler for you: `gcc -o hello hello.c cs50.c` in our labs (cs50.dev uses `clang` with `-lcs50`; same idea). Three steps you will repeat a thousand times: **edit, compile, run**. When the compiler complains, read the *first* error, fix it, compile again. Most later errors are echoes of the first.
 
 > [!note] Correctness, design, style
 > CS50 grades code on three axes. **Correct**: does it do what it should? **Design**: is it written well, without needless repetition? **Style**: is it readable, consistently indented, sensibly named? The autograder checks the first; the instructor looks at the other two in your project.

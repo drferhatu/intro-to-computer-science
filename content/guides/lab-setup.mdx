@@ -50,7 +50,7 @@ You are ready. Each week the lab page tells you which assignment to accept.
 Codespaces opens from a repository, so you will do this for real in the first lab. What to expect:
 
 1. On your lab repository page: green **Code** button → **Codespaces** tab → **Create codespace on main**.
-2. VS Code opens in the browser. The first start takes a minute or two while `clang`, `make`, `valgrind` and the tests are installed.
+2. VS Code opens in the browser. The first start takes a minute or two while `gcc`, `make`, `valgrind` and the tests are installed.
 3. The **terminal** is at the bottom. That is where you type `make hello`, `./hello`, `python3 check.py` and `git push`.
 
 Your codespaces are listed at [github.com/codespaces](https://github.com/codespaces). They stop by themselves after 30 minutes without activity. Delete old ones there when the lab is graded, to save your quota.
@@ -69,7 +69,7 @@ Once set up, every lab works the same way:
 ## Other ways to work (optional)
 
 - **cs50.dev.** Harvard CS50's free VS Code in the browser, with the CS50 library and `make` preconfigured. Perfect for following the CS50 lectures and problem sets. For graded labs, Codespaces is simpler, because it opens your own repository with permission to push already set up.
-- **Your own computer.** Install a C compiler (macOS: `xcode-select --install`; Windows: WSL with `sudo apt install clang make`; Linux: your package manager), [Git](https://git-scm.com/downloads), [VS Code](https://code.visualstudio.com/) and Python 3, then `git clone` your lab repository. Everything else is the same.
+- **Your own computer.** Install a C compiler (macOS: `xcode-select --install`; Windows: WSL with `sudo apt install gcc make`; Linux: your package manager), [Git](https://git-scm.com/downloads), [VS Code](https://code.visualstudio.com/) and Python 3, then `git clone` your lab repository. Everything else is the same.
 - **Google Colab.** Runs the exploration notebooks, including the C ones (each lab page has an **Open in Colab** button). It is not suited to the graded files.
 - **Command line fans.** Classroom 50 also has a CLI: `gh extension install foundation50/gh-student`, then `gh student accept FiratUniversity-IJDP-SoftEng ics-2026 lab01` and `gh student submit`. See the [Classroom 50 student guide](https://github.com/foundation50/classroom50/wiki/CLI-Student-Guide).
 
@@ -81,7 +81,7 @@ Once set up, every lab works the same way:
 > [!note] I cannot create a codespace
 > Make sure you are on **your own** lab repository (named `ics-2026-lab…-yourusername`), not the template. If GitHub says your quota is used up, delete old codespaces at [github.com/codespaces](https://github.com/codespaces), or work on cs50.dev or your own computer this week.
 
-> [!note] `make` or `clang` is not found
+> [!note] `make` or `gcc` is not found
 > The codespace has not finished setting up. Wait for the terminal, or run `bash .devcontainer/setup.sh` once.
 
 > [!note] `git push` asks for a password

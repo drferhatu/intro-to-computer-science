@@ -14,7 +14,7 @@ def compile_c(name: str) -> Path:
     src = ROOT / f"{name}.c"
     if not src.exists():
         pytest.fail(f"{name}.c is missing")
-    r = subprocess.run(["clang", "-std=c11", "-Wall", "-I", str(ROOT), "-o", str(exe), str(src), str(ROOT / "cs50.c")],
+    r = subprocess.run(["gcc", "-std=c11", "-Wall", "-I", str(ROOT), "-o", str(exe), str(src), str(ROOT / "cs50.c")],
                        capture_output=True, text=True, cwd=ROOT)
     if r.returncode != 0:
         first = next((l for l in r.stderr.splitlines() if "error" in l), r.stderr.strip().splitlines()[:1])

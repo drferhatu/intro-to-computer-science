@@ -1,10 +1,10 @@
 {
-  "name": "Intro to CS Lab (C)",
+  "name": "Intro to CS Lab",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
-  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postCreateCommand": "pip install -q -r requirements.txt",
   "customizations": {
     "vscode": {
-      "extensions": ["ms-vscode.cpptools", "ms-python.python", "ms-toolsai.jupyter"],
+      "extensions": ["ms-python.python"],
       "settings": { "files.autoSave": "afterDelay" }
     }
   }

@@ -30,7 +30,7 @@ private/                   solutions and instructor-only notes; git-ignored, nev
 
 ## Develop
 
-Node.js 22+, Python 3.12+ with `scripts/requirements-notebooks.txt`, clang (for the C notebooks and lab tests).
+Node.js 22+, Python 3.12+ with `scripts/requirements-notebooks.txt`, gcc (for the C notebooks and lab tests).
 
 ```bash
 npm install
@@ -46,6 +46,6 @@ Every push to `main` builds and deploys to GitHub Pages (`.github/workflows/depl
 ## Labs
 
 Labs are distributed and autograded with [Classroom 50](https://github.com/foundation50/classroom50/wiki)
-and solved in GitHub Codespaces (VS Code in the browser with clang, make, valgrind and the tests preinstalled).
+and solved in GitHub Codespaces (VS Code in the browser with gcc, make, valgrind and the tests preinstalled).
 Each lab also ships an exploration notebook that compiles and runs C inside Jupyter/Colab.
 See `docs/OGRETIM-UYESI-REHBERI.md` for the instructor setup and the weekly routine.

@@ -1,9 +1,3 @@
-# compiled programs and debug info
-hello
-greet
-bits
-*.o
-*.dSYM/
 __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/

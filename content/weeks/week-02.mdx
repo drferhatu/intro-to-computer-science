@@ -1,7 +1,7 @@
 ---
 week: 2
 title: "Everything Is Bits: Representation, Algorithms and Scratch"
-description: "How 0 and 1 become numbers, letters, colors and sound; what an algorithm is and why some are dramatically faster; and your first programs in Scratch, which contain every idea C will use."
+description: "CS50 Week 0, live: how 0 and 1 become numbers, letters, colors and sound; what an algorithm is and why some are dramatically faster; and the five ideas of every programming language, built step by step in Scratch."
 module: m1
 status: ready
 lab: lab-01
@@ -24,9 +24,9 @@ objectives:
   - "Convert small numbers between decimal and binary, and explain why 8 bits can hold 256 values."
   - "Explain how text (ASCII, Unicode), colors (RGB), images, sound and video are all encoded as bits."
   - "Define algorithm, and compare linear search with binary search on the phone-book problem."
-  - "Read and write pseudocode with conditions, loops and variables."
-  - "Build a Scratch program that uses functions (blocks), conditions, loops, variables and events, and explain abstraction."
-  - "Recognize the same five ideas in a first C program."
+  - "Read and write pseudocode with functions, conditions, loops and variables."
+  - "Build Scratch programs that use functions with arguments and return values, loops, conditions, variables, events and custom blocks, and explain abstraction."
+  - "Recognize the same five ideas in a first C program (preview only; C starts in week 3)."
 wow:
   title: "One hand can count to 31. Eight switches can store every letter you have ever typed."
   text: "Counting on fingers the usual way stops at 5. Treat each finger as a bit (down = 0, up = 1) and one hand counts to 31, two hands to 1023. That is the whole trick behind computers: a switch is a bit, 8 switches are a byte, and the byte 01001000 is the letter H. The laptop in front of you has around 100 billion such switches, each smaller than a virus."
@@ -37,87 +37,104 @@ industry:
   - { "t": "Scratch is real", "d": "Block languages are how Lego robots, many industrial PLCs and Apple's Shortcuts are programmed. The ideas are identical to text languages; only the typing is missing." }
 resources:
   - { "title": "CS50x 2026 · Week 0 notes", "url": "https://cs50.harvard.edu/x/2026/notes/0/", "note": "The written version of the lecture; excellent for review." }
+  - { "title": "CS50x 2026 · Week 0 source code (Scratch Studio)", "url": "https://cs50.harvard.edu/x/2026/weeks/0/", "note": "Malan's own projects, online." }
   - { "title": "ASCII table", "url": "https://www.asciitable.com/", "note": "Find your initials in binary." }
   - { "title": "Unicode character table", "url": "https://symbl.cc/en/unicode-table/", "note": "Every character, its code point and its bytes." }
-  - { "title": "Scratch", "url": "https://scratch.mit.edu/", "note": "Create, and share your project link in the lab." }
   - { "title": "Code, by Charles Petzold (book)", "url": "https://www.codehiddenlanguage.com/", "note": "Chapters 1–10: from Morse code to bytes. Free interactive companion site." }
-tags: ["binary", "bits", "bytes", "ASCII", "Unicode", "RGB", "algorithm", "binary search", "pseudocode", "Scratch", "abstraction"]
+tags: ["binary", "bits", "bytes", "ASCII", "Unicode", "RGB", "algorithm", "binary search", "pseudocode", "Scratch", "abstraction", "functions", "loops", "conditionals", "variables", "events"]
 ---
 
-## Before we start: the lab
+## How this page is organized
 
-From today on, every Monday ends in the lab. You can begin **without the instructor**: the [Lab 1 page](/labs/lab-01) is a numbered list of steps, from accepting the assignment to your first `git push`. If you did the [setup](/guides/lab-setup) at home, the first step takes two minutes.
+This week we follow **CS50 Week 0** closely, because Malan's sequence is the best there is: representation first, then algorithms, then the same five programming ideas built one block at a time in Scratch. The page is the lecture script. Boxes marked **live demo** are where we leave the slides and open Scratch. Every project shown is downloadable below, so you can open it yourself: in Scratch, **File → Load from your computer**.
 
-## What is computer science?
+| Project | What it shows | File |
+|---|---|---|
+| hello0 | one function: `say` | [hello0.sb3](/scratch/hello0.sb3) |
+| hello1 | input, return value, `join` | [hello1.sb3](/scratch/hello1.sb3) |
+| hello2 | text to speech: the same idea, another function | [hello2.sb3](/scratch/hello2.sb3) |
+| meow0 · meow1 | one sound, then copy-paste three times | [meow0.sb3](/scratch/meow0.sb3) · [meow1.sb3](/scratch/meow1.sb3) |
+| meow2 | the loop: `repeat 3` | [meow2.sb3](/scratch/meow2.sb3) |
+| meow3 | a custom block: `meow` (abstraction) | [meow3.sb3](/scratch/meow3.sb3) |
+| meow4 | a custom block with an input: `meow n times` | [meow4.sb3](/scratch/meow4.sb3) |
+| pet0 · pet1 | conditions and events: `forever`, `if touching`, video motion | [pet0.sb3](/scratch/pet0.sb3) · [pet1.sb3](/scratch/pet1.sb3) |
+| oscartime 1–6 | a game built up in six steps: sprites, `if … else`, random, custom block, a variable `score` | [1](/scratch/oscartime-1.sb3) · [2](/scratch/oscartime-2.sb3) · [3](/scratch/oscartime-3.sb3) · [4](/scratch/oscartime-4.sb3) · [5](/scratch/oscartime-5.sb3) · [6](/scratch/oscartime-6.sb3) · [full](/scratch/oscartime.sb3) |
+| Ivy's Hardest Game 0–2 | many sprites, `or`, custom blocks reused | [Harvard 0](/scratch/ivys-hardest-game-harvard-0.sb3) · [1](/scratch/ivys-hardest-game-harvard-1.sb3) · [2](/scratch/ivys-hardest-game-harvard-2.sb3) · [full](/scratch/ivys-hardest-game-harvard.sb3) |
+| Whack-a-Mole | broadcasts, `repeat until`, several variables | [whack-a-mole.sb3](/scratch/whack-a-mole.sb3) |
+
+## Part 1 · What is computer science? (13:30)
 
 > [!definition] Computation
-> **Input → algorithm → output.** Computer science is the study of information: how to represent it (the input and output) and how to process it (the algorithm).
+> **Input → algorithm → output.** Computer science is the study of information: how to represent it (the input and output) and how to process it (the algorithm). Computational thinking is applying that lens to any problem.
 
-We spend this week on the two halves. First, representation: how a machine that has only *on* and *off* can hold a novel, a photograph or a song. Then, algorithms: what it means to solve a problem step by step, and why some ways are dramatically faster than others.
+Draw the box on the board: a problem goes in, a solution comes out, and the box in the middle is what this course is about. Before we can talk about the box, we have to agree on how the inputs and outputs are written down. Humans use words and pictures; a computer has only electricity, on or off.
 
-## Representation: everything is bits
+## Part 2 · Representation: everything is bits
 
-### Counting with switches
+### Unary, decimal, binary
 
-You count in **decimal** because you have ten fingers: digits 0–9, and each position is worth ten times the one to its right. A computer is made of transistors, tiny switches that are either off or on. So it counts in **binary**: digits 0 and 1, each position worth *two* times the one to its right.
+Ask the room: how high can you count on one hand? Five, in **unary** (one finger per unit). Now treat each finger as a **bit**, down = 0, up = 1: 31 on one hand, 1023 on two. That is the wow moment of the week, and it is not a trick. It is *place value*.
+
+In **decimal** we have ten digits and each position is worth ten times the one to its right (1, 10, 100). A transistor is a switch, so a computer has two digits, and each position is worth *two* times the one to its right (1, 2, 4, 8, …).
 
 <table class="bits">
 <thead><tr><th>128</th><th>64</th><th>32</th><th>16</th><th>8</th><th>4</th><th>2</th><th>1</th><th>decimal</th></tr></thead>
 <tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td></tr>
 <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>5</td></tr>
 <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>73</td></tr>
 <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>255</td></tr>
 </tbody>
 </table>
 
-A single binary digit is a **bit**. Eight bits are a **byte**, and a byte can hold 2⁸ = 256 different values, 0 through 255. Try it: click the bits, then type your name.
+A single binary digit is a **bit**; eight of them are a **byte**; a byte holds 2⁸ = 256 values, 0 through 255. Click the bits, then type your name:
 
 <BitPlayground initial="Firat" id="bits-w2" />
 
-> [!try] By hand
-> Write 13, 42 and 100 in binary. Then convert 1010 1010 to decimal. Check with the widget above.
+> [!try] Together, on paper
+> Write 13, 42 and 100 in binary. Then read 1010 1010 as a decimal number. (Answers: 00001101, 00101010, 01100100, 170. These come back in the lab.)
 
 ### Text: ASCII and Unicode
 
-Bits are just numbers; to store letters we need an *agreement*. **ASCII** (1963) says 65 is `A`, 66 is `B`, 97 is `a`, 48 is `0` (the character, not the number), 32 is a space. Eight bits per character, so a 1 000-word email is about 6 KB.
+Bits are just numbers. To store letters we need an **agreement**, and the 1963 agreement is **ASCII**: 65 is `A`, 66 is `B`, 97 is `a`, 48 is the character `0`, 32 is a space. Malan's example: 72 73 33 is `HI!`. Ask the room to decode it from the table.
 
-ASCII has room for only 128 characters, which covers English and not much else. **Unicode** extends it to about 150 000 characters for every writing system and emoji, encoded as 1 to 4 bytes per character in **UTF-8**. `ş` is two bytes, `😂` is four. UTF-8 is backwards compatible: every ASCII file is already a valid UTF-8 file.
+ASCII has 128 characters, enough for English and little else. **Unicode** extends the same idea to about 150 000 characters, every writing system and every emoji, stored as 1 to 4 bytes per character in **UTF-8**: `ş` is two bytes, `😂` (code point 128 514) is four. Show the "face with tears of joy" slide; the number is the point.
 
 > [!warning] The same bits, different meanings
-> 01001000 01101001 is `Hi` if you read it as text, 18 537 if you read it as a 16-bit number, and a slightly dark teal if you read it as the first two bytes of a pixel. Bits carry no meaning; **programs** do. That is why a program that misreads a file shows garbage.
+> 01001000 01101001 is `Hi` as text, 18 537 as a 16-bit number, and part of a dark teal pixel as color. Bits carry no meaning; **programs** do, by context. That is why a program that misreads a file shows garbage, and why every file format starts with a header saying "read me as an image".
 
 ### Color, images, sound, video
 
-- A **pixel** is three bytes: red, green, blue, each 0–255. (255, 255, 255) is white, (0, 0, 0) is black, (255, 0, 0) pure red. A 1920 × 1080 image is 2 million pixels, about 6 MB raw.
-- An **image** is a grid of pixels plus a header that says how wide it is. A **video** is many images per second plus sound.
-- **Sound** is a wave sampled 44 100 times per second; each sample is a number (the pressure), typically 2 bytes.
-- **Programs** are bits too: instructions the processor understands. We meet them in week 3 when we compile C.
+- A **pixel** is three bytes, red, green, blue, each 0–255. (255, 255, 255) is white, (0, 0, 0) black, (255, 0, 0) red. Zoom into the emoji slide until the squares show: "enhance" is impossible, there is nothing behind the bytes.
+- An **image** is a grid of pixels plus a header; a **video** is many images per second; **sound** is a wave sampled 44 100 times a second, each sample a number.
+- **Programs** are bits too, instructions the processor understands. We meet them in week 3.
 
-The notebook at the bottom of this page draws a pixel-art image from a grid of numbers and plays with ASCII. Open it in Colab.
+The notebook at the bottom of this page draws a pixel-art smiley from a grid of numbers. Open it in Colab after class.
 
-## Algorithms
+## Part 3 · Algorithms (13:55)
 
 > [!definition] Algorithm
-> A finite, precise, step-by-step procedure for solving a problem. The steps must be unambiguous enough for a machine that does not understand anything.
+> A finite, precise, step-by-step procedure for solving a problem. Precise enough for a machine that understands nothing.
 
-CS50's phone book: find *John Harvard* in a 1 000-page book.
+The phone book (bring a real one if you can; a thick dictionary works). Find *John Harvard*:
 
-1. **Page by page** from the front: correct, but up to 1 000 steps. This is *linear search*.
-2. **Two pages at a time**: twice as fast, but you can skip John; you need a fix-up step. Still linear.
-3. **Open the middle**, decide which half John is in, tear the other half away, repeat: about 10 steps for 1 000 pages, 20 for a million, 30 for a billion. This is *binary search*, and it only works because the book is **sorted**.
+1. **Page by page**: correct, up to 1 000 steps. Linear search.
+2. **Two pages at a time**: twice as fast, but you can overshoot; you need a check step. Still linear.
+3. **Open the middle**, decide which half, tear the other half away, repeat: 10 steps for 1 000 pages, 20 for a million, 30 for a billion. Binary search, and it only works because the book is **sorted**.
 
-| Pages | Linear search (worst case) | Binary search |
+| Pages | Linear | Binary |
 |---|---|---|
 | 1 000 | 1 000 | 10 |
 | 1 000 000 | 1 000 000 | 20 |
 | 1 000 000 000 | 1 000 000 000 | 30 |
 
-Correctness is the first requirement; **efficiency** is what separates a program that works from one that is usable. Week 5 turns this into a science (Big O). For now, remember the shape: doubling the input adds one step to binary search and doubles the steps of linear search.
+Correctness first, then **efficiency**; the second curve is why Google feels instant. Week 5 makes this a science (Big O).
 
 ### Pseudocode
 
-We write algorithms in **pseudocode** before code: English with structure.
+Write the algorithm in English with structure, and the vocabulary of every programming language appears by itself:
 
 ```text
 1  Pick up phone book
@@ -135,31 +152,65 @@ We write algorithms in **pseudocode** before code: English with structure.
 13     Quit
 ```
 
-Notice the vocabulary, because every language has it:
-
-| Idea | In the pseudocode | In Scratch | In C (week 3) |
+| Idea | In the pseudocode | In Scratch (today) | In C (week 3) |
 |---|---|---|---|
-| **function** | pick up, open, look at, call | `say`, `move`, your own blocks | `printf`, `main`, your own functions |
+| **function** | pick up, open, look at, call | `say`, `play sound`, your own blocks | `printf`, `main`, your own functions |
 | **condition** | if / else if / else | `if … then … else` | `if (…) { } else { }` |
-| **boolean expression** | person is on page | `touching`, `=`, `<` | `x == 5`, `n < 10` |
+| **boolean expression** | person is on page | `touching`, `=`, `<`, `or` | `x == 5`, `n < 10` |
 | **loop** | go back to line 3 | `forever`, `repeat`, `repeat until` | `while`, `for` |
 | **variable** | (the current page) | orange variable blocks | `int page = 500;` |
 
-## Scratch: the ideas without the syntax
+Keep this table on the board for the rest of the hour: every Scratch demo points at a row.
 
-Scratch is a block language from MIT. You drag blocks instead of typing, so you cannot make a syntax error, and you can concentrate on the five ideas above.
+## Part 4 · Scratch: the five ideas, one block at a time (14:10)
 
-- **Functions**: `say hello` is a function with an *argument* ("hello"). `ask … and wait` is a function with a *return value* (`answer`).
-- **Conditions and booleans**: `if touching mouse-pointer then …`; `and`, `or`, `not`.
-- **Loops**: `forever`, `repeat 10`, `repeat until`.
+Scratch is a block language from MIT: you drag blocks instead of typing, so there are no syntax errors, and we can concentrate on the ideas. Open [scratch.mit.edu](https://scratch.mit.edu) → **Create**. Three areas: **blocks** on the left, **scripts** in the middle, the **stage** on the right. Colors are categories: Motion, Looks, Sound, Events, Control, Sensing, Operators, Variables, My Blocks.
+
+> [!demo] hello0 · one function
+> Load [hello0.sb3](/scratch/hello0.sb3). `when green flag clicked` → `say Hello, world!`. Click the flag. That is a whole program: an **event** (the flag) and a **function** (`say`) with an **argument** (the text). Change the text, click again. This is `printf("hello, world")` in disguise.
+
+> [!demo] hello1 · input and a return value
+> Load [hello1.sb3](/scratch/hello1.sb3). `ask What's your name? and wait` → `say (join hello, answer)`. Point at the shapes: `ask` is a function with a **side effect** (a prompt) and a **return value** (`answer`, the rounded block). `join` takes two inputs and returns one string. Functions plug into functions. Ask: what happens if you `say answer` without `join`? Try it live.
+
+> [!demo] hello2 · the same idea, a different function
+> Load [hello2.sb3](/scratch/hello2.sb3). Same program, but `speak` from the Text to Speech extension instead of `say`. The point: once you know the shape (event → function with inputs), new functions cost nothing to learn. This is the whole reason libraries exist.
+
+> [!demo] meow0 → meow1 → meow2 · the loop
+> Load [meow0.sb3](/scratch/meow0.sb3): `play sound Meow until done`. Now [meow1.sb3](/scratch/meow1.sb3): the same block three times with `wait 1 seconds` between. It works. Ask the room what is wrong with it. (Copy-paste; change the wait and you change it three times; want 100 meows?) Then [meow2.sb3](/scratch/meow2.sb3): `repeat 3` around one `play sound` and one `wait`. Same behavior, one place to change. Change 3 to 10 live. This row of the table is **loop**.
+
+> [!demo] meow3 · abstraction: your own block
+> Load [meow3.sb3](/scratch/meow3.sb3). *My Blocks → Make a Block* named `meow`; its definition is `play sound Meow`, `wait 1`. The main script is now `repeat 3 { meow }`: it reads like English. **Abstraction**: once `meow` works, you stop thinking about its inside. Every large program is abstraction on abstraction; this is the most important idea of the day.
+
+> [!demo] meow4 · a block with an input
+> Load [meow4.sb3](/scratch/meow4.sb3). The block is now `meow n times`, and its definition contains `repeat n { play sound; wait 1 }`. The main script is one block: `meow 3 times`. Compare with `say`: our block takes an argument exactly like Scratch's own. We just wrote a function with a parameter. In week 3 this is `void meow(int n)`.
+
+> [!demo] pet0 · conditions and forever
+> Load [pet0.sb3](/scratch/pet0.sb3). `forever { if touching mouse-pointer then play sound Meow }`. Move the mouse over the cat. Two new rows: **loop** again (`forever`, the "go back to line 3" of pseudocode) and **condition** with a **boolean expression** (`touching mouse-pointer` is true or false). Ask: why do we need `forever` around the `if`? (Because the check must happen again and again; a single `if` runs once, at the moment the flag is clicked.)
+
+> [!demo] pet1 · events from the world
+> Load [pet1.sb3](/scratch/pet1.sb3). `when video motion > 50 → play sound Meow` (allow the camera). No `forever` needed: this is an **event**, like the green flag or a key press. Programs react to the world; a phone app is nothing but event handlers.
+
+### Break (14:30, 5 minutes)
+
+> [!demo] Oscartime 1 → 6 · a game grows one idea at a time
+> Load [oscartime-1.sb3](/scratch/oscartime-1.sb3): two sprites, Oscar and Trash; `forever { if touching Trash then … else … }`, so the trash disappears when dragged onto the can. Then [2](/scratch/oscartime-2.sb3) and [3](/scratch/oscartime-3.sb3): the trash falls from a **random** x position (`pick random`). Then [4](/scratch/oscartime-4.sb3): the falling is moved into a **custom block**, the script reads clean. Then [5](/scratch/oscartime-5.sb3) and [6](/scratch/oscartime-6.sb3): a **variable** `score`, `set score to 0` at start, `change score by 1` on every hit. Every row of the table, in one small game. Finish by opening the [full Oscartime](/scratch/oscartime.sb3) for a minute: same ideas, more sprites, a countdown, broadcasts. Nothing new, just more.
+
+> [!demo] Ivy's Hardest Game 0 → 2 · reuse
+> Load [Harvard 0](/scratch/ivys-hardest-game-harvard-0.sb3): the player sprite moves with arrow keys inside two walls; a custom block checks `if touching left wall or touching right wall` and bounces back. [1](/scratch/ivys-hardest-game-harvard-1.sb3) adds a Yale sprite that patrols and kills; [2](/scratch/ivys-hardest-game-harvard-2.sb3) adds MIT. The point: the *same* custom block runs in every enemy sprite. Abstraction is what makes level 3 cheap after level 2.
+
+> [!demo] Whack-a-Mole · a real project
+> Load [whack-a-mole.sb3](/scratch/whack-a-mole.sb3) and just play it for a minute: four gophers, `when this sprite clicked`, `broadcast`, `repeat until`, a `score`, a `count down`, `level`. Ask the room to name the rows of the table as they see them. This is the size of the Scratch project the lab asks for at the *advanced* end; the minimum is much smaller.
+
+### What Scratch taught you, in one list
+
+- **Functions** with arguments (`say hello`) and return values (`answer`, `join`).
+- **Loops**: `repeat n`, `forever`, `repeat until`.
+- **Conditions** on **boolean expressions**: `if touching … then … else`, `and`, `or`, `not`.
 - **Variables**: `set score to 0`, `change score by 1`.
-- **Events**: `when green flag clicked`, `when space key pressed`. Programs react to the world.
-- **Abstraction**: `make a block` turns ten blocks into one named block, like `meow` or `bounce`. Once it works, you stop thinking about the inside. Every large program is abstraction on abstraction.
+- **Events**: green flag, key pressed, sprite clicked, broadcast received.
+- **Abstraction**: `make a block`, with or without inputs; reuse across sprites.
 
-> [!try] In the lab
-> Lab 1 asks for a small Scratch project with at least one custom block, one variable, one loop and one condition. Oscartime, Ivy's Hardest Game and the meowing cat from the lecture are the models; your own idea is better.
-
-## From Scratch to C: a preview
+## Part 5 · Where this goes (14:40)
 
 The same program, twice:
 
@@ -177,12 +228,12 @@ int main(void)
 }
 ```
 
-`main` is the green flag. `printf` is `say`. The semicolon ends a statement; the braces group statements into a block. Next week you write this yourself, and in Lab 1 today you already compile and run it once, so that week 3 starts with no fear.
+`main` is the green flag, `printf` is `say`. The semicolon ends a statement; the braces group statements into a block. Next week we type this ourselves, and every block you dragged today gets a text spelling. **Not in today's lab**: today's lab is all Scratch and bits.
 
 ## Summary
 
-- Computers hold only bits. Numbers, text, color, sound, images and programs are all bits under an agreement (binary, ASCII/Unicode, RGB, …).
-- 8 bits = 1 byte = 256 values. n bits give 2ⁿ values.
-- An algorithm is a precise procedure; binary search needs a sorted input and takes about log₂ n steps.
-- Five ideas in every language: functions, conditions, loops, variables, events; plus abstraction to manage size.
-- Scratch is those ideas with blocks. C is the same ideas with text.
+- Computers hold only bits. Numbers, text, color, sound, images and programs are all bits under an agreement (binary, ASCII/Unicode, RGB).
+- 8 bits = 1 byte = 256 values; n bits give 2ⁿ values.
+- An algorithm is a precise procedure; binary search needs a sorted input and takes about log₂ n steps. Pseudocode is how we design before we code.
+- Five ideas in every language: functions, conditions (on booleans), loops, variables, events; plus abstraction (custom blocks) to manage size.
+- The lab starts at 15:00: [Lab 1 · Hello, Scratch](/labs/lab-01). You can begin before the instructor arrives.

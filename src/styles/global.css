@@ -205,6 +205,9 @@ body {
 .callout-thm .callout-title { color: var(--mod-indigo); }
 .callout-try { border-left-color: var(--mod-rose); border-style: dashed; border-left-style: solid; }
 .callout-try .callout-title { color: var(--mod-rose); }
+.callout-demo { border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--card)); }
+.callout-demo .callout-title { color: var(--accent); }
+.callout-demo .callout-title::before { content: '▶'; background: none; width: auto; height: auto; font-size: 10px; }
 
 /* "wow moment" box on week pages: warm light tint, readable in both themes */
 .wow-box { background: color-mix(in srgb, var(--accent) 7%, var(--card)); border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); }

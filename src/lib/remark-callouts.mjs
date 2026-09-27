@@ -1,7 +1,7 @@
 /**
  * GitHub-style callout boxes in Markdown:
  *   > [!definition] Proposition     > [!theorem] De Morgan's laws
- *   > [!example]  > [!why]  > [!industry]  > [!warning]  > [!note]  > [!try]  > [!tip]
+ *   > [!example]  > [!why]  > [!industry]  > [!warning]  > [!note]  > [!try]  > [!tip]  > [!demo]
  * The first line may carry a title after the marker; otherwise the default label is used.
  */
 const KINDS = {
@@ -14,6 +14,7 @@ const KINDS = {
   definition: { label: 'Definition', cls: 'callout-def' },
   theorem: { label: 'Theorem', cls: 'callout-thm' },
   try: { label: 'Try it', cls: 'callout-try' },
+  demo: { label: 'Live demo · switch to Scratch', cls: 'callout-demo' },
 };
 
 const RE = /^\[!(\w+)\]\s*(.*)$/;
