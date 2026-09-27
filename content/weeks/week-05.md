@@ -16,7 +16,7 @@ cs50:
   pset: "https://cs50.harvard.edu/x/2026/psets/3/"
 prep:
   - "Watch the lecture and pause at the sorting demos: predict the next step before Malan does it."
-  - "Project assignments are announced today. Accept the project repository on Classroom 50 this week."
+  - "Your personal project is announced today. Set up the project repository this week and make your first commit (a README with a plan)."
 objectives:
   - "Implement linear search and binary search on arrays, and state their preconditions."
   - "Trace selection sort, bubble sort and merge sort by hand on eight numbers."

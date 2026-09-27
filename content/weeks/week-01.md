@@ -64,7 +64,7 @@ All three steps are in the [lab setup guide](/guides/lab-setup). Ten minutes, no
 - **Midterm** (week 8): 40%.
 - **Final**: 60%, made of the final exam (85% of that) and the **semester project** (15% of that).
 - **Labs**: autograded, tracked, and the practice ground for everything else. A student who does every lab has never failed this course.
-- The [project catalog](/project) is published in week 2. You choose in week 4, you build from week 5, you demo in week 15.
+- The [semester project](/project) framework is published in week 2. You receive your personal project in week 5, you build until week 15, you demo on the last Monday.
 
 ## The road ahead
 

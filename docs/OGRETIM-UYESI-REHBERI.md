@@ -128,12 +128,12 @@ npm run build && /opt/miniconda3/envs/ferhat_ml/bin/python scripts/validate_cont
 
 ## 4. Proje (%15 final)
 
-- Katalog herkese açık: `content/data/projects.json` → `/project`. Yeni proje eklemek için JSON'a bir kayıt.
-- Takvim: H2 katalog · H4 (12 Ekim) tercihler e-postayla · H5 (19 Ekim) atama + Classroom 50'de şablonsuz bireysel `project` ödevi (Manual grading) · H11 (30 Kasım) `m3-prototype` etiketi · H14 atölye · H15 (28 Aralık) demo + `v1.0`.
+- Fikir bankası **gizli**: `private/project-ideas.json` (20 proje, 6 tema, min/ileri kapsam). Sitede yalnızca çerçeve var (`/project`): tema adları, kilometre taşları, rubrik, commit takibi. Proje başlıkları ve kapsamlar yayımlanmaz.
+- Atama: 5. hafta (19 Ekim). Sınıf listesi gelince projeleri rastgele dağıtacağız (bir projeye en fazla 2 öğrenci, farklı ileri kapsam); her öğrenciye kişisel duyuru/e-posta ile başlığı + min/ileri kapsamı gider. Dağıtım için küçük bir script yazılacak (`scripts/assign_projects.py`, roster CSV → atama CSV, `private/` altında).
+- Depo: Classroom 50 açıksa şablonsuz bireysel `project` ödevi (Manual grading); değilse Lab 1'deki gibi öğrenci kendi hesabında özel `ics-2026-project` deposu açar, `drferhatu`'yu ekler.
+- Kilometre taşları sitede: H2 çerçeve · H5 atama + ilk commit · H11 (30 Kasım) `m3-prototype` etiketi · H14 atölye · H15 (28 Aralık) demo + `v1.0`.
 - Commit takibi için hızlı komut (öğrenci reposunda): `gh api repos/ORG/REPO/commits --paginate --jq '.[].commit.author.date' | cut -c1-10 | sort | uniq -c`.
 - Süreç notu (%15): haftalık commit, etiketler, README görev listesi. Rubrik sitede.
-
----
 
 ## 5. Sık sorunlar
 

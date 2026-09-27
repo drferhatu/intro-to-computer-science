@@ -16,7 +16,7 @@ cs50:
   pset: "https://cs50.harvard.edu/x/2026/psets/2/"
 prep:
   - "Watch the lecture with a terminal open and type <code>scores.c</code> and <code>string.c</code> yourself as they appear."
-  - "Read the <a href=\"/project\">project catalog</a>: preferences are due <strong>next Monday, October 12</strong> by email."
+  - "Read the <a href=\"/project\">semester project page</a>: how it works, milestones and how it is graded. Projects are assigned next week."
 objectives:
   - "Name the four stages of compilation (preprocessing, compiling, assembling, linking) and what make hides."
   - "Debug with printf, the VS Code debugger (debug50) and rubber-duck debugging."

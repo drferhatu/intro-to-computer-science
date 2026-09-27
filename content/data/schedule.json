@@ -7,10 +7,10 @@
   },
   "weeks": [
     { "week": 1,  "date": "2026-09-21", "status": "normal", "note": "Course introduction (held)" },
-    { "week": 2,  "date": "2026-09-28", "status": "normal", "note": "First lab: setup, Scratch, hello world in C" },
+    { "week": 2,  "date": "2026-09-28", "status": "normal", "note": "First lab: Scratch and bits" },
     { "week": 3,  "date": "2026-10-05", "status": "normal", "note": "" },
-    { "week": 4,  "date": "2026-10-12", "status": "normal", "note": "Project preferences due" },
-    { "week": 5,  "date": "2026-10-19", "status": "normal", "note": "Projects assigned" },
+    { "week": 4,  "date": "2026-10-12", "status": "normal", "note": "" },
+    { "week": 5,  "date": "2026-10-19", "status": "normal", "note": "Projects assigned (personal announcement)" },
     { "week": 6,  "date": "2026-10-26", "status": "normal", "note": "" },
     { "week": 7,  "date": "2026-11-02", "status": "normal", "note": "" },
     { "week": 8,  "date": "2026-11-09", "status": "exam",   "note": "Midterm week (date to be confirmed by the faculty)" },

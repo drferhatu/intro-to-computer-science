@@ -12,7 +12,6 @@ content/
   data/course.json         course info, meeting times, outcomes, grading, policies, books, tools, Classroom 50 and CS50 settings
   data/modules.json        six modules and their weeks
   data/schedule.json       Monday dates, exam week, final
-  data/projects.json       semester project catalog (20 projects, 6 themes)
   weeks/week-NN.md(x)      one file per week (frontmatter: CS50 lecture to watch, prep, objectives, wow moment, industry, lab, notebook, resources)
   labs/lab-NN.md(x)        step-by-step lab instructions (students can start without the instructor)
   guides/                  setup guides (/guides/<name>)
@@ -25,7 +24,7 @@ src/                       Astro pages, components (BitPlayground, Step, Termina
 scripts/                   notebook builder, lab verifier, template publisher, content validator
 public/slides/             lecture slides (PDF)
 docs/                      maintainer notes (Turkish)
-private/                   solutions and instructor-only notes; git-ignored, never published
+private/                   solutions and the project idea bank (project-ideas.json); git-ignored, never published
 ```
 
 ## Develop
