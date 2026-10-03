@@ -70,6 +70,32 @@ export function acceptCmd(assignment: string) {
 
 export const moduleColorVar = (m: Module) => `var(--mod-${m.color})`;
 
+/** Deadline of a lab: its `due`, else Friday 23:59 of its week. */
+export function labDue(lab: Lab): string {
+  if (lab.data.due) return lab.data.due;
+  const monday = scheduleOf(lab.data.week)?.date;
+  if (!monday) return '';
+  const d = new Date(monday + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 4);
+  return `${d.toISOString().slice(0, 10)} 23:59`;
+}
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+/** Date of the class the lab belongs to (the Monday of its week), e.g. "Mon, Oct 5". */
+export function labWeekDate(lab: Lab, long = false): string {
+  const d = scheduleOf(lab.data.week)?.date;
+  if (!d) return '';
+  const wd = WEEKDAYS[new Date(d + 'T12:00:00Z').getUTCDay()];
+  return long ? `${wd === 'Mon' ? 'Monday' : wd}, ${formatDate(d, true)}` : `${wd}, ${formatDate(d)}`;
+}
+
+/** "Fri, Oct 2 · 23:59" */
+export function formatDue(due: string): string {
+  if (!due) return '';
+  const d = new Date(due.slice(0, 10) + 'T12:00:00Z');
+  return `${WEEKDAYS[d.getUTCDay()]}, ${formatDate(due)} · ${due.slice(11) || '23:59'}`;
+}
+
 /** The week students should look at: today's class, else the next upcoming one (evaluated at build time). */
 export function currentWeek(today = new Date()): number {
   const iso = today.toISOString().slice(0, 10);

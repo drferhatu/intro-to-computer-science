@@ -8,7 +8,7 @@ import Terminal from '@/components/Terminal.astro';
 import Step from '@/components/Step.astro';
 import NotebookEmbed from '@/components/NotebookEmbed.astro';
 import { render, getCollection } from 'astro:content';
-import { getWeeksSorted, moduleOf, moduleColorVar, scheduleOf, formatDate, STATUS_LABEL, href, weekSlug, labHref, pad, course } from '@/lib/site';
+import { getWeeksSorted, moduleOf, moduleColorVar, scheduleOf, formatDate, STATUS_LABEL, href, weekSlug, labHref, pad, course, labDue, formatDue } from '@/lib/site';
 
 export async function getStaticPaths() {
   const weeks = await getWeeksSorted();
@@ -147,7 +147,7 @@ const cs50Links = d.cs50 ? [
           <a href={labHref(lab.id)} class="not-prose group mt-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-card p-5 !no-underline hover:border-ink">
             <span class="min-w-0">
               <span class="block text-ink-2">{lab.data.description}</span>
-              <span class="mt-2 block font-mono text-xs text-ink-3">{lab.data.language} · {lab.data.duration} · {lab.data.points} points · {lab.data.status === 'open' ? 'open now' : lab.data.status}</span>
+              <span class="mt-2 block font-mono text-xs text-ink-3">{lab.data.language} · due {formatDue(labDue(lab))} · {lab.data.points} points · {lab.data.status === 'open' ? 'open now' : `opens in week ${lab.data.week}`}</span>
             </span>
             <span class="btn-primary">Open lab instructions →</span>
           </a>
