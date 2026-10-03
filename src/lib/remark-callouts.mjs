@@ -15,6 +15,7 @@ const KINDS = {
   theorem: { label: 'Theorem', cls: 'callout-thm' },
   try: { label: 'Try it', cls: 'callout-try' },
   demo: { label: 'In Scratch', cls: 'callout-demo' },
+  code: { label: 'In VS Code', cls: 'callout-demo' },
 };
 
 const RE = /^\[!(\w+)\]\s*(.*)$/;
@@ -40,7 +41,8 @@ export default function remarkCallouts() {
       const kind = KINDS[m[1].toLowerCase()];
       if (!kind) return;
       const custom = m[2].trim();
-      const title = custom ? (m[1].toLowerCase() === 'demo' ? `In Scratch · ${custom}` : custom) : kind.label;
+      const k = m[1].toLowerCase();
+      const title = custom ? (k === 'demo' ? `In Scratch · ${custom}` : k === 'code' ? `In VS Code · ${custom}` : custom) : kind.label;
       // ilk satırı kaldır
       text.value = nl === -1 ? '' : text.value.slice(nl + 1);
       if (!text.value) first.children.shift();

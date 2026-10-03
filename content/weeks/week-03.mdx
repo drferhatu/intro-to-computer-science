@@ -5,7 +5,7 @@ description: "From Scratch blocks to text: how source code becomes machine code,
 module: m2
 status: ready
 lab: lab-02
-reading: "K&R chapter 1"
+reading: "K&R chapter 1; CS50 Week 1 notes"
 cs50:
   week: "1"
   title: "C"
@@ -16,7 +16,8 @@ cs50:
   pset: "https://cs50.harvard.edu/x/2026/psets/1/"
 prep:
   - "Make sure Lab 1 is pushed and you saw your score under <em>Releases</em>. If not, fix that first; the loop is the same every week."
-  - "Open <a href=\"https://cs50.dev\" target=\"_blank\" rel=\"noopener\">cs50.dev</a> once and run the lecture's <code>hello.c</code> yourself."
+  - "Open <a href=\"https://cs50.dev\" target=\"_blank\" rel=\"noopener\">cs50.dev</a> once, sign in with GitHub, and run the lecture's <code>hello.c</code> yourself: <code>code hello.c</code>, <code>make hello</code>, <code>./hello</code>."
+  - "Accept the invitation to the <strong>FiratUniversity-IJDP-SoftEng</strong> GitHub organization (arrives by email this week) and sign in once at <a href=\"https://classroom50.org\" target=\"_blank\" rel=\"noopener\">classroom50.org</a>. From Lab 2 on, labs are accepted and graded there."
 notebook:
   file: "labs/templates/lab02/lab02.ipynb"
   title: "Lab 2 · Explore: C in a notebook"
@@ -47,7 +48,14 @@ tags: ["C", "compiler", "gcc", "make", "printf", "scanf", "get_int", "int", "flo
 
 ## From blocks to text
 
-Last week's five ideas, in text. The cost: you can now make syntax errors, and the compiler will tell you about every one of them. The gain: you can write anything, and the result runs on every computer on Earth.
+Last week every idea had a block: `say`, `repeat`, `if`, a variable, a custom block. This week the same ideas have a spelling. The cost of text is real: you can now make a typo, and the compiler will tell you about every single one. The gain is bigger: you can write anything, the result runs on every computer on Earth, and the language you learn, **C**, is the one under Linux, Windows, macOS, Python itself and most of the code in your car.
+
+All the programs on this page are the ones from CS50's Week 1 lecture. Each orange box is a program we open and run together in VS Code; each has a download link, and the whole set is in [src1.zip](https://cdn.cs50.net/2025/fall/lectures/1/src1.zip). The lab afterwards, [Lab 2: C Kickstart](/labs/lab-02), asks you to write your own versions.
+
+## hello, world
+
+> [!code] hello0.c · the smallest program
+> [hello0.c](/c/week-03/hello0.c). Four lines, and every one of them is doing something. Compare it with last week's `when green flag clicked → say hello, world`: `main` is the green flag, `printf` is `say`, the text in quotes is the argument.
 
 ```c
 #include <stdio.h>
@@ -60,53 +68,32 @@ int main(void)
 
 | Piece | Meaning |
 |---|---|
-| `#include <stdio.h>` | Use the standard input/output library, which is where `printf` lives. Like importing a Scratch extension. |
+| `#include <stdio.h>` | Use the standard input/output library, which is where `printf` lives. The C equivalent of adding a Scratch extension. |
 | `int main(void)` | The program starts here. The green flag. |
 | `{ … }` | A block: the statements that belong to `main`. |
-| `printf("hello, world\n");` | Call the function `printf` with one argument. `\n` is a newline. The `;` ends the statement. |
+| `printf("hello, world\n");` | Call the function `printf` with one argument. `\n` is a newline, like pressing Enter. The semicolon ends the statement. |
 
-## Source code → machine code
+Almost every C program you read this term has this skeleton. The interesting part is always what goes between the braces.
 
-The processor understands only bits, so your text must be translated. That is the **compiler**'s job.
+## Source code becomes machine code
+
+The processor understands only bits, so the text you write has to be translated. That is the job of the **compiler**. In the terminal, three commands you will type a thousand times this term:
 
 <Terminal lines={['code hello.c', 'make hello', './hello']} out="hello, world" />
 
-`make hello` is a convenience: it really runs the compiler for you: `gcc -o hello hello.c cs50.c` in our labs (cs50.dev uses `clang` with `-lcs50`; same idea). Three steps you will repeat a thousand times: **edit, compile, run**. When the compiler complains, read the *first* error, fix it, compile again. Most later errors are echoes of the first.
+`code hello.c` opens (or creates) the file in the editor. `make hello` compiles it: it reads `hello.c` and produces a program called `hello`. `./hello` runs that program; the `./` means "the one in this folder". **Edit, compile, run.** When the compiler complains, read the *first* error only, fix it, compile again. Later errors are very often echoes of the first one.
+
+`make` is itself a convenience. Behind it, a real compiler is being called: on cs50.dev it is `clang`, in our lab repositories it is `gcc`, and the command that actually runs is something like `gcc -o hello hello.c`. Same idea, two brands.
 
 > [!note] Correctness, design, style
-> CS50 grades code on three axes. **Correct**: does it do what it should? **Design**: is it written well, without needless repetition? **Style**: is it readable, consistently indented, sensibly named? The autograder checks the first; the instructor looks at the other two in your project.
+> Good code is judged on three axes. **Correct**: does it do what it should? **Design**: is it written well, without needless repetition, in a way another person can follow? **Style**: is it readable, consistently indented, sensibly named? The autograder in the lab checks the first. The other two are what we talk about when we look at each other's code, and they are the difference between code that works once and code a team can live with.
 
-## Variables and types
+## Input: get_string and printf's placeholders
 
-C wants to know what kind of value a variable holds, because different kinds take different numbers of bytes.
+A program that only prints is a poster. Programs become useful when they take input. CS50 gives us a small library, `cs50.h`, with functions that ask the user for a value and hand it back: `get_string`, `get_int`, `get_float`, `get_long`, `get_char`. In the lab you get the same library as two files, `cs50.h` and `cs50.c`, so everything here compiles wherever you are.
 
-| Type | Holds | Bytes | Example |
-|---|---|---|---|
-| `int` | integers | 4 | `int age = 19;` |
-| `long` | bigger integers | 8 | `long population = 8000000000;` |
-| `float` | real numbers, ~7 digits | 4 | `float pi = 3.14159;` |
-| `double` | real numbers, ~15 digits | 8 | `double e = 2.718281828459045;` |
-| `char` | one character | 1 | `char grade = 'A';` |
-| `bool` | true / false | 1 | `bool done = false;` (needs `<stdbool.h>` or `<cs50.h>`) |
-| `string` | text (CS50 library) | pointer | `string name = "Alice";` (needs `<cs50.h>`) |
-
-`=` is **assignment**, not equality. `int x = 5;` creates `x` and puts 5 in it. `x = x + 1;` (or `x++;`) puts the old value plus one back. Equality is `==`.
-
-### Output with printf
-
-`printf` prints a **format string** where placeholders are replaced by values:
-
-```c
-int age = 19;
-float gpa = 3.75;
-char initial = 'F';
-string name = "Firat";
-printf("%s is %i, initial %c, GPA %.2f\n", name, age, initial, gpa);
-```
-
-`%i` int, `%f` float/double (`%.2f` two decimals), `%c` char, `%s` string, `%li` long, `%%` a literal percent sign.
-
-### Input with the CS50 library
+> [!code] hello1.c · a bug worth making
+> [hello1.c](/c/week-03/hello1.c). We ask for the user's name, store it in a variable called `answer`, and print it. Run it and type your name. It prints `hello, answer`. Of course it does: inside the quotes, `answer` is just six letters. To put a *value* into the text we need a placeholder.
 
 ```c
 #include <cs50.h>
@@ -114,39 +101,126 @@ printf("%s is %i, initial %c, GPA %.2f\n", name, age, initial, gpa);
 
 int main(void)
 {
-    string name = get_string("What's your name? ");
-    printf("hello, %s\n", name);
+    string answer = get_string("What's your name? ");
+    printf("hello, answer\n");
 }
 ```
 
-`get_string`, `get_int`, `get_float`, `get_long`, `get_char` ask the user and **return** a value. They re-prompt on nonsense; you still have to reject values that are the wrong *size*, which is what loops are for. In week 6 we look inside `get_string`; for now it is an abstraction, like a Scratch block.
+> [!code] hello2.c · the fix: %s
+> [hello2.c](/c/week-03/hello2.c). `%s` is a placeholder for a string; the value to put there comes after the format string, separated by a comma. One placeholder, one value, in order.
+
+```c
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
+{
+    string answer = get_string("What's your name? ");
+    printf("hello, %s\n", answer);
+}
+```
+
+The line `string answer = get_string(...)` does three things at once: it **declares** a variable called `answer`, it says its **type** is `string`, and it **assigns** the return value of `get_string` to it. The single `=` is assignment, not equality: "put this value in that box". Equality is `==`, and confusing the two is the most classic bug in C.
+
+## Types
+
+Scratch did not care whether a variable held a number or a word. C does, because different kinds of values take different amounts of memory, and the compiler wants to know in advance how many bytes to set aside.
+
+| Type | Holds | Bytes | Example | printf |
+|---|---|---|---|---|
+| `int` | integers | 4 | `int age = 19;` | `%i` |
+| `long` | bigger integers | 8 | `long population = 8000000000;` | `%li` |
+| `float` | real numbers, about 7 significant digits | 4 | `float pi = 3.14159;` | `%f` |
+| `double` | real numbers, about 15 significant digits | 8 | `double e = 2.718281828459045;` | `%f` |
+| `char` | one character | 1 | `char grade = 'A';` | `%c` |
+| `bool` | true or false | 1 | `bool done = false;` | — |
+| `string` | text (CS50 library) | depends | `string name = "Alice";` | `%s` |
+
+Notice the quotes: a `char` uses single quotes (`'A'`), a `string` uses double quotes (`"Alice"`). In week 4 we discover that a string is really a row of chars, which is why the distinction matters.
+
+## Arithmetic and a first calculator
+
+C has the operators you expect: `+`, `-`, `*`, `/`, and `%`, the **remainder** (`7 % 3` is 1). Let's add two numbers.
+
+> [!code] calculator0.c · addition
+> [calculator0.c](/c/week-03/calculator0.c). `get_int` asks for an integer and keeps asking until it gets one; try typing `cat` and see. Then `x + y` is computed *before* `printf` runs, and the result fills the `%i`.
+
+```c
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
+{
+    int x = get_int("x: ");
+    int y = get_int("y: ");
+    printf("%i\n", x + y);
+}
+```
+
+Try 2 000 000 000 plus 2 000 000 000. The answer is negative. We come back to that at the end of the page, because it has grounded airplanes.
+
+> [!code] calculator4.c · the same with long
+> [calculator4.c](/c/week-03/calculator4.c). Change `int` to `long`, `get_int` to `get_long`, `%i` to `%li`, and the same addition now has room for 9 quintillion. Types are a promise about how big a value can get; choose them knowingly.
 
 ## Conditions
 
+A condition in C looks like Scratch's `if … then … else`, with parentheses around the question and braces around the answer.
+
+> [!code] compare0.c → compare4.c · five ways to compare
+> [compare0.c](/c/week-03/compare0.c) says something only when `x < y`. [compare1.c](/c/week-03/compare1.c) adds an `else`, so there is always an answer. [compare2.c](/c/week-03/compare2.c) uses three separate `if`s; it works, but the program keeps asking questions even after it has found the answer. [compare3.c](/c/week-03/compare3.c) chains them with `else if`, which is better, but the last question `x == y` is unnecessary: if x is not less and not greater, what else could it be? [compare4.c](/c/week-03/compare4.c) is the clean version.
+
 ```c
-if (x < y)
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
 {
-    printf("x is less than y\n");
-}
-else if (x > y)
-{
-    printf("x is greater than y\n");
-}
-else
-{
-    printf("x is equal to y\n");
+    int x = get_int("What's x? ");
+    int y = get_int("What's y? ");
+
+    if (x < y)
+    {
+        printf("x is less than y\n");
+    }
+    else if (x > y)
+    {
+        printf("x is greater than y\n");
+    }
+    else
+    {
+        printf("x is equal to y\n");
+    }
 }
 ```
 
-Comparison operators: `<`, `<=`, `>`, `>=`, `==`, `!=`. Logical: `&&` (and), `||` (or), `!` (not). Parentheses are required around the condition, and the condition is a **boolean expression**: something true or false.
+The question inside the parentheses is a **boolean expression**: something that is either true or false. The comparison operators are `<`, `<=`, `>`, `>=`, `==` and `!=`. The progression from compare2 to compare4 is what *design* means: all three are correct, one of them is clearly better.
 
-> [!warning] The most common bug in C
-> `if (x = 5)` **assigns** 5 to x and is always true. You meant `if (x == 5)`. Compilers warn about this; read the warning.
+> [!code] agree0.c → agree2.c · characters and logical operators
+> [agree0.c](/c/week-03/agree0.c) asks "Do you agree?" and checks for `'y'` or `'n'`. Type a capital `Y` and nothing happens: `'y'` and `'Y'` are different characters (121 and 89 in ASCII, as you know from last week). [agree1.c](/c/week-03/agree1.c) fixes it with four branches and a lot of copy-paste. [agree2.c](/c/week-03/agree2.c) uses `||`, which means **or**, and the four branches become two.
+
+```c
+    if (c == 'Y' || c == 'y')
+    {
+        printf("Agreed.\n");
+    }
+    else if (c == 'N' || c == 'n')
+    {
+        printf("Not agreed.\n");
+    }
+```
+
+`||` is *or*, `&&` is *and*, `!` is *not*. The same three words Scratch had as green blocks.
+
+> [!warning] The classic mistake
+> `if (x = 5)` **assigns** 5 to `x` and is always true. You meant `if (x == 5)`. Modern compilers warn about this; read the warning.
 
 ## Loops
 
+> [!code] meow0.c → meow4.c · from copy-paste to for
+> [meow0.c](/c/week-03/meow0.c) prints `meow` three times with three `printf`s: it works, and it is exactly the copy-paste we criticized in Scratch. [meow1.c](/c/week-03/meow1.c) tries a `while` loop and prints **nothing**. Look closely at the condition: `i` starts at 3 and the loop runs *while* `i > 3`, which is false from the start. [meow2.c](/c/week-03/meow2.c) prints `i` instead of `meow` to see what is going on, which is the oldest debugging technique there is. [meow3.c](/c/week-03/meow3.c) counts up from 0 while `i < 3`, and now it works. [meow4.c](/c/week-03/meow4.c) says the same thing in one line with `for`.
+
 ```c
-// while: repeat as long as the condition holds
+// meow3.c: while
 int i = 0;
 while (i < 3)
 {
@@ -154,65 +228,119 @@ while (i < 3)
     i++;
 }
 
-// for: the same, with init, condition and update in one line
+// meow4.c: for, the same three parts on one line: start; condition; update
 for (int i = 0; i < 3; i++)
 {
     printf("meow\n");
 }
-
-// do-while: run once, then check. Perfect for input validation.
-int n;
-do
-{
-    n = get_int("Positive number: ");
-}
-while (n < 1);
 ```
 
-Use `for` when you know how many times; `while` when you repeat until something happens; `do … while` when the body must run at least once. `while (true)` with a `break` inside is the "forever" block.
+Programmers count from 0, so `i < 3` gives exactly three iterations: 0, 1, 2. `i++` is shorthand for `i = i + 1`. Use `for` when you know how many times; use `while` when you repeat until something happens; `while (true)` is Scratch's `forever`.
 
-## Functions
-
-Scratch's *make a block* is a **function** in C:
+> [!code] mario0.c → mario7.c · bricks, grids and validation
+> From a row of four question marks to a grid whose size the user chooses. [mario0.c](/c/week-03/mario0.c) prints the row by hand; [mario1.c](/c/week-03/mario1.c) with a loop. [mario2.c](/c/week-03/mario2.c) prints a column of bricks, one `#` per line. [mario3.c](/c/week-03/mario3.c) nests one loop inside another and prints a 3×3 grid: the outer loop is the rows, the inner loop is the columns, and the newline comes after each inner loop finishes. [mario4.c](/c/week-03/mario4.c) replaces the magic number with a `const int n = 3;`, so the size lives in one place. [mario5.c](/c/week-03/mario5.c) asks the user for `n`. Type `-1` and you get an empty grid; type `0` and the same. [mario6.c](/c/week-03/mario6.c) re-asks with a `while` loop until the number is at least 1, but asks the first time outside the loop and then again inside it, which repeats code. [mario7.c](/c/week-03/mario7.c) uses `do … while`, which asks first and checks after, exactly the shape of "ask until the answer is valid".
 
 ```c
+#include <cs50.h>
 #include <stdio.h>
-
-void meow(int n);          // prototype: tell the compiler it exists
 
 int main(void)
 {
-    meow(3);
-}
+    // Get size of grid
+    int n;
+    do
+    {
+        n = get_int("Size: ");
+    }
+    while (n < 1);
 
-void meow(int n)           // definition
-{
+    // Print grid of bricks
     for (int i = 0; i < n; i++)
     {
-        printf("meow\n");
+        for (int j = 0; j < n; j++)
+        {
+            printf("#");
+        }
+        printf("\n");
     }
 }
 ```
 
-`void` means "returns nothing". A function can also **return** a value:
+This is the shape of nearly every input in this course: ask in a `do … while`, reject what is wrong, and only then do the work. Never trust input; in week 13 this sentence becomes the whole of security.
+
+## Functions: abstraction, in C
+
+> [!code] meow5.c · a function of our own
+> [meow5.c](/c/week-03/meow5.c). We write a function called `meow` that prints once, and `main` becomes `for … { meow(); }`, which reads like English. This is last week's *make a block*. There is a new line at the top, `void meow(void);`, the **prototype**: C reads top to bottom, and `main` uses `meow` before `meow` is defined, so we promise the compiler that the definition is coming.
 
 ```c
-int square(int x)
+#include <stdio.h>
+
+void meow(void);
+
+int main(void)
 {
-    return x * x;
+    for (int i = 0; i < 3; i++)
+    {
+        meow();
+    }
+}
+
+void meow(void)
+{
+    printf("meow\n");
 }
 ```
 
-Functions are the unit of **abstraction**: once `meow` works, `main` reads like English. The prototype is needed because C reads top to bottom and `main` calls `meow` before `meow` is defined.
+> [!code] meow6.c · a function with a parameter
+> [meow6.c](/c/week-03/meow6.c). Now `meow` takes a number, `void meow(int n)`, and loops inside. `main` is one line: `meow(3);`. This is Scratch's `meow n times` block, spelled out. The first `void` says the function returns nothing; `int n` says it takes one integer and calls it `n` inside.
 
-> [!definition] Scope
-> A variable exists only inside the braces where it was declared. `int i` in a `for` loop is gone after the loop. This is why functions cannot see each other's variables, and why we pass **arguments** and get **return values**.
+> [!code] calculator1.c → calculator3.c · return values and scope
+> [calculator1.c](/c/week-03/calculator1.c) tries to move the addition into a function `add` and does not even compile: `x` and `y` are declared inside `main`, and `add` cannot see them. A variable lives only inside the braces where it was declared; that is **scope**. [calculator2.c](/c/week-03/calculator2.c) fixes it the right way: `add` takes two **parameters**, `int a, int b`, and **returns** their sum, so the data flows in through the arguments and back out through `return`. [calculator3.c](/c/week-03/calculator3.c) then removes the variables that were only used once.
+
+```c
+#include <cs50.h>
+#include <stdio.h>
+
+int add(int a, int b);
+
+int main(void)
+{
+    int x = get_int("x: ");
+    int y = get_int("y: ");
+    printf("%i\n", add(x, y));
+}
+
+int add(int a, int b)
+{
+    return a + b;
+}
+```
+
+Read `int add(int a, int b)` as a contract: give me two ints, I give you back one int. Every function in every library you will ever use, from `printf` to the ones that render your phone's screen, is a contract like this.
 
 ## Where numbers break
 
+### Integer division and truncation
+
+> [!code] calculator5.c → calculator8.c · 1 / 3 is 0
+> [calculator5.c](/c/week-03/calculator5.c) divides two ints. 1 divided by 3 prints `0`: when both sides are integers, C throws away the fraction, which is called **truncation**. [calculator6.c](/c/week-03/calculator6.c) changes the placeholder to `%f` and gets garbage, because the value is still an int. [calculator7.c](/c/week-03/calculator7.c) stores the result in a `float` and still prints `0.000000`, because the division happened *before* the storing. [calculator8.c](/c/week-03/calculator8.c) finally **casts** the operands, `(float) x / (float) y`, so the division itself is done with real numbers. The order of operations is the lesson: convert first, then divide.
+
+### Floating-point imprecision
+
+> [!code] calculator9.c and calculator10.c · 0.1 does not exist
+> [calculator9.c](/c/week-03/calculator9.c) prints the result with twenty decimals, `%.20f`, and 1 / 10 comes out as `0.10000000149011611938`. A `float` has 32 bits, and 0.1 has no exact binary representation, just as 1/3 has no exact decimal one. [calculator10.c](/c/week-03/calculator10.c) switches to `double` and `long`: 64 bits each, far more digits, still not exact.
+
+```c
+    double z = (double) x / (double) y;
+    printf("%.20f\n", z);
+```
+
+Never compare floats with `==`, and never store money in a float. Banks count in integer cents. In 1991 a Patriot missile battery missed a Scud because a clock that counted in tenths of a second accumulated this exact rounding error for 100 hours.
+
 ### Integer overflow
 
-An `int` is 32 bits: 4 294 967 296 values, split into −2 147 483 648 … 2 147 483 647. Add one to the maximum and the bits wrap around to the minimum, like a car odometer. That is the 787 bug in the wow moment, and the reason YouTube once had to change its view counter to a `long` when *Gangnam Style* passed 2³¹ views.
+An `int` is 32 bits: 4 294 967 296 values, split into −2 147 483 648 to 2 147 483 647. Add one to the maximum and the bits wrap around to the minimum, like a car's odometer rolling from 999999 to 000000. That is why `calculator0.c` gave a negative answer for two billion plus two billion.
 
 ```c
 int big = 2147483647;
@@ -220,23 +348,15 @@ big = big + 1;
 printf("%i\n", big);      // -2147483648
 ```
 
-Use `long` when values can be large, and think about the maximum whenever you count anything.
-
-### Floating-point imprecision
-
-```c
-float x = 1.0;
-float y = 10.0;
-printf("%.20f\n", x / y);  // 0.10000000149011611938
-```
-
-0.1 has no exact binary representation, just as ⅓ has no exact decimal one. A `float` keeps about 7 significant digits, a `double` about 15. Never compare floats with `==`; never store money in a float (banks use integers of cents).
+It is also the wow moment of the week: the Boeing 787's generator controllers counted hundredths of a second in a 32-bit integer, and 2³¹ hundredths of a second is 248.55 days, after which they switched off. The same bug took Pac-Man's original arcade machine to a broken level 256, and the fear of two-digit years was the whole of Y2K. Use `long` when values can be large, and think about the maximum whenever you count anything.
 
 ## Summary
 
 - Edit, compile (`make`), run (`./program`). Read the first compiler error.
-- Types: `int`, `long`, `float`, `double`, `char`, `bool`, `string`. `printf` with `%i %f %c %s`.
-- `get_int` and friends for input; `do … while` to validate it.
-- `if / else if / else`, `while`, `for`, `do … while`, and your own functions with prototypes.
-- Integers overflow, floats are approximate, and both have crashed real systems.
-- Next: arrays and strings (week 4), where you learn that a `string` is really a row of `char`s ending in a zero byte.
+- Types: `int`, `long`, `float`, `double`, `char`, `bool`, `string`, with `printf` placeholders `%i %li %f %c %s`.
+- `get_int` and friends ask for input; `do … while` validates it.
+- Conditions with `if / else if / else` on boolean expressions, joined by `||`, `&&`, `!`.
+- Loops with `while` and `for`, counting from 0; nested loops for grids.
+- Functions with prototypes, parameters and return values; a variable lives only in its own braces.
+- Integer division truncates, floats are approximate, ints overflow, and all three have broken real systems.
+- Lab 2 starts at 15:00: [C Kickstart](/labs/lab-02). You write your own hello, mario, calculator and cash from this page's building blocks.
