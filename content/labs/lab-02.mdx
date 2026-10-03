@@ -183,6 +183,45 @@ Push as often as you like before **Friday, October 9, 23:59**; the last push bef
 
 Points: hello 1, greet 1, bits 1, mario 3, calculator 2, cash 2. Each part is graded by its own test file, so a part you did not finish costs only its own points.
 
+## Other ways to work and submit
+
+Codespaces is the easiest route, but it is not the only one. You can write your C **anywhere** and hand it in **from the browser**. Grading is exactly the same: every change that lands in your repository is graded automatically.
+
+> [!warning] The CS50 library is not part of C
+> `get_int`, `get_string` and the `string` type come from `cs50.h` and `cs50.c`, two files that are **in your repository**. Wherever you compile, those two files must sit next to your `.c` file, and `cs50.c` must be compiled together with it. Without them you get `cs50.h: No such file or directory` or `undefined reference to get_int`. The lab PCs and your own laptop do not have the library installed; cs50.dev does.
+
+### Where you can work
+
+| Option | What to do |
+|---|---|
+| **Your own computer** | Install a C compiler: macOS `xcode-select --install` in Terminal; Windows: [WSL](https://learn.microsoft.com/windows/wsl/install) then `sudo apt install gcc make`; Linux: `sudo apt install gcc make`. Download your repository (green **Code** button → **Download ZIP**), unzip, and in that folder compile each program **with the library**: `gcc -o mario mario.c cs50.c` then `./mario`. If `make` is installed, `make mario` does the same. For the checks, install Python 3 and `pip install pytest`, then `python3 check.py`. |
+| **cs50.dev** | Open [cs50.dev](https://cs50.dev). The CS50 library is preinstalled there, so you can create `mario.c`, paste your code, and run `make mario` and `./mario` exactly as in the lecture. Copy your finished file back into your repository (below). |
+| **Google Colab** | Open the lab notebook with the **Open in Colab** button below; a cell that starts with `%%writefile mario.c` saves your code, and `!gcc -o mario mario.c cs50.c && ./mario` compiles and runs it. Upload `cs50.h` and `cs50.c` from your repository into the Colab session first (folder icon on the left → upload). Programs that ask for input need `echo 4 \| ./mario` instead of typing. |
+| **github.dev** | On your repository page press the <span class="kbd">.</span> key. A light VS Code opens in the browser for editing and committing (it cannot compile C). |
+
+### Submit from the browser (no terminal, no git)
+
+When a program is ready in a file on your computer or in another editor, put it into your repository on github.com in one of two ways.
+
+**A. Paste into the file**
+
+1. Open your repository `introduction-to-computer-science-lab02-yourusername` on github.com.
+2. Click `mario.c`, then the **pencil icon ✎** (Edit this file) at the top right of the file.
+3. Select everything (<span class="kbd">Ctrl</span> + <span class="kbd">A</span>, or <span class="kbd">⌘</span> + <span class="kbd">A</span> on a Mac) and paste your complete file.
+4. Click **Commit changes…**, write a short message such as `Lab 2 mario`, keep **Commit directly to the main branch** selected, and click **Commit changes**.
+5. Do the same for each file you changed.
+
+**B. Upload the files**
+
+1. On your repository page click **Add file → Upload files**.
+2. Drag your `.c` files from your computer into the box. Files with the same name **replace** the starter files; that is what you want.
+3. Click **Commit changes**.
+
+> [!warning] Keep the names and the structure
+> Paste or upload the **whole file**, keep the file names exactly `hello.c`, `greet.c`, `bits.c`, `mario.c`, `calculator.c`, `cash.c`, and keep `#include <cs50.h>` as it is: the autograder compiles with the library from the repository. Do not upload into a new folder; the files must stay at the top level. Do not upload compiled programs (`mario`, `a.out`), only source.
+
+**Check your grade the same way.** About two minutes after each commit, a new **Release** with your score appears on the right of your repository page. Every commit counts as a submission, the last one before Friday 23:59 is the one that matters, and you may mix methods (for example, push from Codespaces on Monday and paste a fix from home on Wednesday).
+
 ## Explore: C in a notebook
 
 `lab02.ipynb` is not graded. It writes C files, compiles them and runs them cell by cell: types, `printf` placeholders, the bit loop explained, and integer overflow on purpose. Open it in your codespace (choose the Python kernel) or in Colab with the button below; nothing to install.
