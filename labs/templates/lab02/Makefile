@@ -2,7 +2,7 @@
 CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -Wno-unused-parameter -g -I.
 
-PROGRAMS = hello greet bits
+PROGRAMS = hello greet bits mario calculator cash
 
 all: $(PROGRAMS)
 

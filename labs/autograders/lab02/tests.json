@@ -1,3 +1,8 @@
 [
-  { "name": "Lab 2 tests (hello.c, greet.c, bits.c)", "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests", "timeout": 180, "points": 10 }
+  { "name": "Part A · hello.c",       "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_a_hello.py",      "timeout": 120, "points": 1 },
+  { "name": "Part B · greet.c",       "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_b_greet.py",      "timeout": 120, "points": 1 },
+  { "name": "Part C · bits.c",        "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_c_bits.py",       "timeout": 120, "points": 1 },
+  { "name": "Part D · mario.c",       "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_d_mario.py",      "timeout": 120, "points": 3 },
+  { "name": "Part E · calculator.c",  "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_e_calculator.py", "timeout": 120, "points": 2 },
+  { "name": "Part F · cash.c",        "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_f_cash.py",       "timeout": 120, "points": 2 }
 ]

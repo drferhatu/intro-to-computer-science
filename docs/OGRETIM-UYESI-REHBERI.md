@@ -40,11 +40,11 @@ Org `FiratUniversity-IJDP-SoftEng` zaten Discrete Math için hazırlanıyor; ayn
 
 1. Education benefits → org'u **GitHub Team**'e ücretsiz yükseltin (bir kez, iki ders için ortak).
 2. https://classroom50.org → org → **Set up organization** (DM için yaptıysanız atlayın).
-3. **Create classroom** → kısa ad: **`ics-2026`** (sitedeki tüm komutlar bu adı kullanır; değiştirirseniz `content/data/course.json → classroom.slug`).
+3. **Create classroom** → kısa ad: **`introduction-to-computer-science`** (açıldı; `content/data/course.json → classroom.slug` ile aynı olmalı).
 4. **Roster → Invite**: öğrenci e-postaları. DM ile ortak öğrenciler zaten org üyesi olacaktır.
 5. Codespaces: org **Settings → Codespaces** → "Enable for all members", **ownership: user**.
 
-### 2.3 Lab 1'i açmak
+### 2.3 Bir labı açmak (Lab 2 için yapıldı: `publish_lab_template.sh lab02` + `gh teacher assignment add … --tests labs/autograders/lab02/tests.json`; roster `gh teacher roster import … private/roster/ymt113-roster.csv`)
 
 ```bash
 cd ".../Courses/ICS/site"
@@ -52,7 +52,7 @@ cd ".../Courses/ICS/site"
 scripts/publish_lab_template.sh lab01                                        # org'da özel template repo: ics-2026-lab01-template
 ```
 
-classroom50.org → `ics-2026` → **New assignment**:
+classroom50.org → `introduction-to-computer-science` → **New assignment** (ya da `gh teacher assignment add`):
 
 - Slug: `lab01` · Name: `Lab 1 · Hello, Scratch` · Type: Individual
 - Template: `FiratUniversity-IJDP-SoftEng/ics-2026-lab01-template`

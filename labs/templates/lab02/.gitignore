@@ -2,6 +2,9 @@
 hello
 greet
 bits
+mario
+calculator
+cash
 *.o
 *.dSYM/
 __pycache__/

@@ -1,0 +1,213 @@
+---
+lab: 2
+week: 3
+title: "C Kickstart"
+description: "Your first real C programs: three one-line warm-ups (hello, greet, bits), then mario pyramids, a calculator with validated input and cash change-making with a greedy loop. Accepted and autograded on Classroom 50."
+assignment: lab02
+status: open
+acceptUrl: "https://classroom50.org/FiratUniversity-IJDP-SoftEng/introduction-to-computer-science/assignments/lab02/accept"
+due: "2026-10-09 23:59"
+duration: "90 min + finish at home"
+points: 10
+language: "C"
+files: ["hello.c", "greet.c", "bits.c", "mario.c", "calculator.c", "cash.c"]
+topics: ["Classroom 50", "make", "printf", "get_int", "do-while", "nested loops", "casting", "greedy"]
+notebook: { file: "labs/templates/lab02/lab02.ipynb", title: "Lab 2 · Explore: C in a notebook" }
+---
+
+## Goal
+
+By the end of this lab you have written six small C programs and watched them pass real tests. The first three are warm-ups with one line to change each; the last three you write yourself from the building blocks of the [week 3 page](/weeks/week-03): `do … while` for input, nested `for` loops, `if`, casting, and the `/` and `%` operators. From this lab on we use **Classroom 50**: one click gives you a private repository, every push is graded within a minute or two, and your score appears on GitHub.
+
+> [!note] You can start without the instructor
+> Everything you need is on this page. Work top to bottom. Ask your neighbor first, then the instructor. If one step blocks you for more than 10 minutes, write down the exact error message and go on to the next part.
+
+> [!warning] New this week: Classroom 50
+> Lab 1 used your own copy of a template. From now on you **accept** each lab on classroom50.org, which creates the repository for you with the right name, and grades every push automatically. You need to be a member of the course organization: check your email for the invitation from **FiratUniversity-IJDP-SoftEng** and accept it before step 1.
+
+## Steps
+
+<Step n={1} title="Join the course organization (once)" time="1 min" id="join">
+
+You received an email from GitHub: *“FiratUniversity-IJDP-SoftEng has invited you to join”*. Open it and click **Join**, or go to [github.com/FiratUniversity-IJDP-SoftEng](https://github.com/FiratUniversity-IJDP-SoftEng) and accept the banner at the top. Make sure you are signed in with the **same GitHub account** you used for Lab 1.
+
+No email? Check spam, then tell the instructor your GitHub username.
+
+</Step>
+
+<Step n={2} title="Accept Lab 2 on Classroom 50" time="2 min" id="accept">
+
+1. Click the orange **Accept lab lab02** button at the top of this page. Sign in with GitHub if asked and authorize Classroom 50.
+2. Click **Accept assignment**. A checklist runs for about 20 seconds while your repository is created.
+3. Click **Open repository**.
+
+You now own a private repository called `introduction-to-computer-science-lab02-yourusername`. Only you and the instructor can see it.
+
+</Step>
+
+<Step n={3} title="Open it in Codespaces" time="2–3 min the first time" id="codespace">
+
+On your repository page: green **Code** button → **Codespaces** tab → **Create codespace on main**.
+
+VS Code opens in your browser. The first start takes a couple of minutes while `gcc`, `make`, `valgrind` and the tests are installed; watch the terminal at the bottom until it shows a prompt ending in `$`.
+
+> [!tip] Next time
+> Your codespace is saved. Go to [github.com/codespaces](https://github.com/codespaces) and click it to continue where you left off.
+
+</Step>
+
+<Step n={4} title="Look around and run the checks once" time="3 min" id="look">
+
+| File | What it is |
+|---|---|
+| `hello.c`, `greet.c`, `bits.c` | Parts A–C, warm-ups: each has a one-line `TODO` |
+| `mario.c`, `calculator.c`, `cash.c` | Parts D–F: you write them; the comment at the top of each file is the specification |
+| `cs50.h`, `cs50.c` | the CS50 library (`get_int`, `get_string`); do not edit |
+| `Makefile` | lets you type `make mario` instead of the long compiler command |
+| `lab02.ipynb` | playground notebook, not graded |
+| `check.py` | the friendly test runner |
+| `tests/` | the tests, one file per part; the autograder runs exactly these |
+
+In the terminal:
+
+<Terminal cmd="python3 check.py" out={`:| hello.c prints "hello, world"
+    expected 'hello, world\\n', got 'hello, TODO\\n'
+...
+0/14 checks passed`} />
+
+Everything fails because nothing is done yet. Your job is to turn the list green, part by part.
+
+</Step>
+
+<Step n={5} title="Part A · hello.c" time="3 min" id="part-a">
+
+Open `hello.c`. One word is wrong. Make it print exactly `hello, world` with a newline, then compile and run:
+
+<Terminal lines={['make hello', './hello']} out="hello, world" />
+
+If the compiler complains, read the **first** error; it names the line.
+
+</Step>
+
+<Step n={6} title="Part B · greet.c" time="5 min" id="part-b">
+
+`greet.c` asks for a name with `get_string` and stores it in `name`. Complete the `printf` so that it prints `hello, ` followed by the name and a newline. `%s` is the placeholder, and the value goes after the format string, separated by a comma, exactly like `hello2.c` in the lecture.
+
+<Terminal lines={['make greet', './greet']} out={`What's your name? Firat
+hello, Firat`} />
+
+</Step>
+
+<Step n={7} title="Part C · bits.c" time="5 min" id="part-c">
+
+`bits.c` asks for a number from 0 to 255 and loops over its 8 bits; `bit` is already 1 or 0. Replace the two `?` so that it prints `'1'` when `bit` is 1 and `'0'` otherwise.
+
+<Terminal lines={['make bits', './bits']} out={`Number (0–255): 73
+01001001`} />
+
+That is last week's bit widget, now in C.
+
+</Step>
+
+<Step n={8} title="Part D · mario.c" time="20 min" id="part-d">
+
+Write a program that asks for a height from 1 to 8, re-prompting until it gets one, and prints a right-aligned pyramid:
+
+<Terminal lines={['make mario', './mario']} out={`Height: 4
+   #
+  ##
+ ###
+####`} />
+
+Plan it before you type. Row 1 has three spaces and one `#`; row 2 has two spaces and two `#`; in general row `i` has `height - i` spaces and `i` hashes. So:
+
+1. A `do … while` that asks for `height` until it is between 1 and 8 (lecture: `mario7.c`).
+2. An outer `for` over the rows, `i` from 1 to `height`.
+3. Inside it, one `for` that prints `height - i` spaces, then one `for` that prints `i` hashes, then `printf("\n")`.
+
+> [!tip] Print a column first
+> If the shape is wrong, simplify: print only the hashes (a left-aligned triangle), get that right, then add the spaces.
+
+</Step>
+
+<Step n={9} title="Part E · calculator.c" time="15 min" id="part-e">
+
+Read two integers `x` and `y` and print five lines: the sum, the difference, the product, the quotient as a real number with two decimals, and the remainder. If `y` is 0, print the word `undefined` for the last two lines instead of dividing.
+
+<Terminal lines={['make calculator', './calculator']} out={`x: 7
+y: 2
+9
+5
+14
+3.50
+1`} />
+
+Two traps from the lecture: `x / y` with ints **truncates**, so cast first, `(float) x / (float) y`; and `printf("%.2f\n", z)` prints two decimals. Dividing by zero crashes a C program, so the `if (y == 0)` must come before the division.
+
+</Step>
+
+<Step n={10} title="Part F · cash.c" time="15 min" id="part-f">
+
+Ask for an amount of change in cents (re-prompt while it is negative) and print the **minimum number of coins** using quarters (25), dimes (10), nickels (5) and pennies (1).
+
+<Terminal lines={['make cash', './cash']} out={`Change owed: 41
+4`} />
+
+41 = 25 + 10 + 5 + 1. The strategy is **greedy**: always take the largest coin that still fits. Two ways to write it: a `while (cents >= 25)` loop per coin, or arithmetic: `cents / 25` is how many quarters fit and `cents % 25` is what is left. Both are correct; the second is four lines shorter. Try 0, 1 and 99 by hand before you trust the tests.
+
+</Step>
+
+<Step n={11} title="Submit" time="2 min" id="submit">
+
+When `python3 check.py` shows `14/14 checks passed` (or when you have done what you can), push. **Every push is graded.**
+
+<Terminal lines={['git add -A', 'git commit -m "Lab 2"', 'git push']} />
+
+Prefer buttons? **Source Control** icon on the left of VS Code: type a message, click **Commit**, then **Sync Changes**.
+
+About two minutes after the push:
+
+1. On your repository page, look under **Releases** on the right. The newest release shows your score out of 10 and a table of the six parts.
+2. Or on [classroom50.org](https://classroom50.org), open the assignment and click **My submission**.
+
+Push as often as you like before **Friday, October 9, 23:59**; the last push before the deadline counts. Pushes up to five days late lose 10% per day.
+
+</Step>
+
+## How to submit
+
+> [!note] The short version
+> 1. Accept Lab 2 on Classroom 50 (orange button at the top), open the repository in Codespaces.
+> 2. Edit the six `.c` files; `make name && ./name` to try one, `python3 check.py` to check all.
+> 3. `git add -A && git commit -m "Lab 2" && git push`. Your last push before **Friday, October 9, 23:59** is graded; the score appears under **Releases**.
+
+Points: hello 1, greet 1, bits 1, mario 3, calculator 2, cash 2. Each part is graded by its own test file, so a part you did not finish costs only its own points.
+
+## Explore: C in a notebook
+
+`lab02.ipynb` is not graded. It writes C files, compiles them and runs them cell by cell: types, `printf` placeholders, the bit loop explained, and integer overflow on purpose. Open it in your codespace (choose the Python kernel) or in Colab with the button below; nothing to install.
+
+<NotebookEmbed file="labs/templates/lab02/lab02.ipynb" title="Lab 2 · Explore: C in a notebook" />
+
+## Challenges (optional, not graded)
+
+1. **Mario, two-sided.** Print the pyramid with a mirror image and a two-space gap, as in the real game.
+2. **Cash in Turkish lira.** Coins of 1, 0.50, 0.25, 0.10 and 0.05 lira: read kuruş as an integer and keep greedy working.
+3. **Calculator with a menu.** Ask which operation the user wants with `get_char` and `if … else if`, like `agree2.c`.
+
+## Troubleshooting
+
+> [!note] Classroom 50 says “Not a member yet” or “This assignment isn't available to you”
+> You have not accepted the organization invitation, or you are signed in with a different GitHub account than the one on the roster. Accept the invitation (step 1), then click **Check again**.
+
+> [!note] `make: gcc: command not found` or `cs50.h: No such file`
+> The codespace is still installing. Wait for the terminal, or run `bash .devcontainer/setup.sh` once. `cs50.h` is in your repository; `make` finds it with `-I.`.
+
+> [!note] My score is lower than `python3 check.py` shows
+> The autograder runs the official tests on the files you **pushed**. Save all files (File → Save All), check `git status` shows nothing left, then push again.
+
+> [!note] `git push` is rejected
+> Classroom 50 added a commit to your repository (the grading workflow). Run `git pull`, then `git push` again.
+
+> [!note] My program waits forever
+> It is waiting for input that never comes, or a loop never ends. Press Ctrl+C to stop it. Check the condition of your `do … while` and `for` loops.

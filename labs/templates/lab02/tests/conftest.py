@@ -1,6 +1,5 @@
 """Shared helpers for the lab tests: compile a C file once, run it with input."""
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -31,16 +30,15 @@ def run(exe: Path, stdin: str = "", timeout: float = 5) -> str:
     return r.stdout
 
 
-@pytest.fixture(scope="session")
-def hello():
-    return compile_c("hello")
+def after_prompts(out: str) -> str:
+    """Everything the program printed after the last prompt (prompts end with ': ' and no newline)."""
+    lines = out.split("\n")
+    # drop the prompt text that sits at the start of the first output line, e.g. "Height: " or "x: y: "
+    first = lines[0]
+    if ": " in first:
+        first = first.rsplit(": ", 1)[1]
+    return "\n".join([first] + lines[1:]).strip("\n")
 
 
-@pytest.fixture(scope="session")
-def greet():
-    return compile_c("greet")
-
-
-@pytest.fixture(scope="session")
-def bits():
-    return compile_c("bits")
+for _n in ["hello", "greet", "bits", "mario", "calculator", "cash"]:
+    globals()[_n] = pytest.fixture(scope="session", name=_n)(lambda _n=_n: compile_c(_n))
