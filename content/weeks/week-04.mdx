@@ -67,18 +67,17 @@ Every program you write from now on will have bugs. The question is not whether,
 > [!code] buggy0.c · a column that is one brick too tall
 > [buggy0.c](/c/week-04/buggy0.c) is meant to print three bricks and prints four. The loop runs `for (int i = 0; i <= 3; i++)`. Read the condition slowly: 0, 1, 2 and 3 are all less than or equal to 3, so the body runs four times. Off-by-one errors are the most common bug in programming, and `<=` where `<` was meant is the most common way to make one.
 
-```c
-for (int i = 0; i <= 3; i++)
-{
-    printf("#\n");
-}
-```
+<CodeFiles dir="week-04" files={["buggy0.c"]} />
 
 > [!code] buggy1.c · printf as a flashlight
 > [buggy1.c](/c/week-04/buggy1.c) is the same program with one extra line inside the loop: `printf("i is %i\n", i);`. Now the output says `i is 0, 1, 2, 3`, and the bug is visible. Printing a variable to see what it holds is the oldest debugging technique, it works in every language, and you will use it for the rest of your life. Remove the line when you are done.
 
+<CodeFiles dir="week-04" files={["buggy1.c"]} />
+
 > [!code] buggy2.c · the debugger
 > [buggy2.c](/c/week-04/buggy2.c) hides the same mistake inside a function, `print_column`. Instead of adding printfs, set a **breakpoint**: click to the left of a line number in VS Code so a red dot appears, then run `debug50 ./buggy2` on cs50.dev (or press F5 in a codespace). The program stops at your line; the panel on the left shows every variable; **Step over** runs one line at a time. Watching `i` climb to `height` and the loop still run once more is a lesson that sticks.
+
+<CodeFiles dir="week-04" files={["buggy2.c"]} />
 
 The third technique needs no software. Explain your code, line by line, out loud, to someone who does not understand it: a friend, the CS50 duck at [cs50.ai](https://cs50.ai), or an actual rubber duck on your desk. Halfway through the explanation you will usually hear the bug yourself. Programmers call this **rubber-duck debugging**, and it is not a joke.
 
@@ -89,41 +88,19 @@ Suppose you have three exam scores and want their average.
 > [!code] scores0.c → scores1.c · three variables, or one array
 > [scores0.c](/c/week-04/scores0.c) uses three variables, `score1`, `score2`, `score3`. It works, but imagine thirty scores, or three hundred. [scores1.c](/c/week-04/scores1.c) declares one **array**, `int scores[3];`, three ints stored back to back in memory under one name, and refers to them as `scores[0]`, `scores[1]`, `scores[2]`. Programmers count from zero, so the first box is number 0 and the last box of an array of three is number 2.
 
-```c
-int scores[3];
-scores[0] = 72;
-scores[1] = 73;
-scores[2] = 33;
-printf("Average: %f\n", (scores[0] + scores[1] + scores[2]) / 3.0);
-```
+<CodeFiles dir="week-04" files={["scores0.c", "scores1.c"]} />
 
 Notice the `3.0` rather than `3`: dividing by an `int` would truncate, as you saw last week.
 
 > [!code] scores2.c → scores3.c · the point of an index
 > [scores2.c](/c/week-04/scores2.c) reads the three scores from the user, still one line each. [scores3.c](/c/week-04/scores3.c) replaces the three lines with a loop, because an index can be a variable: `scores[i] = get_int("Score: ");`. This is the moment arrays and loops meet, and it is why they are taught in the same breath. Three scores or three thousand, the code is the same length.
 
-```c
-int scores[3];
-for (int i = 0; i < 3; i++)
-{
-    scores[i] = get_int("Score: ");
-}
-```
+<CodeFiles dir="week-04" files={["scores2.c", "scores3.c"]} />
 
 > [!code] scores4.c → scores5.c · constants and passing an array to a function
 > [scores4.c](/c/week-04/scores4.c) replaces the number 3, which appeared in three places, with `const int N = 3;`, so there is one place to change. [scores5.c](/c/week-04/scores5.c) moves the averaging into a function, `float average(int length, int array[])`. Look at the parameter list: the function receives the array **and** its length. An array in C does not know how long it is; if you do not pass the length, the function cannot know where to stop. That is the single most important fact about arrays this week, and it is why `strlen` has to exist.
 
-```c
-float average(int length, int array[])
-{
-    int sum = 0;
-    for (int i = 0; i < length; i++)
-    {
-        sum += array[i];
-    }
-    return sum / (float) length;
-}
-```
+<CodeFiles dir="week-04" files={["scores4.c", "scores5.c"]} />
 
 What if you read `scores[3]` in an array of three? C does not stop you. You get whatever bytes happen to sit after the array, or you crash, or you overwrite something that matters. This silence is what makes C fast and what makes it dangerous; a whole category of security bugs, buffer overflows, is nothing but writing past the end of an array.
 
@@ -132,44 +109,36 @@ What if you read `scores[3]` in an array of three? C does not stop you. You get 
 > [!code] hi0.c → hi1.c · characters are numbers
 > [hi0.c](/c/week-04/hi0.c) stores three `char`s, `'H'`, `'I'`, `'!'`, and prints them with `%c`. [hi1.c](/c/week-04/hi1.c) prints the same three variables with `%i` and gets `72 73 33`. Nothing changed in memory; only the way we asked `printf` to interpret it. A `char` *is* a small integer, and the mapping from numbers to characters is the ASCII table from week 2.
 
+<CodeFiles dir="week-04" files={["hi0.c", "hi1.c"]} />
+
 > [!code] hi2.c → hi4.c · the zero at the end
 > [hi2.c](/c/week-04/hi2.c) stores `"HI!"` as a `string` and prints it with `%s`. [hi3.c](/c/week-04/hi3.c) prints `s[0]`, `s[1]`, `s[2]` with `%c` and gets `HI!` again: a string can be indexed like an array, because it **is** an array of chars. [hi4.c](/c/week-04/hi4.c) prints `s[0]` to `s[3]` as integers and gets `72 73 33 0`. That fourth byte, the zero, is the **NUL terminator**, written `'\0'`, and it is how C knows where a string ends. `"HI!"` takes four bytes, not three.
 
-```c
-string s = "HI!";
-printf("%i %i %i %i\n", s[0], s[1], s[2], s[3]);   // 72 73 33 0
-```
+<CodeFiles dir="week-04" files={["hi2.c", "hi3.c", "hi4.c"]} />
 
 This is the wow moment of the week: there is no such thing as text in C. There are bytes, and an agreement that a zero means stop. `printf("%s")` prints byte after byte until it meets that zero. Erase the zero and it keeps going into whatever memory comes next, which is exactly how a famous bug in 2014, Heartbleed, leaked passwords from web servers. The notebook at the bottom of the page lets you break a string on purpose and watch what happens.
 
 > [!code] hi5.c → hi7.c · arrays of strings
 > [hi5.c](/c/week-04/hi5.c) has two strings. [hi6.c](/c/week-04/hi6.c) puts them in an array, `string words[2];`, and [hi7.c](/c/week-04/hi7.c) indexes twice: `words[0][1]` is the second character of the first word, `I`. An array of strings is an array of arrays, and two pairs of brackets are nothing more than two steps of the same idea.
 
+<CodeFiles dir="week-04" files={["hi5.c", "hi6.c", "hi7.c"]} />
+
 ### Walking a string
 
 > [!code] length0.c → length2.c · counting to the zero
 > If a string is an array that ends with a zero, you can find its length yourself: [length0.c](/c/week-04/length0.c) starts at 0 and counts up until `name[n]` is `'\0'`. [length1.c](/c/week-04/length1.c) puts that loop into a function, `string_length`. [length2.c](/c/week-04/length2.c) throws both away: the standard library already has this function, `strlen`, in `<string.h>`. Knowing how to write it is what lets you trust it.
 
-```c
-int n = 0;
-while (name[n] != '\0')
-{
-    n++;
-}
-```
+<CodeFiles dir="week-04" files={["length0.c", "length1.c", "length2.c"]} />
 
 > [!code] string0.c → string1.c · a loop over every character
 > [string0.c](/c/week-04/string0.c) prints a string character by character with `for (int i = 0; i < strlen(s); i++)`. It works, but `strlen` is itself a loop, so this calls it once per character: for a string of a thousand characters, a million steps. [string1.c](/c/week-04/string1.c) computes the length once, `for (int i = 0, n = strlen(s); i < n; i++)`, and is the pattern you should copy whenever you walk a string. The difference is invisible here and enormous in week 5.
 
+<CodeFiles dir="week-04" files={["string0.c", "string1.c"]} />
+
 > [!code] uppercase0.c → uppercase2.c · arithmetic on letters, then a library
 > [uppercase0.c](/c/week-04/uppercase0.c) uppercases a string by hand: if a character is between `'a'` and `'z'`, print `s[i] - 32`, because in ASCII the lowercase letters sit exactly 32 places after the uppercase ones. It works, and it is a little cryptic. [uppercase1.c](/c/week-04/uppercase1.c) uses `<ctype.h>`: `islower(c)` and `toupper(c)` say what they do. [uppercase2.c](/c/week-04/uppercase2.c) notices that `toupper` leaves everything that is not a lowercase letter alone, so the `if` is unnecessary. Three correct programs; the last is the one you would want to read six months from now.
 
-```c
-for (int i = 0, n = strlen(s); i < n; i++)
-{
-    printf("%c", toupper(s[i]));
-}
-```
+<CodeFiles dir="week-04" files={["uppercase0.c", "uppercase1.c", "uppercase2.c"]} />
 
 The `<ctype.h>` family is small and worth knowing: `isalpha`, `isdigit`, `isupper`, `islower`, `isspace`, `toupper`, `tolower`. The lab uses most of them.
 
@@ -180,32 +149,12 @@ So far every input came from `get_string` while the program was running. Program
 > [!code] greet0.c → greet3.c · argc and argv
 > [greet0.c](/c/week-04/greet0.c) greets with `get_string`. [greet1.c](/c/week-04/greet1.c) changes `main`'s signature to `int main(int argc, string argv[])` and prints `argv[1]`: run `./greet David` and it says hello to David without asking. `argv` is an array of strings, the words typed on the command line; `argc` is how many there are. `argv[0]` is the program's own name, so the first real argument is `argv[1]`. But run `./greet` alone and it prints garbage or crashes, because `argv[1]` does not exist. [greet2.c](/c/week-04/greet2.c) checks `if (argc == 2)` first. [greet3.c](/c/week-04/greet3.c) loops over all of `argv` and prints every word; try it with five arguments.
 
-```c
-int main(int argc, string argv[])
-{
-    if (argc == 2)
-    {
-        printf("hello, %s\n", argv[1]);
-    }
-    else
-    {
-        printf("hello, world\n");
-    }
-}
-```
+<CodeFiles dir="week-04" files={["greet0.c", "greet1.c", "greet2.c", "greet3.c"]} />
 
 > [!code] status.c · exit codes
 > [status.c](/c/week-04/status.c) does something you have been doing without noticing: `main` **returns an int**. By convention 0 means success and anything else means an error. The program returns 1 when the argument is missing, after printing a message that says how to use it. In the terminal, `echo $?` shows the last program's exit code. Nobody reads these numbers by eye; other programs do: `make`, scripts, and the autograder that grades your lab all decide what to do next from the exit code of the previous step.
 
-```c
-if (argc != 2)
-{
-    printf("Missing command-line argument\n");
-    return 1;
-}
-printf("hello, %s\n", argv[1]);
-return 0;
-```
+<CodeFiles dir="week-04" files={["status.c"]} />
 
 ## Cryptography, finally
 

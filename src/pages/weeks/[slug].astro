@@ -7,6 +7,7 @@ import BitPlayground from '@/components/BitPlayground.astro';
 import Terminal from '@/components/Terminal.astro';
 import Step from '@/components/Step.astro';
 import NotebookEmbed from '@/components/NotebookEmbed.astro';
+import CodeFiles from '@/components/CodeFiles.astro';
 import { render, getCollection } from 'astro:content';
 import { getWeeksSorted, moduleOf, moduleColorVar, scheduleOf, formatDate, STATUS_LABEL, href, weekSlug, labHref, pad, course, labDue, formatDue } from '@/lib/site';
 
@@ -125,7 +126,7 @@ const cs50Links = d.cs50 ? [
         </section>
       )}
 
-      <Content components={{ BitPlayground, Terminal, Step, NotebookEmbed }} />
+      <Content components={{ BitPlayground, Terminal, Step, NotebookEmbed, CodeFiles }} />
 
       {d.industry.length > 0 && (
         <section>

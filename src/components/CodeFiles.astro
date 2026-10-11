@@ -1,0 +1,61 @@
+---
+/**
+ * Full, copyable source of one or more lecture programs, read from public/c/<dir>/ at build time.
+ * Several files render as tabs (the first open). Usage in MDX:
+ *   <CodeFiles dir="week-04" files={["scores0.c", "scores1.c"]} />
+ */
+import { Code } from 'astro:components';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { href } from '@/lib/site';
+interface Props { dir: string; files: string[]; }
+const { dir, files } = Astro.props;
+const root = join(process.cwd(), 'public', 'c', dir);
+const sources = files.map((f) => ({ name: f, code: readFileSync(join(root, f), 'utf-8').replace(/\s+$/, '') }));
+const id = `cf-${dir}-${files[0].replace(/\W/g, '')}`;
+---
+<div class="codefiles not-prose my-5 overflow-hidden rounded-xl border border-line-2 bg-card shadow-soft" data-codefiles>
+  <div class="flex flex-wrap items-center gap-1 border-b border-line bg-paper-2 px-2 py-1.5">
+    {sources.map((s, i) => (
+      <button type="button" data-tab={`${id}-${i}`} aria-selected={i === 0 ? 'true' : 'false'}
+        class="cf-tab rounded-md px-2.5 py-1 font-mono text-[12px] text-ink-2 hover:text-ink aria-selected:bg-card aria-selected:text-ink aria-selected:shadow-soft">{s.name}</button>
+    ))}
+    <span class="ml-auto flex items-center gap-1">
+      {sources.map((s, i) => (
+        <a href={href(`/c/${dir}/${s.name}`)} download data-panel-link={`${id}-${i}`} class:list={['rounded-md border border-line-2 px-2 py-0.5 font-mono text-[11px] text-ink-2 hover:border-ink hover:text-ink', i !== 0 && 'hidden']}>download</a>
+      ))}
+      {sources.map((s, i) => (
+        <button type="button" data-copy={s.code} data-panel-link={`${id}-${i}`} class:list={['copy-btn rounded-md border border-line-2 bg-card px-2 py-0.5 font-mono text-[11px] text-ink-2 hover:border-ink hover:text-ink', i !== 0 && 'hidden']}>copy</button>
+      ))}
+    </span>
+  </div>
+  {sources.map((s, i) => (
+    <div data-panel={`${id}-${i}`} class:list={['cf-panel text-[13.5px]', i !== 0 && 'hidden']}>
+      <Code code={s.code} lang="c" themes={{ light: 'github-light', dark: 'github-dark' }} wrap />
+    </div>
+  ))}
+</div>
+<style>
+  .codefiles :global(pre.astro-code) { margin: 0; padding: 1rem; border: 0; border-radius: 0; overflow-x: auto; line-height: 1.6; background: var(--code-bg) !important; }
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-codefiles]').forEach((box) => {
+    if (box.dataset.bound) return;
+    box.dataset.bound = '1';
+    box.querySelectorAll<HTMLButtonElement>('.cf-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const key = tab.dataset.tab!;
+        box.querySelectorAll<HTMLButtonElement>('.cf-tab').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        box.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => p.classList.toggle('hidden', p.dataset.panel !== key));
+        box.querySelectorAll<HTMLElement>('[data-panel-link]').forEach((l) => l.classList.toggle('hidden', l.dataset.panelLink !== key));
+      });
+    });
+    box.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((b) => {
+      b.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(b.dataset.copy ?? ''); b.textContent = 'copied ✓'; }
+        catch { b.textContent = 'select & copy'; }
+        setTimeout(() => (b.textContent = 'copy'), 1600);
+      });
+    });
+  });
+</script>

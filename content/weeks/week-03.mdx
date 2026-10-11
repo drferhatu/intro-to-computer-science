@@ -57,14 +57,7 @@ All the programs on this page are the ones from CS50's Week 1 lecture. Each oran
 > [!code] hello0.c · the smallest program
 > [hello0.c](/c/week-03/hello0.c). Four lines, and every one of them is doing something. Compare it with last week's `when green flag clicked → say hello, world`: `main` is the green flag, `printf` is `say`, the text in quotes is the argument.
 
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    printf("hello, world\n");
-}
-```
+<CodeFiles dir="week-03" files={["hello0.c"]} />
 
 | Piece | Meaning |
 |---|---|
@@ -95,30 +88,12 @@ A program that only prints is a poster. Programs become useful when they take in
 > [!code] hello1.c · a bug worth making
 > [hello1.c](/c/week-03/hello1.c). We ask for the user's name, store it in a variable called `answer`, and print it. Run it and type your name. It prints `hello, answer`. Of course it does: inside the quotes, `answer` is just six letters. To put a *value* into the text we need a placeholder.
 
-```c
-#include <cs50.h>
-#include <stdio.h>
-
-int main(void)
-{
-    string answer = get_string("What's your name? ");
-    printf("hello, answer\n");
-}
-```
+<CodeFiles dir="week-03" files={["hello1.c"]} />
 
 > [!code] hello2.c · the fix: %s
 > [hello2.c](/c/week-03/hello2.c). `%s` is a placeholder for a string; the value to put there comes after the format string, separated by a comma. One placeholder, one value, in order.
 
-```c
-#include <cs50.h>
-#include <stdio.h>
-
-int main(void)
-{
-    string answer = get_string("What's your name? ");
-    printf("hello, %s\n", answer);
-}
-```
+<CodeFiles dir="week-03" files={["hello2.c"]} />
 
 The line `string answer = get_string(...)` does three things at once: it **declares** a variable called `answer`, it says its **type** is `string`, and it **assigns** the return value of `get_string` to it. The single `=` is assignment, not equality: "put this value in that box". Equality is `==`, and confusing the two is the most classic bug in C.
 
@@ -145,22 +120,14 @@ C has the operators you expect: `+`, `-`, `*`, `/`, and `%`, the **remainder** (
 > [!code] calculator0.c · addition
 > [calculator0.c](/c/week-03/calculator0.c). `get_int` asks for an integer and keeps asking until it gets one; try typing `cat` and see. Then `x + y` is computed *before* `printf` runs, and the result fills the `%i`.
 
-```c
-#include <cs50.h>
-#include <stdio.h>
-
-int main(void)
-{
-    int x = get_int("x: ");
-    int y = get_int("y: ");
-    printf("%i\n", x + y);
-}
-```
+<CodeFiles dir="week-03" files={["calculator0.c"]} />
 
 Try 2 000 000 000 plus 2 000 000 000. The answer is negative. We come back to that at the end of the page, because it has grounded airplanes.
 
 > [!code] calculator4.c · the same with long
 > [calculator4.c](/c/week-03/calculator4.c). Change `int` to `long`, `get_int` to `get_long`, `%i` to `%li`, and the same addition now has room for 9 quintillion. Types are a promise about how big a value can get; choose them knowingly.
+
+<CodeFiles dir="week-03" files={["calculator4.c"]} />
 
 ## Conditions
 
@@ -169,45 +136,14 @@ A condition in C looks like Scratch's `if … then … else`, with parentheses a
 > [!code] compare0.c → compare4.c · five ways to compare
 > [compare0.c](/c/week-03/compare0.c) says something only when `x < y`. [compare1.c](/c/week-03/compare1.c) adds an `else`, so there is always an answer. [compare2.c](/c/week-03/compare2.c) uses three separate `if`s; it works, but the program keeps asking questions even after it has found the answer. [compare3.c](/c/week-03/compare3.c) chains them with `else if`, which is better, but the last question `x == y` is unnecessary: if x is not less and not greater, what else could it be? [compare4.c](/c/week-03/compare4.c) is the clean version.
 
-```c
-#include <cs50.h>
-#include <stdio.h>
-
-int main(void)
-{
-    int x = get_int("What's x? ");
-    int y = get_int("What's y? ");
-
-    if (x < y)
-    {
-        printf("x is less than y\n");
-    }
-    else if (x > y)
-    {
-        printf("x is greater than y\n");
-    }
-    else
-    {
-        printf("x is equal to y\n");
-    }
-}
-```
+<CodeFiles dir="week-03" files={["compare0.c", "compare1.c", "compare2.c", "compare3.c", "compare4.c"]} />
 
 The question inside the parentheses is a **boolean expression**: something that is either true or false. The comparison operators are `<`, `<=`, `>`, `>=`, `==` and `!=`. The progression from compare2 to compare4 is what *design* means: all three are correct, one of them is clearly better.
 
 > [!code] agree0.c → agree2.c · characters and logical operators
 > [agree0.c](/c/week-03/agree0.c) asks "Do you agree?" and checks for `'y'` or `'n'`. Type a capital `Y` and nothing happens: `'y'` and `'Y'` are different characters (121 and 89 in ASCII, as you know from last week). [agree1.c](/c/week-03/agree1.c) fixes it with four branches and a lot of copy-paste. [agree2.c](/c/week-03/agree2.c) uses `||`, which means **or**, and the four branches become two.
 
-```c
-    if (c == 'Y' || c == 'y')
-    {
-        printf("Agreed.\n");
-    }
-    else if (c == 'N' || c == 'n')
-    {
-        printf("Not agreed.\n");
-    }
-```
+<CodeFiles dir="week-03" files={["agree0.c", "agree1.c", "agree2.c"]} />
 
 `||` is *or*, `&&` is *and*, `!` is *not*. The same three words Scratch had as green blocks.
 
@@ -219,52 +155,14 @@ The question inside the parentheses is a **boolean expression**: something that 
 > [!code] meow0.c → meow4.c · from copy-paste to for
 > [meow0.c](/c/week-03/meow0.c) prints `meow` three times with three `printf`s: it works, and it is exactly the copy-paste we criticized in Scratch. [meow1.c](/c/week-03/meow1.c) tries a `while` loop and prints **nothing**. Look closely at the condition: `i` starts at 3 and the loop runs *while* `i > 3`, which is false from the start. [meow2.c](/c/week-03/meow2.c) prints `i` instead of `meow` to see what is going on, which is the oldest debugging technique there is. [meow3.c](/c/week-03/meow3.c) counts up from 0 while `i < 3`, and now it works. [meow4.c](/c/week-03/meow4.c) says the same thing in one line with `for`.
 
-```c
-// meow3.c: while
-int i = 0;
-while (i < 3)
-{
-    printf("meow\n");
-    i++;
-}
-
-// meow4.c: for, the same three parts on one line: start; condition; update
-for (int i = 0; i < 3; i++)
-{
-    printf("meow\n");
-}
-```
+<CodeFiles dir="week-03" files={["meow0.c", "meow1.c", "meow2.c", "meow3.c", "meow4.c"]} />
 
 Programmers count from 0, so `i < 3` gives exactly three iterations: 0, 1, 2. `i++` is shorthand for `i = i + 1`. Use `for` when you know how many times; use `while` when you repeat until something happens; `while (true)` is Scratch's `forever`.
 
 > [!code] mario0.c → mario7.c · bricks, grids and validation
 > From a row of four question marks to a grid whose size the user chooses. [mario0.c](/c/week-03/mario0.c) prints the row by hand; [mario1.c](/c/week-03/mario1.c) with a loop. [mario2.c](/c/week-03/mario2.c) prints a column of bricks, one `#` per line. [mario3.c](/c/week-03/mario3.c) nests one loop inside another and prints a 3×3 grid: the outer loop is the rows, the inner loop is the columns, and the newline comes after each inner loop finishes. [mario4.c](/c/week-03/mario4.c) replaces the magic number with a `const int n = 3;`, so the size lives in one place. [mario5.c](/c/week-03/mario5.c) asks the user for `n`. Type `-1` and you get an empty grid; type `0` and the same. [mario6.c](/c/week-03/mario6.c) re-asks with a `while` loop until the number is at least 1, but asks the first time outside the loop and then again inside it, which repeats code. [mario7.c](/c/week-03/mario7.c) uses `do … while`, which asks first and checks after, exactly the shape of "ask until the answer is valid".
 
-```c
-#include <cs50.h>
-#include <stdio.h>
-
-int main(void)
-{
-    // Get size of grid
-    int n;
-    do
-    {
-        n = get_int("Size: ");
-    }
-    while (n < 1);
-
-    // Print grid of bricks
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            printf("#");
-        }
-        printf("\n");
-    }
-}
-```
+<CodeFiles dir="week-03" files={["mario0.c", "mario1.c", "mario2.c", "mario3.c", "mario4.c", "mario5.c", "mario6.c", "mario7.c"]} />
 
 This is the shape of nearly every input in this course: ask in a `do … while`, reject what is wrong, and only then do the work. Never trust input; in week 13 this sentence becomes the whole of security.
 
@@ -273,49 +171,17 @@ This is the shape of nearly every input in this course: ask in a `do … while`,
 > [!code] meow5.c · a function of our own
 > [meow5.c](/c/week-03/meow5.c). We write a function called `meow` that prints once, and `main` becomes `for … { meow(); }`, which reads like English. This is last week's *make a block*. There is a new line at the top, `void meow(void);`, the **prototype**: C reads top to bottom, and `main` uses `meow` before `meow` is defined, so we promise the compiler that the definition is coming.
 
-```c
-#include <stdio.h>
-
-void meow(void);
-
-int main(void)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        meow();
-    }
-}
-
-void meow(void)
-{
-    printf("meow\n");
-}
-```
+<CodeFiles dir="week-03" files={["meow5.c"]} />
 
 > [!code] meow6.c · a function with a parameter
 > [meow6.c](/c/week-03/meow6.c). Now `meow` takes a number, `void meow(int n)`, and loops inside. `main` is one line: `meow(3);`. This is Scratch's `meow n times` block, spelled out. The first `void` says the function returns nothing; `int n` says it takes one integer and calls it `n` inside.
 
+<CodeFiles dir="week-03" files={["meow6.c"]} />
+
 > [!code] calculator1.c → calculator3.c · return values and scope
 > [calculator1.c](/c/week-03/calculator1.c) tries to move the addition into a function `add` and does not even compile: `x` and `y` are declared inside `main`, and `add` cannot see them. A variable lives only inside the braces where it was declared; that is **scope**. [calculator2.c](/c/week-03/calculator2.c) fixes it the right way: `add` takes two **parameters**, `int a, int b`, and **returns** their sum, so the data flows in through the arguments and back out through `return`. [calculator3.c](/c/week-03/calculator3.c) then removes the variables that were only used once.
 
-```c
-#include <cs50.h>
-#include <stdio.h>
-
-int add(int a, int b);
-
-int main(void)
-{
-    int x = get_int("x: ");
-    int y = get_int("y: ");
-    printf("%i\n", add(x, y));
-}
-
-int add(int a, int b)
-{
-    return a + b;
-}
-```
+<CodeFiles dir="week-03" files={["calculator1.c", "calculator2.c", "calculator3.c"]} />
 
 Read `int add(int a, int b)` as a contract: give me two ints, I give you back one int. Every function in every library you will ever use, from `printf` to the ones that render your phone's screen, is a contract like this.
 
@@ -326,15 +192,14 @@ Read `int add(int a, int b)` as a contract: give me two ints, I give you back on
 > [!code] calculator5.c → calculator8.c · 1 / 3 is 0
 > [calculator5.c](/c/week-03/calculator5.c) divides two ints. 1 divided by 3 prints `0`: when both sides are integers, C throws away the fraction, which is called **truncation**. [calculator6.c](/c/week-03/calculator6.c) changes the placeholder to `%f` and gets garbage, because the value is still an int. [calculator7.c](/c/week-03/calculator7.c) stores the result in a `float` and still prints `0.000000`, because the division happened *before* the storing. [calculator8.c](/c/week-03/calculator8.c) finally **casts** the operands, `(float) x / (float) y`, so the division itself is done with real numbers. The order of operations is the lesson: convert first, then divide.
 
+<CodeFiles dir="week-03" files={["calculator5.c", "calculator6.c", "calculator7.c", "calculator8.c"]} />
+
 ### Floating-point imprecision
 
 > [!code] calculator9.c and calculator10.c · 0.1 does not exist
 > [calculator9.c](/c/week-03/calculator9.c) prints the result with twenty decimals, `%.20f`, and 1 / 10 comes out as `0.10000000149011611938`. A `float` has 32 bits, and 0.1 has no exact binary representation, just as 1/3 has no exact decimal one. [calculator10.c](/c/week-03/calculator10.c) switches to `double` and `long`: 64 bits each, far more digits, still not exact.
 
-```c
-    double z = (double) x / (double) y;
-    printf("%.20f\n", z);
-```
+<CodeFiles dir="week-03" files={["calculator9.c", "calculator10.c"]} />
 
 Never compare floats with `==`, and never store money in a float. Banks count in integer cents. In 1991 a Patriot missile battery missed a Scud because a clock that counted in tenths of a second accumulated this exact rounding error for 100 hours.
 
