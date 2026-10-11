@@ -181,9 +181,84 @@ md("""The bits wrap around, like an odometer. This exact behavior grounded the B
 Copy any cell, change the program, run it. Ideas: print your name and age; print 5 / 2 and 5.0 / 2; count from 1 to 10 with a `for` loop."""),
 ]
 
+# ---------------------------------------------------------------------------
+# LAB 3 · strings, byte by byte
+# ---------------------------------------------------------------------------
+LAB03 = [
+md("""# Lab 3 · Explore: a string, byte by byte
+
+**Introduction to Computer Science (YMT113)** · Fall 2026
+
+Nothing here is graded. The cells write small C programs, compile them with `gcc` and run them, so you can poke at
+what a string really is. Runs in Google Colab (gcc is preinstalled) or in your codespace."""),
+md("""## 1 · `HI!` is four bytes
+
+A string ends with a zero byte, `\\0` (NUL). `printf("%s")` prints until it meets it. Let's print the bytes, including the one you never typed."""),
+code("""%%writefile hi.c
+#include <stdio.h>
+
+int main(void)
+{
+    char s[] = "HI!";
+    for (int i = 0; i < 4; i++)
+    {
+        printf("s[%i] = %3i  '%c'\\n", i, s[i], s[i] == 0 ? '0' : s[i]);
+    }
+    printf("sizeof(s) = %zu bytes\\n", sizeof s);
+}"""),
+code("""!gcc -o hi hi.c && ./hi"""),
+md("""## 2 · Letters are numbers
+
+Because characters are numbers, you can do arithmetic on them. `'a' + 1` is `'b'`, and `c - 'a'` is a letter's position in the alphabet. That is all a Caesar cipher needs."""),
+code("""%%writefile rot.c
+#include <stdio.h>
+
+int main(void)
+{
+    char msg[] = "HELLO, world";
+    int key = 13;
+    for (int i = 0; msg[i] != '\\0'; i++)
+    {
+        char c = msg[i];
+        if (c >= 'A' && c <= 'Z')
+            c = 'A' + (c - 'A' + key) % 26;
+        else if (c >= 'a' && c <= 'z')
+            c = 'a' + (c - 'a' + key) % 26;
+        printf("%c", c);
+    }
+    printf("\\n");
+}"""),
+code("""!gcc -o rot rot.c && ./rot"""),
+md("""Run it twice: encrypting with 13 and then encrypting the result with 13 again gives the original. That is why ROT13 is its own inverse."""),
+md("""## 3 · What happens without the zero
+
+Overwrite the terminator and `printf` keeps reading memory until it happens to find a zero. The output differs from machine to machine, which is exactly the point: it is **undefined behavior**."""),
+code("""%%writefile nozero.c
+#include <stdio.h>
+
+int main(void)
+{
+    char a[] = "HI!";
+    char b[] = "bye";
+    a[3] = '!';          // the NUL is gone
+    printf("%s\\n", a);  // prints HI!! and then whatever follows in memory
+}"""),
+code("""!gcc -Wno-array-bounds -o nozero nozero.c && ./nozero"""),
+md("""## 4 · The same thing in Python, for comparison
+
+Python hides all of this: a string knows its own length and has no terminator. `ord` and `chr` are C's implicit conversions, made explicit."""),
+code("""msg = "HELLO, world"
+print([ord(c) for c in "HI!"])
+print("".join(chr((ord(c) - 65 + 13) % 26 + 65) if c.isupper() else chr((ord(c) - 97 + 13) % 26 + 97) if c.islower() else c for c in msg))"""),
+md("""## 5 · Your turn
+
+Change the key, the message, or print each character's number next to it. Try a key of 26, then 27."""),
+]
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
     "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
+    "lab03": (ROOT / "labs" / "templates" / "lab03" / "lab03.ipynb", LAB03),
 }
 
 

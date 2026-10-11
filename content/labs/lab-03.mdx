@@ -1,0 +1,161 @@
+---
+lab: 3
+week: 4
+title: "Strings and Ciphers"
+description: "Arrays and strings under the hood: min, max and average of an array through functions; a readability grade for any text; and a Caesar cipher driven from the command line with a proper usage message and exit code."
+assignment: lab03
+status: open
+acceptUrl: "https://classroom50.org/FiratUniversity-IJDP-SoftEng/introduction-to-computer-science/assignments/lab03/accept"
+due: "2026-10-16 23:59"
+duration: "90 min + finish at home"
+points: 10
+language: "C"
+files: ["scores.c", "readability.c", "caesar.c"]
+topics: ["arrays", "functions with arrays", "strings", "strlen", "ctype", "argc/argv", "exit codes", "Caesar"]
+notebook: { file: "labs/templates/lab03/lab03.ipynb", title: "Lab 3 · Explore: a string, byte by byte" }
+---
+
+## Goal
+
+Three programs, each one a step deeper into this week's lecture. In `scores.c` you put numbers into an array and hand the array to functions. In `readability.c` you walk a string character by character and turn what you count into a school grade. In `caesar.c` you take a key from the command line, check it the way a real tool would, and encrypt text. Every part is scaffolded: the prototypes are written, the specification sits in the comment at the top of each file, and the tests tell you exactly what is expected.
+
+> [!note] You can start without the instructor
+> Work top to bottom. Ask your neighbor first, then the instructor. If one part blocks you for more than 10 minutes, write down the exact error message and go on to the next; each part is graded on its own.
+
+## Steps
+
+<Step n={1} title="Accept Lab 3 on Classroom 50" time="2 min" id="accept">
+
+Click the orange **Accept lab lab03** button at the top of this page, then **Accept assignment**, wait for the checklist, and click **Open repository**. Your repository is `introduction-to-computer-science-lab03-yourusername`.
+
+Still not a member of the organization? Accept the invitation at [github.com/FiratUniversity-IJDP-SoftEng](https://github.com/FiratUniversity-IJDP-SoftEng) first; the [setup guide](/guides/lab-setup) has the details.
+
+</Step>
+
+<Step n={2} title="Open it in Codespaces and run the checks once" time="3 min" id="codespace">
+
+Green **Code** button → **Codespaces** → **Create codespace on main**. When the terminal shows a `$` prompt:
+
+<Terminal cmd="python3 check.py" out={`:| scores.c: 72, 73, 33 → Min 33, Max 73, Average 59.33
+    got 'How many scores? Score: Score: Score: '
+...
+0/17 checks passed`} />
+
+| File | What it is |
+|---|---|
+| `scores.c`, `readability.c`, `caesar.c` | Parts A–C; the comment at the top of each is the specification |
+| `cs50.h`, `cs50.c` | the CS50 library; do not edit |
+| `Makefile` | `make scores`, `make readability`, `make caesar` |
+| `lab03.ipynb` | playground notebook, not graded |
+| `check.py`, `tests/` | the checks, one test file per part |
+
+</Step>
+
+<Step n={3} title="Part A · scores.c (3 points)" time="20 min" id="part-a">
+
+Ask how many scores there are (1 to 10, re-prompt otherwise), read that many integers into an array, and print the minimum, the maximum and the average with two decimals:
+
+<Terminal lines={['make scores', './scores']} out={`How many scores? 3
+Score: 72
+Score: 73
+Score: 33
+Min: 33
+Max: 73
+Average: 59.33`} />
+
+The three functions are declared for you: `lowest`, `highest` and `average`, each taking the length and the array, exactly like `average(int length, int array[])` in the lecture's `scores5.c`. Fill them in, then complete `main`.
+
+Two things to notice. First, `int scores[n];` after reading `n` is allowed in C: the size does not have to be a constant. Second, the smallest value in an array is found by assuming the first element is the smallest and then letting every other element challenge it; the same with the largest.
+
+</Step>
+
+<Step n={4} title="Part B · readability.c (3 points)" time="25 min" id="part-b">
+
+Read a text and print the U.S. school grade needed to read it, with the **Coleman–Liau index**:
+
+```text
+index = 0.0588 × L − 0.296 × S − 15.8
+```
+
+where **L** is the average number of letters per 100 words and **S** the average number of sentences per 100 words. Round the index to the nearest whole number; print `Before Grade 1` if it is below 1, `Grade 16+` if it is 16 or more, otherwise `Grade N`.
+
+<Terminal lines={['make readability', './readability']} out={`Text: Congratulations! Today is your day. You're off to Great Places! You're off and away!
+Grade 3`} />
+
+Counting rules, the same as CS50's: a **letter** is anything for which `isalpha` is true; **words** are separated by single spaces, so the number of words is the number of spaces plus one; a **sentence** ends with `.`, `!` or `?`. Write the three counting functions first and test each with a `printf` before you compute the index. For the example above you should count 65 letters, 14 words and 4 sentences.
+
+> [!tip] Two traps
+> `letters / words` with two ints truncates to 0; cast first, `letters / (float) words * 100`. And `round` lives in `<math.h>`, which is already included and already linked for you.
+
+</Step>
+
+<Step n={5} title="Part C · caesar.c (4 points)" time="25 min" id="part-c">
+
+A Caesar cipher whose key comes from the command line:
+
+<Terminal lines={['make caesar', './caesar 13']} out={`plaintext:  HELLO, world
+ciphertext: URYYB, jbeyq`} />
+
+The rules, in the order you should implement them:
+
+1. **Validate.** Exactly one argument, made only of digits. Otherwise print `Usage: ./caesar key` and `return 1`. `only_digits` is declared for you; `isdigit` from `<ctype.h>` checks one character. Test it before anything else: `./caesar`, `./caesar 1 2`, `./caesar abc` must all print the usage line, and `echo $?` must show `1`.
+2. **Convert** the key with `atoi(argv[1])` from `<stdlib.h>`.
+3. **Read** the plaintext with `get_string("plaintext:  ")`, print `ciphertext: `, then every character passed through `rotate`.
+4. **Rotate.** An uppercase letter's position is `c - 'A'`; add the key, take `% 26`, add `'A'` back. The same with `'a'` for lowercase. Anything that is not a letter is returned unchanged. Keys larger than 26 must work; `% 26` takes care of that.
+
+<Terminal lines={['./caesar 3', './caesar 27']} out={`plaintext:  xyz XYZ
+ciphertext: abc ABC
+plaintext:  abc
+ciphertext: bcd`} />
+
+Encrypt something with 13, then encrypt the result with 13 again. You get the original back; ROT13 is its own inverse, and the notebook below shows why.
+
+</Step>
+
+<Step n={6} title="Submit" time="2 min" id="submit">
+
+When `python3 check.py` is green (or when you have done what you can):
+
+<Terminal lines={['git add -A', 'git commit -m "Lab 3"', 'git push']} />
+
+About two minutes later your score appears under **Releases** in your repository and on classroom50.org. Push as often as you like before **Friday, October 16, 23:59**; the last push before the deadline counts, and late pushes lose 10% per day for up to five days.
+
+</Step>
+
+## How to submit
+
+> [!note] The short version
+> 1. Accept Lab 3 on Classroom 50 (orange button), open the repository in Codespaces.
+> 2. Edit `scores.c`, `readability.c`, `caesar.c`; `make name && ./name` to try one, `python3 check.py` to check all.
+> 3. `git add -A && git commit -m "Lab 3" && git push` before **Friday, October 16, 23:59**.
+
+Points: scores 3, readability 3, caesar 4. Each part has its own test file, so an unfinished part costs only its own points. The other ways to work and to submit from the browser are the same as in [Lab 2](/labs/lab-02#other-ways-to-work-and-submit): remember that `cs50.h` and `cs50.c` must travel with your `.c` files, and that `readability.c` needs `-lm` (the math library) when you compile it by hand: `gcc -o readability readability.c cs50.c -lm`.
+
+## Explore: a string, byte by byte
+
+`lab03.ipynb` is not graded. It prints the four bytes of `"HI!"` including the zero you never typed, does Caesar arithmetic on characters, and then deletes a string's terminator to show what undefined behavior looks like. Open it in your codespace or in Colab.
+
+<NotebookEmbed file="labs/templates/lab03/lab03.ipynb" title="Lab 3 · Explore: a string, byte by byte" />
+
+## Challenges (optional, not graded)
+
+1. **Decrypt.** Add a second argument, `./caesar 13 -d`, that shifts backwards. Careful with negative remainders in C.
+2. **Vigenère.** Instead of one key, a keyword: `./vigenere lemon` shifts the first letter by `l`, the second by `e`, and so on, skipping non-letters.
+3. **Reading levels in Turkish.** Coleman–Liau was tuned for English. Run `readability` on a Turkish paragraph and think about why the grade is off: what counts as a sentence, and how long Turkish words are.
+
+## Troubleshooting
+
+> [!note] `undefined reference to round`
+> Compile with the math library: `gcc -o readability readability.c cs50.c -lm`. `make readability` and the tests already do this.
+
+> [!note] My Caesar output has strange characters
+> You added the key to the character without wrapping, or wrapped before subtracting `'A'`. The order is: subtract the base letter, add the key, `% 26`, add the base letter back.
+
+> [!note] `./caesar` with no argument crashes instead of printing the usage line
+> You read `argv[1]` before checking `argc`. The check must come first; `argv[1]` does not exist when `argc` is 1.
+
+> [!note] Readability is off by one grade
+> Check the word count on the example sentence (14) and the letter count (65); apostrophes are not letters and `isalpha` already knows that. Then check that you divide with a cast and `round` the final index, not L or S.
+
+> [!note] `git push` is rejected
+> Classroom 50 added a commit to your repository. Run `git pull`, then `git push` again.

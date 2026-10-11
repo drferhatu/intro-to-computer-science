@@ -1,0 +1,240 @@
+---
+week: 4
+title: "Arrays, Strings and the Command Line"
+description: "What the compiler really does in four steps, how to debug instead of guessing, and the first data structure: arrays, including strings, which are arrays of characters. Plus command-line arguments and a first taste of cryptography."
+module: m2
+status: ready
+lab: lab-03
+reading: "K&R 1.6–1.9 (arrays, characters); CS50 Week 2 notes"
+notebook:
+  file: "labs/templates/lab03/lab03.ipynb"
+  title: "Lab 3 · Explore: a string, byte by byte"
+cs50:
+  week: "2"
+  title: "Arrays"
+  video: "https://youtu.be/h5Gc1n8ZuU8"
+  notes: "https://cs50.harvard.edu/x/2026/notes/2/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/2/lecture2.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/2/src2.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/2/"
+prep:
+  - "Watch the lecture with cs50.dev open in another tab and type <code>scores.c</code> and <code>string.c</code> yourself as they appear."
+  - "Lab 2 closed on Friday; your score is under <em>Releases</em> in your repository. If anything is unclear about it, bring the question to the lab."
+  - "Read the <a href=\"/project\">semester project page</a>: how it works, milestones and how it is graded. Projects are assigned next week."
+objectives:
+  - "Name the four stages of compilation (preprocessing, compiling, assembling, linking) and what make hides."
+  - "Debug with printf, the VS Code debugger (debug50) and rubber-duck debugging."
+  - "Declare, fill and loop over arrays, and pass arrays to functions."
+  - "Explain that a string is a char array ending with '\\0', and use strlen, string indexing and ctype functions."
+  - "Read command-line arguments through argc and argv, and return exit codes from main."
+  - "Implement a Caesar cipher on strings."
+wow:
+  title: "A string is a lie: there is no such thing as text in C, only bytes and a zero at the end."
+  text: "\"HI!\" is four bytes in memory: 72, 73, 33 and a 0 that marks the end. printf keeps printing until it meets that zero. Forget the zero and it prints whatever garbage comes next in memory, which is exactly how many real programs leaked passwords. The CS50 library's string type is just a nickname for 'the address of the first char', and by week 6 you will not need the nickname."
+industry:
+  - { "t": "Buffer overflows", "d": "Writing past the end of an array is the single most exploited bug class in history (Morris worm 1988, Heartbleed 2014). C lets you do it silently; that is why memory-safe languages like Rust exist, and why C programmers test bounds religiously." }
+  - { "t": "argv is every CLI tool", "d": "git commit -m \"msg\", gcc -o hello hello.c, ls -l: every command-line program parses argv exactly as you do this week." }
+  - { "t": "Cryptography is arithmetic on characters", "d": "Caesar is a toy, but the pattern, shift each byte by a key, is the ancestor of the stream ciphers that encrypt your Wi-Fi." }
+  - { "t": "Exit codes drive automation", "d": "return 0 for success, non-zero for failure. Continuous-integration systems, including the autograder, read this number to decide whether your build is green." }
+resources:
+  - { "title": "CS50x 2026 · Week 2 notes", "url": "https://cs50.harvard.edu/x/2026/notes/2/" }
+  - { "title": "C strings explained (Beej ch. 5 and 12)", "url": "https://beej.us/guide/bgc/html/split/Strings.html", "note": "Second explanation of the null terminator." }
+  - { "title": "Compiler Explorer", "url": "https://godbolt.org/", "note": "See the assembling step for real." }
+tags: ["arrays", "strings", "null terminator", "strlen", "ctype", "argc", "argv", "exit status", "Caesar cipher", "compilation", "debugging"]
+---
+
+## Taking the hood off
+
+Last week you learned to write a program. This week you learn what you were actually doing when you typed `make`, how to find out why a program misbehaves, and how C stores more than one value under one name. Those three things, compilation, debugging and arrays, are the tools; the payoff at the end of the page is that you understand what a string really is, and you can encrypt one.
+
+All programs are from CS50's Week 2 lecture. Each orange box is a program we open and run in VS Code; the file name is a download link, and the full set is in [src2.zip](https://cdn.cs50.net/2025/fall/lectures/2/src2.zip).
+
+## What `make` really does
+
+Until now, `make hello` turned `hello.c` into a program as if by magic. It is not one step but four, and the names come back for the rest of your degree.
+
+1. **Preprocessing.** Every line that starts with `#` is handled first. `#include <stdio.h>` is replaced by the contents of that header file, which is where the compiler learns that a function called `printf` exists and what arguments it takes. The prototypes you wrote last week do for your own functions what header files do for the library's.
+2. **Compiling.** The C is translated into **assembly**, a human-readable form of the processor's instructions: `movl`, `call`, `ret`. If you are curious what your `hello.c` looks like at this level, paste it into [Compiler Explorer](https://godbolt.org/).
+3. **Assembling.** The assembly becomes **machine code**, the actual zeros and ones for your CPU.
+4. **Linking.** Your machine code is glued together with the machine code of the libraries you used, `stdio` and, in our labs, `cs50.c`. That is why the lab compiles with `gcc -o hello hello.c cs50.c`: two files in, one program out.
+
+The word *compiling* is used for the whole pipeline, and that is fine, as long as you know there is a pipeline.
+
+## Debugging
+
+Every program you write from now on will have bugs. The question is not whether, but how fast you find them. Three techniques, from the simplest to the most powerful.
+
+> [!code] buggy0.c · a column that is one brick too tall
+> [buggy0.c](/c/week-04/buggy0.c) is meant to print three bricks and prints four. The loop runs `for (int i = 0; i <= 3; i++)`. Read the condition slowly: 0, 1, 2 and 3 are all less than or equal to 3, so the body runs four times. Off-by-one errors are the most common bug in programming, and `<=` where `<` was meant is the most common way to make one.
+
+```c
+for (int i = 0; i <= 3; i++)
+{
+    printf("#\n");
+}
+```
+
+> [!code] buggy1.c · printf as a flashlight
+> [buggy1.c](/c/week-04/buggy1.c) is the same program with one extra line inside the loop: `printf("i is %i\n", i);`. Now the output says `i is 0, 1, 2, 3`, and the bug is visible. Printing a variable to see what it holds is the oldest debugging technique, it works in every language, and you will use it for the rest of your life. Remove the line when you are done.
+
+> [!code] buggy2.c · the debugger
+> [buggy2.c](/c/week-04/buggy2.c) hides the same mistake inside a function, `print_column`. Instead of adding printfs, set a **breakpoint**: click to the left of a line number in VS Code so a red dot appears, then run `debug50 ./buggy2` on cs50.dev (or press F5 in a codespace). The program stops at your line; the panel on the left shows every variable; **Step over** runs one line at a time. Watching `i` climb to `height` and the loop still run once more is a lesson that sticks.
+
+The third technique needs no software. Explain your code, line by line, out loud, to someone who does not understand it: a friend, the CS50 duck at [cs50.ai](https://cs50.ai), or an actual rubber duck on your desk. Halfway through the explanation you will usually hear the bug yourself. Programmers call this **rubber-duck debugging**, and it is not a joke.
+
+## Arrays
+
+Suppose you have three exam scores and want their average.
+
+> [!code] scores0.c → scores1.c · three variables, or one array
+> [scores0.c](/c/week-04/scores0.c) uses three variables, `score1`, `score2`, `score3`. It works, but imagine thirty scores, or three hundred. [scores1.c](/c/week-04/scores1.c) declares one **array**, `int scores[3];`, three ints stored back to back in memory under one name, and refers to them as `scores[0]`, `scores[1]`, `scores[2]`. Programmers count from zero, so the first box is number 0 and the last box of an array of three is number 2.
+
+```c
+int scores[3];
+scores[0] = 72;
+scores[1] = 73;
+scores[2] = 33;
+printf("Average: %f\n", (scores[0] + scores[1] + scores[2]) / 3.0);
+```
+
+Notice the `3.0` rather than `3`: dividing by an `int` would truncate, as you saw last week.
+
+> [!code] scores2.c → scores3.c · the point of an index
+> [scores2.c](/c/week-04/scores2.c) reads the three scores from the user, still one line each. [scores3.c](/c/week-04/scores3.c) replaces the three lines with a loop, because an index can be a variable: `scores[i] = get_int("Score: ");`. This is the moment arrays and loops meet, and it is why they are taught in the same breath. Three scores or three thousand, the code is the same length.
+
+```c
+int scores[3];
+for (int i = 0; i < 3; i++)
+{
+    scores[i] = get_int("Score: ");
+}
+```
+
+> [!code] scores4.c → scores5.c · constants and passing an array to a function
+> [scores4.c](/c/week-04/scores4.c) replaces the number 3, which appeared in three places, with `const int N = 3;`, so there is one place to change. [scores5.c](/c/week-04/scores5.c) moves the averaging into a function, `float average(int length, int array[])`. Look at the parameter list: the function receives the array **and** its length. An array in C does not know how long it is; if you do not pass the length, the function cannot know where to stop. That is the single most important fact about arrays this week, and it is why `strlen` has to exist.
+
+```c
+float average(int length, int array[])
+{
+    int sum = 0;
+    for (int i = 0; i < length; i++)
+    {
+        sum += array[i];
+    }
+    return sum / (float) length;
+}
+```
+
+What if you read `scores[3]` in an array of three? C does not stop you. You get whatever bytes happen to sit after the array, or you crash, or you overwrite something that matters. This silence is what makes C fast and what makes it dangerous; a whole category of security bugs, buffer overflows, is nothing but writing past the end of an array.
+
+## Strings are arrays
+
+> [!code] hi0.c → hi1.c · characters are numbers
+> [hi0.c](/c/week-04/hi0.c) stores three `char`s, `'H'`, `'I'`, `'!'`, and prints them with `%c`. [hi1.c](/c/week-04/hi1.c) prints the same three variables with `%i` and gets `72 73 33`. Nothing changed in memory; only the way we asked `printf` to interpret it. A `char` *is* a small integer, and the mapping from numbers to characters is the ASCII table from week 2.
+
+> [!code] hi2.c → hi4.c · the zero at the end
+> [hi2.c](/c/week-04/hi2.c) stores `"HI!"` as a `string` and prints it with `%s`. [hi3.c](/c/week-04/hi3.c) prints `s[0]`, `s[1]`, `s[2]` with `%c` and gets `HI!` again: a string can be indexed like an array, because it **is** an array of chars. [hi4.c](/c/week-04/hi4.c) prints `s[0]` to `s[3]` as integers and gets `72 73 33 0`. That fourth byte, the zero, is the **NUL terminator**, written `'\0'`, and it is how C knows where a string ends. `"HI!"` takes four bytes, not three.
+
+```c
+string s = "HI!";
+printf("%i %i %i %i\n", s[0], s[1], s[2], s[3]);   // 72 73 33 0
+```
+
+This is the wow moment of the week: there is no such thing as text in C. There are bytes, and an agreement that a zero means stop. `printf("%s")` prints byte after byte until it meets that zero. Erase the zero and it keeps going into whatever memory comes next, which is exactly how a famous bug in 2014, Heartbleed, leaked passwords from web servers. The notebook at the bottom of the page lets you break a string on purpose and watch what happens.
+
+> [!code] hi5.c → hi7.c · arrays of strings
+> [hi5.c](/c/week-04/hi5.c) has two strings. [hi6.c](/c/week-04/hi6.c) puts them in an array, `string words[2];`, and [hi7.c](/c/week-04/hi7.c) indexes twice: `words[0][1]` is the second character of the first word, `I`. An array of strings is an array of arrays, and two pairs of brackets are nothing more than two steps of the same idea.
+
+### Walking a string
+
+> [!code] length0.c → length2.c · counting to the zero
+> If a string is an array that ends with a zero, you can find its length yourself: [length0.c](/c/week-04/length0.c) starts at 0 and counts up until `name[n]` is `'\0'`. [length1.c](/c/week-04/length1.c) puts that loop into a function, `string_length`. [length2.c](/c/week-04/length2.c) throws both away: the standard library already has this function, `strlen`, in `<string.h>`. Knowing how to write it is what lets you trust it.
+
+```c
+int n = 0;
+while (name[n] != '\0')
+{
+    n++;
+}
+```
+
+> [!code] string0.c → string1.c · a loop over every character
+> [string0.c](/c/week-04/string0.c) prints a string character by character with `for (int i = 0; i < strlen(s); i++)`. It works, but `strlen` is itself a loop, so this calls it once per character: for a string of a thousand characters, a million steps. [string1.c](/c/week-04/string1.c) computes the length once, `for (int i = 0, n = strlen(s); i < n; i++)`, and is the pattern you should copy whenever you walk a string. The difference is invisible here and enormous in week 5.
+
+> [!code] uppercase0.c → uppercase2.c · arithmetic on letters, then a library
+> [uppercase0.c](/c/week-04/uppercase0.c) uppercases a string by hand: if a character is between `'a'` and `'z'`, print `s[i] - 32`, because in ASCII the lowercase letters sit exactly 32 places after the uppercase ones. It works, and it is a little cryptic. [uppercase1.c](/c/week-04/uppercase1.c) uses `<ctype.h>`: `islower(c)` and `toupper(c)` say what they do. [uppercase2.c](/c/week-04/uppercase2.c) notices that `toupper` leaves everything that is not a lowercase letter alone, so the `if` is unnecessary. Three correct programs; the last is the one you would want to read six months from now.
+
+```c
+for (int i = 0, n = strlen(s); i < n; i++)
+{
+    printf("%c", toupper(s[i]));
+}
+```
+
+The `<ctype.h>` family is small and worth knowing: `isalpha`, `isdigit`, `isupper`, `islower`, `isspace`, `toupper`, `tolower`. The lab uses most of them.
+
+## Command-line arguments
+
+So far every input came from `get_string` while the program was running. Programs can also take input **before** they run, on the command line: `make hello`, `gcc -o hello hello.c`, `./caesar 13`. Those words after the command are **arguments**, and C hands them to `main`.
+
+> [!code] greet0.c → greet3.c · argc and argv
+> [greet0.c](/c/week-04/greet0.c) greets with `get_string`. [greet1.c](/c/week-04/greet1.c) changes `main`'s signature to `int main(int argc, string argv[])` and prints `argv[1]`: run `./greet David` and it says hello to David without asking. `argv` is an array of strings, the words typed on the command line; `argc` is how many there are. `argv[0]` is the program's own name, so the first real argument is `argv[1]`. But run `./greet` alone and it prints garbage or crashes, because `argv[1]` does not exist. [greet2.c](/c/week-04/greet2.c) checks `if (argc == 2)` first. [greet3.c](/c/week-04/greet3.c) loops over all of `argv` and prints every word; try it with five arguments.
+
+```c
+int main(int argc, string argv[])
+{
+    if (argc == 2)
+    {
+        printf("hello, %s\n", argv[1]);
+    }
+    else
+    {
+        printf("hello, world\n");
+    }
+}
+```
+
+> [!code] status.c · exit codes
+> [status.c](/c/week-04/status.c) does something you have been doing without noticing: `main` **returns an int**. By convention 0 means success and anything else means an error. The program returns 1 when the argument is missing, after printing a message that says how to use it. In the terminal, `echo $?` shows the last program's exit code. Nobody reads these numbers by eye; other programs do: `make`, scripts, and the autograder that grades your lab all decide what to do next from the exit code of the previous step.
+
+```c
+if (argc != 2)
+{
+    printf("Missing command-line argument\n");
+    return 1;
+}
+printf("hello, %s\n", argv[1]);
+return 0;
+```
+
+## Cryptography, finally
+
+Everything above comes together in one classic program. **Cryptography** is the art of scrambling information so that only the intended reader can unscramble it. The text you start with is the **plaintext**, the scrambled result is the **ciphertext**, and the secret that controls the scrambling is the **key**.
+
+The oldest cipher we know is attributed to Julius Caesar: shift every letter by a fixed number of places. With a key of 1, `HI` becomes `IJ`; with 13, `HELLO` becomes `URYYB`. Once you know that a letter is a number, the whole algorithm is one line of arithmetic: a letter's position in the alphabet is `c - 'A'`; add the key; wrap around with `% 26` so that `Z` becomes `A` again; add `'A'` back to turn the position into a letter.
+
+```c
+char rotate(char c, int key)
+{
+    if (isupper(c))
+    {
+        return 'A' + (c - 'A' + key) % 26;
+    }
+    if (islower(c))
+    {
+        return 'a' + (c - 'a' + key) % 26;
+    }
+    return c;   // spaces, digits and punctuation pass through
+}
+```
+
+Caesar is a toy today; a computer tries all 25 keys in a microsecond. But the pattern, walk the text, transform each character with a key, is the ancestor of the ciphers protecting your Wi-Fi and your bank. In the lab you build it, with the key coming from the command line, and with the usage check and exit code that make it a proper tool.
+
+## Summary
+
+- `make` runs four steps: preprocessing, compiling, assembling, linking. Header files tell the compiler what the library offers.
+- Debug with a `printf` flashlight, with breakpoints in the debugger, and by explaining the code out loud. Off-by-one errors live in loop conditions.
+- An array stores many values of one type under one name, indexed from 0. It does not know its own length, so functions receive the length as a parameter. Reading past the end is silent and dangerous.
+- A string is an array of `char` ending in `'\0'`. `strlen` counts to that zero; `<ctype.h>` classifies and converts characters; letters are numbers, so arithmetic on them is allowed.
+- `int main(int argc, string argv[])` receives command-line arguments; check `argc` before using `argv[1]`; return 0 for success and non-zero for errors.
+- Caesar: `(c - 'A' + key) % 26 + 'A'`. The lab, [Lab 3: Strings and Ciphers](/labs/lab-03), is min/max/average of an array, a readability grade for any text, and the cipher.

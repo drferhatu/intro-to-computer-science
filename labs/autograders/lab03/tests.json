@@ -1,0 +1,5 @@
+[
+  { "name": "Part A · scores.c",      "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_a_scores.py",      "timeout": 120, "points": 3 },
+  { "name": "Part B · readability.c", "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_b_readability.py", "timeout": 120, "points": 3 },
+  { "name": "Part C · caesar.c",      "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_c_caesar.py",      "timeout": 120, "points": 4 }
+]
