@@ -1,0 +1,11 @@
+program
+*.o
+*.dSYM/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+*.bmp
+*.jpg
+*.png
+!docs/*.png
+.env

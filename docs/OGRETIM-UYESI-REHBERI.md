@@ -129,8 +129,8 @@ npm run build && /opt/miniconda3/envs/ferhat_ml/bin/python scripts/validate_cont
 ## 4. Proje (%15 final)
 
 - Fikir bankası **gizli**: `private/project-ideas.json` (20 proje, 6 tema, min/ileri kapsam). Sitede yalnızca çerçeve var (`/project`): tema adları, kilometre taşları, rubrik, commit takibi. Proje başlıkları ve kapsamlar yayımlanmaz.
-- Atama: 5. hafta (19 Ekim). Sınıf listesi gelince projeleri rastgele dağıtacağız (bir projeye en fazla 2 öğrenci, farklı ileri kapsam); her öğrenciye kişisel duyuru/e-posta ile başlığı + min/ileri kapsamı gider. Dağıtım için küçük bir script yazılacak (`scripts/assign_projects.py`, roster CSV → atama CSV, `private/` altında).
-- Depo: Classroom 50 açıksa şablonsuz bireysel `project` ödevi (Manual grading); değilse Lab 1'deki gibi öğrenci kendi hesabında özel `ics-2026-project` deposu açar, `drferhatu`'yu ekler.
+- Atama yapıldı (16 Ekim): `scripts/assign_projects.py` roster'dan 22 öğrenciye 20 projeyi rastgele (SEED sabit) dağıttı; P07 ve P14 iki öğrenciye farklı varyantla. Çıktılar: `content/data/project-cards.json` (öğrenci numarasından PBKDF2 türetilen anahtarla AES-GCM şifreli kartlar; sitede /project → "Find my project"), `private/project-assignments.json` (açık liste), `private/project-messages.md` (kişisel mesaj metinleri). Değişiklik için OVERRIDES sözlüğü, sonra scripti yeniden çalıştır ve push et.
+- Depo: Classroom 50'de `project` assignment'ı açıldı (şablon `introduction-to-computer-science-project-template`: README iskeleti + görev listesi, docs/REPORT.md, Makefile, devcontainer; test yok, due 28 Aralık 13:00). Kart üzerindeki buton accept linkine gider. Commit takibi: `gh api repos/ORG/introduction-to-computer-science-project-USER/commits`.
 - Kilometre taşları sitede: H2 çerçeve · H5 atama + ilk commit · H11 (30 Kasım) `m3-prototype` etiketi · H14 atölye · H15 (28 Aralık) demo + `v1.0`.
 - Commit takibi için hızlı komut (öğrenci reposunda): `gh api repos/ORG/REPO/commits --paginate --jq '.[].commit.author.date' | cut -c1-10 | sort | uniq -c`.
 - Süreç notu (%15): haftalık commit, etiketler, README görev listesi. Rubrik sitede.

@@ -32,6 +32,8 @@ def run(tmp: Path) -> tuple[int, int]:
 def main():
     lab = sys.argv[1] if len(sys.argv) > 1 else sys.exit(__doc__)
     tpl = ROOT / "labs" / "templates" / lab
+    if not (tpl / "tests").exists() or not any((tpl / "tests").glob("test_*.py")):
+        print(f"· {lab}: no tests, skipped (not an autograded lab)"); return
     sol = ROOT / "private" / "solutions" / lab
     ok = True
     with tempfile.TemporaryDirectory() as t:
