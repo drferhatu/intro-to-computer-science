@@ -1,0 +1,157 @@
+---
+lab: 4
+week: 5
+title: "Search and Sort"
+description: "Write linear and binary search with a comparison counter and watch the gap; implement selection sort and bubble sort chosen from the command line; and write two recursive functions, a pyramid and a factorial. Then measure the algorithms in a notebook."
+assignment: lab04
+status: open
+acceptUrl: "https://classroom50.org/FiratUniversity-IJDP-SoftEng/introduction-to-computer-science/assignments/lab04/accept"
+due: "2026-10-23 23:59"
+duration: "90 min + finish at home"
+points: 10
+language: "C"
+files: ["search.c", "sort.c", "recursion.c"]
+topics: ["linear search", "binary search", "selection sort", "bubble sort", "recursion", "Big O"]
+notebook: { file: "labs/templates/lab04/lab04.ipynb", title: "Lab 4 · Explore: measure the algorithms" }
+---
+
+## Goal
+
+This week's lecture was about algorithms; this lab is about making them real. You write the two searches and count how many comparisons each one needs, so the O(n) versus O(log n) gap becomes a number on your screen. You write the two quadratic sorts and pick one from the command line, as in Lab 3. And you write two functions that call themselves. The notebook at the end measures the same algorithms in Python and draws the curves.
+
+> [!note] You can start without the instructor
+> Work top to bottom. Ask your neighbor first, then the instructor. Each part is graded on its own, so a part that resists you is never a reason to stop.
+
+## Steps
+
+<Step n={1} title="Accept Lab 4 and open it in Codespaces" time="4 min" id="accept">
+
+Click **Accept lab lab04** at the top of this page → **Accept assignment** → **Open repository** → green **Code** → **Codespaces** → **Create codespace on main**. When the terminal shows `$`:
+
+<Terminal cmd="python3 check.py" out={`:| search.c finds 50 at index 4: linear in 5 comparisons, binary in 3
+...
+0/12 checks passed`} />
+
+| File | What it is |
+|---|---|
+| `search.c`, `sort.c`, `recursion.c` | Parts A–C; the comment at the top of each file is the specification |
+| `cs50.h`, `cs50.c`, `Makefile` | the CS50 library and `make search`, `make sort`, `make recursion` |
+| `lab04.ipynb` | the timing notebook, not graded |
+| `check.py`, `tests/` | the checks, one test file per part |
+
+</Step>
+
+<Step n={2} title="Part A · search.c (3 points)" time="25 min" id="part-a">
+
+Read a sorted list of numbers and a target, then search for the target with **both** algorithms and report the index and the number of comparisons:
+
+<Terminal lines={['make search', './search']} out={`How many numbers? 7
+Number: 1
+Number: 5
+Number: 10
+Number: 20
+Number: 50
+Number: 100
+Number: 500
+Target: 50
+Linear: found at index 4 after 5 comparisons
+Binary: found at index 4 after 3 comparisons`} />
+
+`main` is mostly written; you print the two result lines (or `Linear: not found after 7 comparisons` when the target is absent) and fill in the two functions. Both return the index or `-1`.
+
+The one new thing is the counter. Each function receives `int *comparisons`, a **pointer** to the caller's counter. You do not need to understand pointers yet (that is week 6); you need one idiom: `(*comparisons)++;` adds one to the counter the caller gave you. Put that line right before every `if (numbers[...] == target)` and the counts come out right.
+
+For binary search keep two indices, `low = 0` and `high = n - 1`, look at `middle = (low + high) / 2`, and move `low` or `high` past the middle depending on the comparison. The loop runs while `low <= high`. Trace the example by hand before you run it: 20, then 100, then 50; three comparisons.
+
+</Step>
+
+<Step n={3} title="Part B · sort.c (4 points)" time="30 min" id="part-b">
+
+Sort a list of numbers with the algorithm named on the command line and print the result on one line:
+
+<Terminal lines={['make sort', './sort bubble']} out={`How many numbers? 5
+Number: 6
+Number: 3
+Number: 8
+Number: 1
+Number: 2
+1 2 3 6 8`} />
+
+Three things to do, in order:
+
+1. **Validate** the argument exactly as in `caesar.c`: one argument, equal to `selection` or `bubble` (`strcmp(argv[1], "bubble") == 0`); otherwise print `Usage: ./sort selection|bubble` and `return 1`.
+2. **Selection sort.** For each position `i` from 0 to n − 2, find the index of the smallest value from `i` to the end, then swap it into position `i`. A `swap` function that takes two pointers is already written for you; call it as `swap(&numbers[i], &numbers[smallest]);`.
+3. **Bubble sort.** Up to n − 1 passes; in each pass compare every pair of neighbors and swap the ones in the wrong order. Keep a `bool swapped`; if a whole pass swaps nothing, `break`.
+
+Print with a space between numbers and no trailing space: `printf("%i%s", numbers[i], i < n - 1 ? " " : "\n");` is one way. The tests try duplicates, negative numbers, a single number and a hundred random ones.
+
+> [!tip] Test with the lecture's eight numbers
+> `6 3 8 5 2 7 4 1` is the array from `selection.c` and `bubble.c` on the week page. If your output after each pass matches theirs, you have the algorithm; add a temporary `printf` inside the outer loop to compare, and remove it before you submit.
+
+</Step>
+
+<Step n={4} title="Part C · recursion.c (3 points)" time="20 min" id="part-c">
+
+Two functions that call themselves:
+
+<Terminal lines={['make recursion', './recursion']} out={`Height: 3
+#
+##
+###
+n: 5
+5! = 120`} />
+
+`draw(n)` prints a left-aligned pyramid exactly like the lecture's `recursion.c`: if `n <= 0` return; otherwise `draw(n - 1)` first, then one row of `n` hashes. `factorial(n)` returns `n × (n − 1) × … × 1`: the base case is `factorial(0) = 1` (and 1 for n = 1), the recursive case is `n * factorial(n - 1)`. Use `long`, because 20! does not fit in an `int`; print it with `%li`. In `main`, re-prompt while the height or `n` is outside 0–20.
+
+The checks also read your source: `factorial` must contain no `for` or `while`, and both functions must call themselves. Recursion is the point of this part, not an optional style.
+
+> [!warning] Forgetting the base case
+> Without `if (n <= 0) return;` the function calls itself forever and the program crashes with a segmentation fault. Write the base case first, then the recursive case.
+
+</Step>
+
+<Step n={5} title="Submit" time="2 min" id="submit">
+
+<Terminal lines={['git add -A', 'git commit -m "Lab 4"', 'git push']} />
+
+Your score appears under **Releases** about two minutes later. Push as often as you like before **Friday, October 23, 23:59**; the last push before the deadline counts, and late pushes lose 10% per day for up to five days.
+
+</Step>
+
+## How to submit
+
+> [!note] The short version
+> 1. Accept Lab 4 on Classroom 50 (orange button), open the repository in Codespaces.
+> 2. Edit `search.c`, `sort.c`, `recursion.c`; `make name && ./name` to try one, `python3 check.py` to check all.
+> 3. `git add -A && git commit -m "Lab 4" && git push` before **Friday, October 23, 23:59**.
+
+Points: search 3, sort 4, recursion 3. The other ways to work and to submit from the browser are the same as in [Lab 2](/labs/lab-02#other-ways-to-work-and-submit); `cs50.h` and `cs50.c` travel with your `.c` files.
+
+## Explore: measure the algorithms
+
+`lab04.ipynb` is not graded. It counts the steps of linear versus binary search for a billion items, times selection, bubble and merge sort on growing random lists and plots the curves, and prints the call tree of the recursive `draw`. Open it in Colab; nothing to install. The shapes you see there are what Big O describes.
+
+<NotebookEmbed file="labs/templates/lab04/lab04.ipynb" title="Lab 4 · Explore: measure the algorithms" />
+
+## Challenges (optional, not graded)
+
+1. **Merge sort in C.** Add `merge` as a third option to `sort.c`, following `merge.c` from the week page. Time all three on 10 000 numbers with `time ./sort merge < input.txt`.
+2. **Recursive binary search.** Rewrite `binary_search` without a loop: a function that calls itself on the left or right half.
+3. **Count the swaps.** Add a swap counter to both sorts and compare them on the same input. Which one swaps less, and why?
+
+## Troubleshooting
+
+> [!note] My comparison counts are off by one
+> Count exactly one comparison per element you look at, and increment before the `if`. Linear search for a present element at index i makes i + 1 comparisons.
+
+> [!note] `./sort` sorts correctly but a test fails on the output format
+> One line, single spaces, no trailing space, one newline at the end. Print nothing else after the numbers.
+
+> [!note] Segmentation fault in `recursion`
+> The base case is missing or wrong. `draw` must return when `n <= 0`; `factorial` must return 1 when `n <= 1`.
+
+> [!note] `error: incompatible pointer types` when calling swap
+> Pass addresses, not values: `swap(&numbers[i], &numbers[j])`, with the ampersands.
+
+> [!note] `git push` is rejected
+> Classroom 50 added a commit to your repository. Run `git pull`, then `git push` again.

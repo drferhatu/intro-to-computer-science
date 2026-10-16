@@ -255,10 +255,108 @@ md("""## 5 · Your turn
 Change the key, the message, or print each character's number next to it. Try a key of 26, then 27."""),
 ]
 
+# ---------------------------------------------------------------------------
+# LAB 4 · timing search and sort
+# ---------------------------------------------------------------------------
+LAB04 = [
+md("""# Lab 4 · Explore: measure the algorithms
+
+**Introduction to Computer Science (YMT113)** · Fall 2026
+
+Nothing here is graded. In the lab you write the algorithms in C; here you *measure* them, in Python, where the code
+is short and plotting is one line. The shapes you see are the whole point of Big O."""),
+md("""## 1 · Linear versus binary search: counting steps
+
+How many elements does each search look at, as the list grows? Linear search can look at all of them. Binary search halves the list every step, so it needs about log₂ n."""),
+code("""import math
+
+def linear_steps(n):            # worst case: the target is last or missing
+    return n
+
+def binary_steps(n):            # worst case: halve until one element is left
+    return math.ceil(math.log2(n)) + 1 if n > 1 else 1
+
+print(f"{'n':>12} {'linear':>12} {'binary':>8}")
+for n in [10, 100, 1_000, 1_000_000, 1_000_000_000]:
+    print(f"{n:>12,} {linear_steps(n):>12,} {binary_steps(n):>8}")"""),
+md("""## 2 · Sorting: time it
+
+Three sorts on the same random lists. Bubble and selection sort are O(n²); merge sort is O(n log n). Watch what happens when n doubles."""),
+code("""import random, time
+
+def selection_sort(a):
+    a = a[:]
+    for i in range(len(a) - 1):
+        m = min(range(i, len(a)), key=a.__getitem__)
+        a[i], a[m] = a[m], a[i]
+    return a
+
+def bubble_sort(a):
+    a = a[:]
+    for p in range(len(a) - 1):
+        swapped = False
+        for j in range(len(a) - 1 - p):
+            if a[j] > a[j + 1]:
+                a[j], a[j + 1] = a[j + 1], a[j]; swapped = True
+        if not swapped:
+            break
+    return a
+
+def merge_sort(a):
+    if len(a) <= 1:
+        return a
+    mid = len(a) // 2
+    left, right = merge_sort(a[:mid]), merge_sort(a[mid:])
+    out, i, j = [], 0, 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            out.append(left[i]); i += 1
+        else:
+            out.append(right[j]); j += 1
+    return out + left[i:] + right[j:]
+
+def timeit(f, a):
+    t = time.perf_counter(); f(a); return time.perf_counter() - t
+
+sizes = [250, 500, 1000, 2000, 4000]
+rows = {"selection": [], "bubble": [], "merge": []}
+for n in sizes:
+    data = [random.randint(0, 10**6) for _ in range(n)]
+    rows["selection"].append(timeit(selection_sort, data))
+    rows["bubble"].append(timeit(bubble_sort, data))
+    rows["merge"].append(timeit(merge_sort, data))
+print(f"{'n':>6} {'selection':>10} {'bubble':>10} {'merge':>10}   (seconds)")
+for i, n in enumerate(sizes):
+    print(f"{n:>6} {rows['selection'][i]:>10.4f} {rows['bubble'][i]:>10.4f} {rows['merge'][i]:>10.4f}")"""),
+md("""Doubling n roughly **quadruples** the O(n²) times and barely more than doubles merge sort. That ratio is the fingerprint of the complexity class, and you can read it off a table without knowing anything about the hardware."""),
+code("""import matplotlib.pyplot as plt
+
+for name, ys in rows.items():
+    plt.plot(sizes, ys, marker="o", label=name)
+plt.xlabel("n (numbers to sort)"); plt.ylabel("seconds"); plt.title("Three sorts on the same random lists")
+plt.legend(); plt.grid(alpha=0.3); plt.show()"""),
+md("""## 3 · Recursion, visualized
+
+Each call to `draw(n)` first asks `draw(n - 1)` to do its work, then adds one row. Indenting by the depth shows the calls stacking up and unwinding."""),
+code("""def draw(n, depth=0):
+    pad = "  " * depth
+    if n <= 0:
+        print(pad + "draw(0): nothing to do, return"); return
+    print(pad + f"draw({n}) calls draw({n - 1})")
+    draw(n - 1, depth + 1)
+    print(pad + f"draw({n}) prints {'#' * n}")
+
+draw(3)"""),
+md("""## 4 · Your turn
+
+Add insertion sort to the race, or time Python's built-in `sorted()` (Timsort, a merge-sort relative) against your merge sort. Then try n = 8000 for bubble sort and go get a coffee."""),
+]
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
     "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
     "lab03": (ROOT / "labs" / "templates" / "lab03" / "lab03.ipynb", LAB03),
+    "lab04": (ROOT / "labs" / "templates" / "lab04" / "lab04.ipynb", LAB04),
 }
 
 

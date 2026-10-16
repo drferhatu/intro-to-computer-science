@@ -1,0 +1,177 @@
+---
+week: 5
+title: "Algorithms: Searching, Sorting and Big O"
+description: "Linear and binary search, three ways to sort, and a language for comparing them: Big O, Ω and Θ. Plus structs, and recursion, which is a function that calls itself."
+module: m3
+status: ready
+lab: lab-04
+reading: "K&R 6.1–6.3 (structs); CS50 Week 3 notes"
+notebook:
+  file: "labs/templates/lab04/lab04.ipynb"
+  title: "Lab 4 · Explore: measure the algorithms"
+cs50:
+  week: "3"
+  title: "Algorithms"
+  video: "https://youtu.be/6Svu_ae5ebk"
+  notes: "https://cs50.harvard.edu/x/2026/notes/3/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/3/lecture3.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/3/src3.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/3/"
+prep:
+  - "Watch the lecture and pause at the sorting demos: predict the next step before Malan does it."
+  - "Lab 3 closed on Friday; your score is under <em>Releases</em>. Bring questions about readability or caesar to the lab."
+  - "Semester projects are announced this week by personal message; the <a href=\"/project\">project page</a> explains what happens next."
+objectives:
+  - "Implement linear search and binary search on arrays, and state their preconditions."
+  - "Trace selection sort, bubble sort and merge sort by hand on eight numbers."
+  - "Use Big O to classify algorithms as O(1), O(log n), O(n), O(n log n) or O(n²), and explain Ω and Θ."
+  - "Define a struct to bundle related data, and use arrays of structs."
+  - "Write a recursive function with a base case, and explain why merge sort is O(n log n)."
+wow:
+  title: "Sorting a million numbers: 12 days with bubble sort, 0.02 seconds with merge sort, on the same laptop."
+  text: "n² for a million is a trillion steps; n log n is twenty million. The hardware did not change, the idea did. This is why 'just buy a faster server' rarely works and why algorithms is the interview question at every major software company. Today you learn to see the difference before you run the code."
+industry:
+  - { "t": "Every database index is binary search", "d": "A B-tree in PostgreSQL or MySQL finds one row among a billion in a few dozen steps, because the data is kept sorted. Without it, every query is a full scan." }
+  - { "t": "Sorting is everywhere", "d": "Your feed, your search results, your bank statement, the leaderboard. Real systems use hybrids of merge sort and insertion sort (Timsort in Python and Java) chosen for exactly the reasons you learn this week." }
+  - { "t": "Big O is the vocabulary of interviews", "d": "\"What is the complexity of your solution?\" is asked in nearly every technical interview. The answer is one of five letters you learn today." }
+  - { "t": "Structs are records", "d": "A struct in C is a row in a database, a JSON object on the web, a class in Python. It is the first step from loose variables to organized data." }
+resources:
+  - { "title": "CS50x 2026 · Week 3 notes", "url": "https://cs50.harvard.edu/x/2026/notes/3/" }
+  - { "title": "Sorting algorithm animations (Toptal)", "url": "https://www.toptal.com/developers/sorting-algorithms", "note": "Race the algorithms on different inputs." }
+  - { "title": "Big-O Cheat Sheet", "url": "https://www.bigocheatsheet.com/", "note": "One page to keep." }
+tags: ["linear search", "binary search", "selection sort", "bubble sort", "merge sort", "Big O", "recursion", "struct"]
+---
+
+## Same problem, different speeds
+
+Every program you have written so far was judged on one question: does it work? From this week there is a second question that matters just as much in the real world: how **fast** does it work, and how does that change when the input grows? Two correct programs can differ by a factor of a million on the same laptop. This week gives you a way to see that difference before you run anything.
+
+The programs on this page are from CS50's Week 3 lecture, plus a few written for this course where CS50 shows only pseudocode (binary search and the three sorts in C). Each orange box is a program we open in VS Code; the full, copyable source follows each box.
+
+## Linear search
+
+Remember the lockers from the lecture: an array of seven numbers behind seven closed doors. The computer cannot see all of them at once the way you can; it opens one door at a time. The simplest strategy is to start at the left and open doors until you find what you are looking for or run out of doors.
+
+```text
+For i from 0 to n-1
+    If 50 is behind doors[i]
+        Return true
+Return false
+```
+
+Notice where the `Return false` sits: *after* the loop, not inside an `else`. If you put it inside the loop, the program gives up after the very first door that is not 50. This is the most common mistake in the first search students write, and the pseudocode makes it visible before any C is typed.
+
+> [!code] search0.c → search1.c · linear search for numbers, then for strings
+> [search0.c](/c/week-05/search0.c) is the pseudocode in C: a loop over the array, an `if` with `==`, `return 0` when found and `return 1` after the loop when not. [search1.c](/c/week-05/search1.c) searches an array of strings and runs into something important: you cannot compare two strings with `==`. That operator would compare where the strings live in memory, not what they say (week 6 explains why). The right tool is `strcmp` from `<string.h>`, which returns 0 when two strings are identical. Every time you see `if (strcmp(a, b) == 0)`, read it as "if a and b are the same text".
+
+<CodeFiles dir="week-05" files={["search0.c", "search1.c"]} />
+
+## Binary search
+
+If the doors are **sorted**, you can do much better. Open the middle door. If the number you want is smaller, everything to the right is useless; if larger, everything to the left is. Either way you have thrown away half the problem with one comparison.
+
+```text
+If no doors left
+    Return false
+If 50 is behind doors[middle]
+    Return true
+Else if 50 < doors[middle]
+    Search doors[0] through doors[middle - 1]
+Else if 50 > doors[middle]
+    Search doors[middle + 1] through doors[n - 1]
+```
+
+> [!code] binary.c · halving, step by step
+> [binary.c](/c/week-05/binary.c) keeps two indices, `low` and `high`, and moves one of them after every comparison. It prints which index it looks at, so you can watch the range shrink: in an array of seven, at most three doors are opened. In an array of a billion, at most thirty-one. The price is that the array must be sorted first, which is why the rest of this week is about sorting.
+
+<CodeFiles dir="week-05" files={["binary.c"]} />
+
+## Running time
+
+We need a way to talk about speed that does not depend on whose laptop is faster. Computer scientists count **steps** as a function of the input size *n* and keep only the shape of the curve, not the constants. That notation is **Big O**, and it describes the upper bound, the worst case.
+
+| Big O | Name | Example this week | Steps for n = 1 000 000 |
+|---|---|---|---|
+| O(1) | constant | reading `numbers[3]` | 1 |
+| O(log n) | logarithmic | binary search | 20 |
+| O(n) | linear | linear search | 1 000 000 |
+| O(n log n) | linearithmic | merge sort | 20 000 000 |
+| O(n²) | quadratic | selection sort, bubble sort | 1 000 000 000 000 |
+
+Three symbols, one idea each. **O** is the worst case: linear search is O(n) because the number might be behind the last door. **Ω** (omega) is the best case: linear search is Ω(1) because the number might be behind the first door. When the best and worst case have the same shape, we write **Θ** (theta): selection sort is Θ(n²), it does the same work whether the list is already sorted or not.
+
+Why do constants not matter? Because for large n they are drowned out. An algorithm that takes 3n steps and one that takes n steps are both O(n); an algorithm that takes n²/100 steps still loses to one that takes 1000·n steps once n passes 100 000. Big O is a statement about *scaling*, and scaling is what decides whether a program survives contact with real data.
+
+## A phone book and a struct
+
+Suppose you want to search a phone book, names and numbers, by name.
+
+> [!code] phonebook0.c → phonebook1.c · parallel arrays, then one struct
+> [phonebook0.c](/c/week-05/phonebook0.c) keeps two arrays, `names` and `numbers`, and relies on `names[i]` belonging with `numbers[i]`. Nothing in the language enforces that; one mistake in one array and the pairing silently breaks. [phonebook1.c](/c/week-05/phonebook1.c) defines a new **type** with `typedef struct { string name; string number; } person;` and then has *one* array, `person people[3]`, where each element carries both fields: `people[0].name`, `people[0].number`. The dot reaches inside the struct. Data that belongs together now travels together.
+
+<CodeFiles dir="week-05" files={["phonebook0.c", "phonebook1.c"]} />
+
+A struct is the first time you design your own type rather than using C's. It is a small moment with a long shadow: a struct in C is a row in a database table, an object in JavaScript, a class in Python. Every program that manages real information is built from them.
+
+## Sorting
+
+Sorting is the price of binary search, and it turns out to be one of the richest problems in computer science. Three algorithms, from the most obvious to the one that actually gets used.
+
+### Selection sort
+
+Look through the whole list for the smallest number and swap it to the front. Then look through what is left for the next smallest, and so on. On the first pass you look at n numbers, on the second n − 1, then n − 2, down to 1. That sum is n(n − 1)/2, and the shape of that is n²: selection sort is Θ(n²).
+
+> [!code] selection.c · the list after every pass
+> [selection.c](/c/week-05/selection.c) sorts eight numbers and prints the array after each swap, so you can see the sorted part growing from the left. Notice that the inner loop always runs to the end of the array, however the data looks; that is why the best case is no better than the worst.
+
+<CodeFiles dir="week-05" files={["selection.c"]} />
+
+### Bubble sort
+
+Walk along the list comparing each pair of neighbors and swap them if they are in the wrong order. After one pass the largest number has bubbled to the end; after two passes the two largest are in place. In the worst case that is also n² steps, but bubble sort has one trick selection sort lacks: if a whole pass makes no swap, the list is sorted and you can stop. On an already sorted list bubble sort finishes in one pass, so it is O(n²) but Ω(n).
+
+> [!code] bubble.c · stop when nothing moves
+> [bubble.c](/c/week-05/bubble.c) prints the array after each pass and uses a `bool swapped` flag to stop early. Feed it a sorted array in your head and count the passes.
+
+<CodeFiles dir="week-05" files={["bubble.c"]} />
+
+### Merge sort
+
+Both sorts so far are quadratic. Doubling the input quadruples the time; a million numbers take a trillion steps. Merge sort breaks the pattern with one idea: sorting a list is easy if you already have two sorted halves, because merging two sorted lists is a single pass. So sort the left half, sort the right half, merge. How do you sort the halves? The same way. The recursion stops at lists of one element, which are sorted by definition.
+
+```text
+If only one number
+    Quit
+Else
+    Sort left half of numbers
+    Sort right half of numbers
+    Merge sorted halves
+```
+
+Each level of halving costs n steps to merge, and there are log₂ n levels, so merge sort is Θ(n log n). For a million numbers that is twenty million steps instead of a trillion: the difference between a blink and twelve days. The cost is memory: merging needs a second array to merge into.
+
+> [!code] merge.c · watch the halves come back together
+> [merge.c](/c/week-05/merge.c) prints every merged range, indented by its depth in the recursion, so the structure of the algorithm is visible in the output: the single elements merge into pairs, the pairs into fours, the fours into the final sorted list.
+
+<CodeFiles dir="week-05" files={["merge.c"]} />
+
+## Recursion
+
+Merge sort was defined in terms of itself, and that deserves a closer look. A function that calls itself is **recursive**. It sounds circular, and it would be, except that every recursive function has a **base case**, an input so small that the answer is known without any further calls. Everything else is reduced one step towards that base case.
+
+> [!code] iteration.c → recursion.c · the same pyramid, two ways
+> [iteration.c](/c/week-05/iteration.c) draws a left-aligned pyramid with two nested loops, as you did in Lab 2. [recursion.c](/c/week-05/recursion.c) says something different: a pyramid of height n is a pyramid of height n − 1 followed by one more row of n hashes. The function `draw(n)` calls `draw(n - 1)` first, then prints its own row. The base case is `if (n <= 0) return;`. Without that line the function would call itself forever, the call stack would overflow, and the program would crash. Trace `draw(3)` by hand: it calls `draw(2)`, which calls `draw(1)`, which calls `draw(0)`, which returns; then the rows are printed on the way back up, 1, 2, 3 hashes.
+
+<CodeFiles dir="week-05" files={["iteration.c", "recursion.c"]} />
+
+Recursion is not a trick for pyramids. It is the natural way to express anything that is defined in terms of a smaller version of itself: file systems inside folders inside folders, the structure of a sentence, a chess game, and, in two weeks, the data structures that make databases fast.
+
+## Summary
+
+- Linear search looks at every element: O(n). Binary search halves the range each step: O(log n), but the array must be sorted.
+- Big O describes how steps grow with n, ignoring constants. O is the worst case, Ω the best, Θ when they match.
+- `strcmp(a, b) == 0` is how you ask whether two strings are the same text; `==` compares something else.
+- A `struct` bundles related data into a type of your own; `.` reaches inside it.
+- Selection sort and bubble sort are Θ(n²) and O(n²) respectively; bubble sort can stop early. Merge sort is Θ(n log n) and uses recursion.
+- A recursive function calls itself on a smaller input and stops at a base case.
+- The lab, [Lab 4: Search and Sort](/labs/lab-04), has you write both searches with a comparison counter, both quadratic sorts chosen from the command line, and a recursive pyramid and factorial.

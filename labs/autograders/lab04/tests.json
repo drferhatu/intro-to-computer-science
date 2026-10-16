@@ -1,0 +1,5 @@
+[
+  { "name": "Part A · search.c",    "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_a_search.py",    "timeout": 120, "points": 3 },
+  { "name": "Part B · sort.c",      "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_b_sort.py",      "timeout": 180, "points": 4 },
+  { "name": "Part C · recursion.c", "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_c_recursion.py", "timeout": 120, "points": 3 }
+]
