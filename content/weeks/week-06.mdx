@@ -1,0 +1,176 @@
+---
+week: 6
+title: "Memory: Pointers, the Heap and Hexadecimal"
+description: "The week that takes the hood off. Addresses, pointers, why a string was a char* all along, malloc and free, the stack and the heap, segmentation faults, and files and images as bytes."
+module: m3
+status: ready
+lab: lab-05
+reading: "K&R 5.1–5.6 (pointers); CS50 Week 4 notes"
+notebook:
+  file: "labs/templates/lab05/lab05.ipynb"
+  title: "Lab 5 · Explore: a BMP file, byte by byte"
+cs50:
+  week: "4"
+  title: "Memory"
+  video: "https://youtu.be/db0H0U13YsA"
+  notes: "https://cs50.harvard.edu/x/2026/notes/4/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/4/lecture4.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/4/src4.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/4/"
+prep:
+  - "This is the hardest week of the course. Watch the lecture twice if needed; the second time, draw the memory diagrams on paper as Malan draws them."
+  - "Open <a href=\"https://pythontutor.com/c.html\" target=\"_blank\" rel=\"noopener\">Python Tutor for C</a>, paste the lecture's <code>swap1.c</code> and step through it; watch the arrows."
+  - "Lab 4 closed on Friday; your score is under <em>Releases</em>. Bring questions to the lab."
+objectives:
+  - "Read and write hexadecimal, and convert between hex, binary and decimal."
+  - "Explain what an address is, and use & (address of) and * (dereference) correctly."
+  - "State that a string is a char*, and explain why string comparison needs strcmp and copying needs a loop or strcpy."
+  - "Allocate memory with malloc, release it with free, and use valgrind to find leaks."
+  - "Draw the stack and the heap, and explain why swap needs pointers and what a segmentation fault is."
+  - "Read and write files with fopen, fread, fwrite and fclose, and describe an image as a header plus pixel bytes."
+wow:
+  title: "‘Enhance!’ is impossible: a photo is a finite grid of bytes, and there is nothing behind them."
+  text: "Every crime show zooms into a reflection to read a license plate. A 3-megapixel image is 9 million bytes and that is all the information there is; zooming shows bigger squares. This week you open image files byte by byte and see that a photo is just a header saying 'width, height' followed by red, green, blue, red, green, blue. Once you see it, you can recover deleted photos from a memory card, which is exactly what CS50's recover.c does."
+industry:
+  - { "t": "Memory bugs are the security headlines", "d": "Microsoft and Google report that about 70% of their serious security vulnerabilities are memory-safety bugs: use-after-free, buffer overflows, dangling pointers. Everything you learn this week is what those bugs are made of." }
+  - { "t": "malloc is a whole subsystem", "d": "Allocators like jemalloc and tcmalloc are engineering marvels that every server process depends on. Facebook and Google each maintain their own." }
+  - { "t": "Hex is the language of the low level", "d": "Memory addresses, colors in CSS (#1a2b3c), MAC addresses, error codes (0xC0000005), file signatures (FF D8 for JPEG). Reading hex fluently is a mark of a real engineer." }
+  - { "t": "Rust exists because of this week", "d": "Rust is C's ideas with a compiler that refuses to build programs with these bugs. It is now in the Linux kernel, Android and Windows. You cannot appreciate it until you have felt the pain." }
+resources:
+  - { "title": "CS50x 2026 · Week 4 notes", "url": "https://cs50.harvard.edu/x/2026/notes/4/" }
+  - { "title": "Pointer Fun with Binky (video)", "url": "https://www.youtube.com/watch?v=5VnDaHBi8dM", "note": "Stanford's 3-minute claymation on pointers. Yes, really." }
+  - { "title": "Python Tutor for C", "url": "https://pythontutor.com/c.html", "note": "Step through any C program and watch memory." }
+  - { "title": "Valgrind quick start", "url": "https://valgrind.org/docs/manual/quick-start.html" }
+tags: ["pointers", "hexadecimal", "address", "malloc", "free", "valgrind", "stack", "heap", "segmentation fault", "strcmp", "file I/O", "BMP"]
+---
+
+## Why this week is different
+
+Until now we have treated memory as a magic cupboard: you say `int n = 50;` and the number is simply there whenever you ask for it. This week we open the cupboard. Every variable lives at a specific place, every place has a number called an **address**, and C lets you work with those numbers directly. That one idea explains several things that were mysterious so far: why a string was called `char *` under the hood, why `==` does not compare strings, why `swap` did not work without ampersands in Lab 4, and what a segmentation fault is. It also opens new doors: memory you ask for while the program runs, files you read byte by byte, and images you can edit as numbers.
+
+It is a dense week and nobody understands pointers the first time; David Malan says it took him office hours. Read slowly, draw boxes and arrows on paper, and use the notebook at the end to look at real bytes. The programs are from CS50's Week 4 lecture, and each orange box is followed by its full source.
+
+## Hexadecimal
+
+Before we look at addresses we need a compact way to write them. You know two number systems: decimal, with ten digits, and binary, with two. Computers' own writing, binary, is exact but long; a single byte is eight symbols. **Hexadecimal** uses sixteen digits, `0` to `9` and then `A` to `F` for ten to fifteen. Each hex digit stands for exactly four bits, so one byte is always two hex digits: `00000000` is `00`, `11111111` is `FF`, and `01001000` (the letter `H`) is `48`.
+
+| Decimal | Binary | Hex |
+|---|---|---|
+| 0 | 0000 | 0 |
+| 9 | 1001 | 9 |
+| 10 | 1010 | A |
+| 15 | 1111 | F |
+| 16 | 0001 0000 | 10 |
+| 72 | 0100 1000 | 48 |
+| 255 | 1111 1111 | FF |
+
+To avoid confusing the hex `10` (sixteen) with the decimal 10, programmers write a `0x` in front: `0x10`. You have already met hex without being told: a web designer's `#FF0000` is three bytes, red 255, green 0, blue 0. And every memory address you see this week is written in hex, because `0x7ffd3a1c` is easier to read than thirty-two zeros and ones.
+
+## Addresses and pointers
+
+Think of the computer's memory as a very long street of identical houses, one byte each, numbered from 0 upwards. When you write `int n = 50;`, the compiler reserves four houses in a row and puts the number 50 inside. The house number of the first one is the **address** of `n`.
+
+> [!code] addresses0.c → addresses3.c · the ampersand and the star
+> [addresses0.c](/c/week-06/addresses0.c) prints the value of `n`, as always. [addresses1.c](/c/week-06/addresses1.c) prints `&n` with `%p`: the `&` operator means "the address of", and the output is a hex number like `0x7ffc1b2e9a4c`, different on every run because the operating system places the program somewhere new each time. [addresses2.c](/c/week-06/addresses2.c) stores that address in a variable of its own: `int *p = &n;`. A variable whose value is an address is a **pointer**, and the `*` in the declaration says "p points to an int". [addresses3.c](/c/week-06/addresses3.c) goes the other way: `*p` means "the thing p points to", so `printf("%i\n", *p)` prints 50. The same star has two jobs: in a declaration it creates a pointer, in an expression it follows one.
+
+<CodeFiles dir="week-06" files={["addresses0.c", "addresses1.c", "addresses2.c", "addresses3.c"]} />
+
+An analogy that helps most people: a pointer is a slip of paper with a house number written on it. `&n` writes n's house number on a slip. `*p` means "go to the house whose number is on the slip and look inside". Passing a slip of paper is cheap, however big the house; that is the whole reason pointers exist.
+
+## Strings were pointers all along
+
+In week 4 you learned that a string is an array of characters ending in a zero byte. This week you learn what the variable actually holds.
+
+> [!code] addresses4.c → addresses7.c · what `s` really is
+> [addresses4.c](/c/week-06/addresses4.c) prints `"HI!"` with `%s`. [addresses5.c](/c/week-06/addresses5.c) prints `s` itself with `%p`, and then `&s[0]`, `&s[1]`, `&s[2]`, `&s[3]`: four consecutive addresses, and the first one is exactly the value of `s`. The variable `s` is nothing but the address of the first character; `printf("%s")` walks from there until it hits the zero. [addresses6.c](/c/week-06/addresses6.c) and [addresses7.c](/c/week-06/addresses7.c) are the same program twice, once with CS50's `string` and once with what `string` has been hiding since week 3: `char *s = "HI!";`. There is no string type in C. There is a pointer to a character, and a convention about where the text ends.
+
+<CodeFiles dir="week-06" files={["addresses4.c", "addresses5.c", "addresses6.c", "addresses7.c"]} />
+
+> [!code] addresses8.c → addresses10.c · pointer arithmetic
+> If `s` is an address, `s + 1` is the next address, and `*(s + 1)` is the character living there. [addresses8.c](/c/week-06/addresses8.c) prints the characters with the familiar `s[0]`, `s[1]`, `s[2]`; [addresses9.c](/c/week-06/addresses9.c) prints the same with `*s`, `*(s + 1)`, `*(s + 2)`. The square brackets you have been using since week 4 are a nicer spelling of exactly that addition. [addresses10.c](/c/week-06/addresses10.c) prints `s`, `s + 1` and `s + 2` with `%s` and gets `HI!`, `I!`, `!`: start the walk one house later and you get the rest of the string.
+
+<CodeFiles dir="week-06" files={["addresses8.c", "addresses9.c", "addresses10.c"]} />
+
+### Why `==` does not compare strings
+
+> [!code] compare0.c → compare4.c · same text, different houses
+> [compare0.c](/c/week-06/compare0.c) compares two ints with `==` and says `Same` when you type the same number twice. [compare1.c](/c/week-06/compare1.c) does the same with two strings and says `Different` even when you type `hello` both times. Now you can see why: `s` and `t` are addresses, and `get_string` stored your two answers in two different places. [compare4.c](/c/week-06/compare4.c) prints the two addresses to prove it. Comparing addresses asks "is this the same house?", not "is this the same text?". [compare2.c](/c/week-06/compare2.c) uses `strcmp`, which walks both strings character by character, and that is the comparison you meant. From now on this rule has a reason behind it.
+
+<CodeFiles dir="week-06" files={["compare0.c", "compare1.c", "compare2.c", "compare3.c", "compare4.c"]} />
+
+## Copying a string, and malloc
+
+Suppose you want a second copy of a string, so that you can change the copy and keep the original.
+
+> [!code] copy0.c → copy1.c · a copy that is not a copy
+> [copy0.c](/c/week-06/copy0.c) writes `string t = s;` and then capitalizes `t[0]`. Print both and *both* are capitalized. Of course: `t = s` copied the address, so `s` and `t` are two slips of paper with the same house number, and there is still only one string. [copy1.c](/c/week-06/copy1.c) adds a check that the string is not empty before touching `t[0]`, which is a good habit, but it does not fix the real problem.
+
+<CodeFiles dir="week-06" files={["copy0.c", "copy1.c"]} />
+
+To make a real copy you need new houses, enough of them for every character plus the zero at the end. You ask the operating system for memory while the program is running with **`malloc`** ("memory allocate"), which returns the address of the first house it gave you, and you give the memory back with **`free`** when you are done.
+
+> [!code] copy2.c → copy5.c · a real copy
+> [copy2.c](/c/week-06/copy2.c) asks for `strlen(s) + 1` bytes, copies the characters one by one in a loop (including the zero, which is why the loop runs to `<=`), and then capitalizes only the copy. [copy3.c](/c/week-06/copy3.c) computes `strlen` once, as you learned in week 4. [copy4.c](/c/week-06/copy4.c) replaces the loop with the library's `strcpy`, which does exactly that loop. [copy5.c](/c/week-06/copy5.c) is the version a professional writes: it checks that `get_string` and `malloc` did not return `NULL`, which they do when memory runs out, and it calls `free(t)` at the end. Every `malloc` deserves a `free`; forgetting it is a **memory leak**, and in a program that runs for days, leaks are what finally bring it down.
+
+<CodeFiles dir="week-06" files={["copy2.c", "copy3.c", "copy4.c", "copy5.c"]} />
+
+### Valgrind: a referee for memory
+
+> [!code] memory.c · one byte past the end
+> [memory.c](/c/week-06/memory.c) allocates room for three ints and then writes to `x[3]`, the fourth. C does not complain; the program may even seem to work. A tool called **valgrind** runs your program and watches every memory access: `valgrind ./memory` reports an "invalid write of size 4" with the line number, and at the end a summary of memory that was never freed. In the lab you use it on your own programs; a clean valgrind report is the C programmer's seal of quality.
+
+<CodeFiles dir="week-06" files={["memory.c"]} />
+
+> [!code] garbage.c · what uninitialized memory contains
+> [garbage.c](/c/week-06/garbage.c) declares an array of 1024 ints and prints them without ever assigning anything. The output is not zeros: it is whatever bytes previous programs, or earlier parts of this one, left in those houses. That is **garbage**, and reading it is a bug that produces different wrong answers on different days. Always initialize what you read.
+
+<CodeFiles dir="week-06" files={["garbage.c"]} />
+
+## Swap, the stack and the heap
+
+In Lab 4 the `swap` function was given to you with two pointers and a hint that week 6 would explain it. Here is the explanation.
+
+> [!code] swap0.c → swap1.c · why swap needs addresses
+> [swap0.c](/c/week-06/swap0.c) passes `x` and `y` to `swap(int a, int b)`. Inside, `a` and `b` are swapped, and then the function returns and `x` and `y` are unchanged. The reason is that C passes **copies**: `a` and `b` are new variables that received the values of `x` and `y`, and live in the function's own area of memory, which is thrown away when the function returns. [swap1.c](/c/week-06/swap1.c) passes `&x` and `&y` instead. Now `a` and `b` are slips of paper with the house numbers of `x` and `y`, and `*a = *b` changes the original houses. The function still cannot touch `x` by name, but it can go to its address.
+
+<CodeFiles dir="week-06" files={["swap0.c", "swap1.c"]} />
+
+This is a good moment to picture the two regions where variables live. Each time a function is called, its variables are placed on the **stack**, a pile that grows with every call and shrinks when the function returns; that is why `a` and `b` disappear. Memory from `malloc` comes from the **heap**, a separate region that keeps what you allocated until you `free` it, regardless of which function asked. Local variables are short-lived and automatic; heap memory is long-lived and your responsibility.
+
+A **segmentation fault** is what happens when you touch an address that is not yours: a `NULL` pointer, memory past the end of an array, memory already freed. The operating system stops the program on the spot. It is unpleasant, but it is also the system protecting other programs from yours; valgrind usually tells you the exact line.
+
+## scanf, and why the CS50 library exists
+
+> [!code] get0.c → get3.c · reading input without the library
+> [get0.c](/c/week-06/get0.c) uses `get_int`. [get1.c](/c/week-06/get1.c) does the same with the standard library's `scanf("%i", &n)`: you pass the *address* of `n`, because `scanf` has to write into your variable, exactly like `swap`. For integers this is fine. [get2.c](/c/week-06/get2.c) tries `scanf("%s", s)` into a `char *s` that points nowhere, and crashes or prints garbage: there is no memory for the text. [get3.c](/c/week-06/get3.c) gives it `char s[4]`, which works until someone types more than three characters and overruns the array. The CS50 library's `get_string` allocates exactly as much as the user typed, which is the work you would otherwise do by hand; now you know what it saved you from.
+
+<CodeFiles dir="week-06" files={["get0.c", "get1.c", "get2.c", "get3.c"]} />
+
+## Files
+
+Everything so far lived in memory and vanished when the program ended. Files are how programs remember. The standard library gives you a `FILE *`, a pointer to an open file, and a small set of functions.
+
+> [!code] phonebook0.c → phonebook1.c · appending to a CSV
+> [phonebook0.c](/c/week-06/phonebook0.c) opens `phonebook.csv` in append mode with `fopen(..., "a")`, writes a line with `fprintf` just like `printf` with a file in front, and closes the file. Run it twice and the file has two lines; open it in a spreadsheet and you have a table. [phonebook1.c](/c/week-06/phonebook1.c) checks that `fopen` succeeded; a missing folder or a permission problem returns `NULL`, and writing through a `NULL` is a segmentation fault.
+
+<CodeFiles dir="week-06" files={["phonebook0.c", "phonebook1.c"]} />
+
+> [!code] cp.c · copying any file, one byte at a time
+> [cp.c](/c/week-06/cp.c) opens a source for reading in binary mode and a destination for writing, then loops: `fread` one byte into `b`, `fwrite` it out, until `fread` returns 0 at the end of the file. It copies a text file, a photo, a song, a program; it does not care, because to this loop everything is bytes. The `typedef uint8_t BYTE;` line gives the one-byte type a friendlier name.
+
+<CodeFiles dir="week-06" files={["cp.c"]} />
+
+## Images are bytes too
+
+A BMP image file, the simplest common format, begins with a **header** of 54 bytes that says, among other things, how wide and how tall the picture is, and then lists every pixel as three bytes: blue, green, red. (BMP stores them in that order, the reverse of RGB.) A picture 100 pixels wide and 50 high is 54 + 100 × 50 × 3 bytes, plus a little padding at the end of each row so that rows start at addresses divisible by four.
+
+That is why "enhance" in crime shows is impossible: the file contains those bytes and nothing more. It is also why you can edit a picture with a loop. Grayscale is "set red, green and blue of every pixel to their average"; a mirror image is "swap the first and last pixel of every row, then the second and second-to-last", and that is exactly what you do in the lab. The notebook below opens a BMP in Python and prints its header and its first pixels, so that you can see the structure before you write the C.
+
+## Summary
+
+- Hexadecimal: sixteen digits, two per byte, `0x` in front. Addresses and colors are written in hex.
+- Every variable has an address. `&x` is the address of `x`; a pointer stores an address; `*p` is the value at the address stored in `p`.
+- A string is a `char *`, the address of its first character; `s[i]` is `*(s + i)`. Comparing with `==` compares addresses, which is why `strcmp` exists; assigning `t = s` copies the address, which is why `malloc` + `strcpy` exist.
+- `malloc` takes memory from the heap and `free` gives it back; valgrind finds leaks and invalid accesses. Local variables live on the stack and vanish when the function returns, which is why `swap` needs pointers.
+- `fopen`, `fprintf`, `fread`, `fwrite`, `fclose` move bytes between memory and files; an image is a header plus pixels.
+- The lab, [Lab 5: Pointers and Pixels](/labs/lab-05): fix swap, copy a string with malloc and free, find three memory bugs with valgrind, and write grayscale and reflect filters for a BMP.

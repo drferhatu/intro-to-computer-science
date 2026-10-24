@@ -352,11 +352,79 @@ md("""## 4 · Your turn
 Add insertion sort to the race, or time Python's built-in `sorted()` (Timsort, a merge-sort relative) against your merge sort. Then try n = 8000 for bubble sort and go get a coffee."""),
 ]
 
+# ---------------------------------------------------------------------------
+# LAB 5 · a BMP file, byte by byte
+# ---------------------------------------------------------------------------
+LAB05 = [
+md("""# Lab 5 · Explore: a BMP file, byte by byte
+
+**Introduction to Computer Science (YMT113)** · Fall 2026
+
+Nothing here is graded. Before you write `filter.c`, look at what a BMP file actually contains: a 54-byte header and then
+pixels, three bytes each. We read it with Python here because it is short; your C program reads the same bytes.
+
+> Where to run it: in your codespace (the `images/` folder is right there) or in Colab after uploading `images/tiny.bmp`."""),
+md("""## 1 · The first 54 bytes, in hex"""),
+code("""from pathlib import Path
+import struct
+
+path = Path("images/tiny.bmp") if Path("images/tiny.bmp").exists() else Path("tiny.bmp")
+data = path.read_bytes()
+print(len(data), "bytes in total")
+print(" ".join(f"{b:02x}" for b in data[:54]))"""),
+md("""`42 4d` are the ASCII codes of `B` and `M`: every BMP starts with its own signature, exactly like the file-type detection you
+read about in the lecture. Let's decode the fields the way `filter.c` does with its two structs."""),
+code("""bfType, bfSize, _, _, bfOffBits = struct.unpack_from("<2sIHHI", data, 0)
+biSize, w, h, planes, bits, comp = struct.unpack_from("<IiiHHI", data, 14)
+print("signature :", bfType.decode())
+print("file size :", bfSize, "bytes")
+print("pixels at :", bfOffBits, "(= 14 + 40, the two headers)")
+print("width x height:", w, "x", h, "  bits per pixel:", bits)"""),
+md("""## 2 · The pixels
+
+Each pixel is three bytes in the order **blue, green, red**, rows are stored from the bottom of the image upwards,
+and every row is padded with zero bytes to a multiple of 4. A 3-pixel-wide row is 9 bytes + 3 bytes of padding."""),
+code("""pad = (4 - (w * 3) % 4) % 4
+print("padding per row:", pad, "bytes")
+p = bfOffBits
+rows = []
+for y in range(h):
+    row = []
+    for x in range(w):
+        b, g, r = data[p], data[p+1], data[p+2]
+        row.append((r, g, b)); p += 3
+    rows.append(row); p += pad
+rows = rows[::-1]            # bottom-up on disk → top-down for humans
+for row in rows:
+    print(row)"""),
+md("""## 3 · Grayscale and reflect, in Python
+
+The two filters you write in C, in six lines of Python, so you can check your C output against them."""),
+code("""gray = [[(round((r+g+b)/3),)*3 for (r,g,b) in row] for row in rows]
+mirror = [row[::-1] for row in rows]
+print("gray  :", gray)
+print("mirror:", mirror)"""),
+md("""## 4 · See them
+
+A 3×2 image is hard to look at; scale it up with matplotlib."""),
+code("""import matplotlib.pyplot as plt
+import numpy as np
+fig, ax = plt.subplots(1, 3, figsize=(7, 2.2))
+for a, (title, img) in zip(ax, [("original", rows), ("grayscale", gray), ("reflect", mirror)]):
+    a.imshow(np.array(img, dtype=np.uint8)); a.set_title(title); a.axis("off")
+plt.show()"""),
+md("""## 5 · Your turn
+
+Run `./filter grayscale images/tiny.bmp images/out.bmp` in the terminal, then point `path` at `images/out.bmp` and compare the pixels with `gray`.
+Then try `firat.bmp` and `smiley.bmp`. If you want a real photo, convert any JPEG to 24-bit BMP (`convert photo.jpg -type truecolor photo.bmp` with ImageMagick, or an online converter) and run your filter on it."""),
+]
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
     "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
     "lab03": (ROOT / "labs" / "templates" / "lab03" / "lab03.ipynb", LAB03),
     "lab04": (ROOT / "labs" / "templates" / "lab04" / "lab04.ipynb", LAB04),
+    "lab05": (ROOT / "labs" / "templates" / "lab05" / "lab05.ipynb", LAB05),
 }
 
 
@@ -380,6 +448,10 @@ def execute(path):
     from nbclient import NotebookClient
     nb = nbformat.read(path, as_version=4)
     with tempfile.TemporaryDirectory() as tmp:
+        images = path.parent / "images"
+        if images.exists():
+            import shutil
+            shutil.copytree(images, Path(tmp) / "images")
         client = NotebookClient(nb, timeout=300, kernel_name="python3", allow_errors=True,
                                 skip_cells_with_tag=SKIP_TAG, resources={"metadata": {"path": tmp}})
         client.execute()
