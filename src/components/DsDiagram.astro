@@ -29,23 +29,25 @@ const defs = `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" marke
 let svg = '', vb = '0 0 760 240';
 if (kind === 'array-grow') {
   vb = '0 0 760 250';
-  svg = label(20, 30, 'An array of 3, somewhere in memory: three boxes side by side, nothing free after them', 'start', ink2, 13)
+  svg = label(20, 30, 'An array of 3 in memory: three boxes side by side, and no free box after them', 'start', ink2, 13)
     + [1, 2, 3].map((v, i) => box(20 + i * 50, 45, 46, 44, String(v))).join('')
     + box(170, 45, 46, 44, 'h', card, line, ink3) + box(220, 45, 46, 44, 'e', card, line, ink3) + box(270, 45, 46, 44, 'l', card, line, ink3) + label(325, 73, '…other data lives right here', 'start', ink3)
     + label(20, 130, 'To add a 4th number: ask for a new array of 4, copy, free the old one', 'start', ink2, 13)
     + [1, 2, 3].map((v, i) => box(20 + i * 50, 145, 46, 44, String(v), asoft, accent)).join('')
     + arrow(175, 167, 330, 167, accent)
     + [1, 2, 3, 4].map((v, i) => box(340 + i * 50, 145, 46, 44, String(v), i < 3 ? soft : asoft, i < 3 ? brand : accent)).join('')
-    + label(20, 225, 'Copying every element each time the list grows costs O(n). realloc does the same work for you, and may extend in place when there is room.', 'start', ink3);
+    + label(20, 218, 'Copying every element each time the list grows costs O(n).', 'start', ink3)
+    + label(20, 236, 'realloc does the same work for you, and may extend in place when there is room.', 'start', ink3);
 } else if (kind === 'linked-list') {
-  vb = '0 0 760 200';
-  svg = label(20, 28, 'A linked list: each node holds a number and the address of the next node. Nodes can be anywhere in memory.', 'start', ink2, 13)
+  vb = '0 0 760 195';
+  svg = label(20, 28, 'A linked list: each node holds a number and the address of the next node; nodes can be anywhere in memory', 'start', ink2, 13)
     + box(20, 60, 52, 40, 'list', soft, brand, brand, 13) + arrow(72, 80, 118, 80)
     + node(120, 60, '1', '0x456') + arrow(208, 80, 268, 80)
     + node(270, 60, '2', '0x789') + arrow(358, 80, 418, 80)
     + node(420, 60, '3', 'NULL')
     + label(120, 125, 'number   next', 'start', ink3, 11) + label(270, 125, 'number   next', 'start', ink3, 11) + label(420, 125, 'number   next', 'start', ink3, 11)
-    + label(20, 170, 'The head pointer "list" is the only way in. NULL at the end means "nothing follows". Following the arrows one by one is O(n); there is no way to jump to the middle.', 'start', ink3);
+    + label(20, 160, 'The head pointer "list" is the only way in. NULL at the end means "nothing follows".', 'start', ink3)
+    + label(20, 180, 'Following the arrows one by one is O(n); there is no way to jump to the middle.', 'start', ink3);
 } else if (kind === 'insert-head') {
   vb = '0 0 760 260';
   svg = label(20, 26, 'Inserting 4 at the front, in the only safe order', 'start', ink2, 13)
@@ -70,7 +72,8 @@ if (kind === 'array-grow') {
     + label(400, 165, 'Each question throws away half the tree:', 'start', ink3)
     + label(400, 185, 'O(log n) when the tree is balanced,', 'start', ink3)
     + label(400, 205, 'and inserting is just one more node at a leaf.', 'start', ink3)
-    + label(400, 240, 'Insert 1, 2, 3, 4 in order and it degenerates into a linked list: O(n). Balance matters.', 'start', ink3, 11);
+    + label(400, 235, 'Insert 1, 2, 3, 4 in that order and it degenerates', 'start', ink3, 11)
+    + label(400, 250, 'into a linked list: O(n). Balance matters.', 'start', ink3, 11);
 } else if (kind === 'hash-table') {
   vb = '0 0 760 300';
   const letters = ['A', 'B', '…', 'L', 'M', '…', 'P', '…', 'T', '…', 'Y', 'Z'];
@@ -85,11 +88,11 @@ if (kind === 'array-grow') {
     + label(400, 168, 'With a bad one (first letter only) names pile up', 'start', ink3)
     + label(400, 188, 'in a few buckets and it degrades towards O(n).', 'start', ink3)
     + label(400, 221, 'Worst case is still O(n); in practice O(1).', 'start', ink3)
-    + label(20, 290, 'Trade-off: more buckets = more memory, shorter lists. The lab asks you to choose both the number of buckets and the hash function.', 'start', ink3, 11);
+    + label(20, 290, 'Trade-off: more buckets = more memory but shorter lists. In the lab you choose both the bucket count and the hash function.', 'start', ink3, 11);
 } else if (kind === 'trie') {
   vb = '0 0 760 250';
   const cell = (x: number, y: number, hl: string[]) => `<rect x="${x}" y="${y}" width="208" height="22" rx="4" fill="${card}" stroke="${line}"/>` + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((c, i) => `<text x="${x + 4 + i * 8}" y="${y + 15}" font-family="${mono}" font-size="9" fill="${hl.includes(c) ? accent : ink3}" font-weight="${hl.includes(c) ? 700 : 400}">${c}</text>`).join('');
-  svg = label(20, 26, '"Toad" and "Tom" in a trie: every node is an array of 26 pointers; the words share the T and the O', 'start', ink2, 13)
+  svg = label(20, 26, '"Toad" and "Tom" in a trie: each node is an array of 26 pointers; the two words share T and O', 'start', ink2, 13)
     + label(20, 55, 'root', 'start', ink3, 11) + cell(60, 40, ['T']) + arrow(60 + 4 + 19 * 8 + 3, 62, 60 + 4 + 19 * 8 + 3, 82, accent)
     + label(20, 100, 'T', 'start', accent, 12) + cell(60, 85, ['O']) + arrow(60 + 4 + 14 * 8 + 3, 107, 60 + 4 + 14 * 8 + 3, 127, accent)
     + label(20, 145, 'TO', 'start', accent, 12) + cell(60, 130, ['A', 'M'])
@@ -110,8 +113,8 @@ if (kind === 'array-grow') {
     + label(420, 26, 'Stack: last in, first out (a pile of trays)', 'start', ink2, 13)
     + ['Peach', 'Luigi', 'Mario'].map((nm, i) => box(420, 40 + i * 40, 110, 36, nm, i === 0 ? asoft : card, i === 0 ? accent : line, ink, 13)).join('')
     + label(545, 62, '← push and pop both happen here', 'start', ink3, 11) + label(545, 142, 'Mario, placed first, leaves last', 'start', ink3, 11)
-    + label(20, 150, 'Both are abstract data types: they say WHAT you can do (add, remove, in which order),', 'start', ink3)
-    + label(20, 170, 'not HOW. Underneath, each can be an array of fixed capacity or a linked list that grows.', 'start', ink3);
+    + label(20, 185, 'Both are abstract data types: they say WHAT you can do (add, remove, in which order),', 'start', ink3)
+    + label(20, 205, 'not HOW. Underneath, each can be an array of fixed capacity or a linked list that grows.', 'start', ink3);
 }
 ---
 <figure class="not-prose my-6 overflow-hidden rounded-2xl border border-line bg-card p-3 shadow-soft">
