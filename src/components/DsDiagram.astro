@@ -109,7 +109,8 @@ if (kind === 'array-grow') {
   vb = '0 0 760 220';
   svg = label(20, 26, 'Queue: first in, first out (a line for a ride)', 'start', ink2, 13)
     + ['Mario', 'Luigi', 'Peach'].map((nm, i) => box(20 + i * 95, 40, 90, 36, nm, i === 0 ? asoft : card, i === 0 ? accent : line, ink, 13)).join('')
-    + label(20, 100, 'enqueue at the back →', 'start', ink3, 11) + label(305, 100, '← dequeue from the front: Mario rides first', 'end', ink3, 11)
+    + label(20, 98, '↑ dequeue from the front: Mario rides first', 'start', ink3, 11)
+    + label(300, 118, 'enqueue at the back →', 'end', ink3, 11)
     + label(420, 26, 'Stack: last in, first out (a pile of trays)', 'start', ink2, 13)
     + ['Peach', 'Luigi', 'Mario'].map((nm, i) => box(420, 40 + i * 40, 110, 36, nm, i === 0 ? asoft : card, i === 0 ? accent : line, ink, 13)).join('')
     + label(545, 62, '← push and pop both happen here', 'start', ink3, 11) + label(545, 142, 'Mario, placed first, leaves last', 'start', ink3, 11)
