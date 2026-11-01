@@ -1,0 +1,5 @@
+[
+  { "name": "Part A · list.c",       "type": "python", "setup": "sudo apt-get install -y -qq valgrind > /dev/null; python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_a_list.py",       "timeout": 240, "points": 3 },
+  { "name": "Part B · queue.c",      "type": "python", "setup": "python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_b_queue.py",      "timeout": 120, "points": 2 },
+  { "name": "Part C · dictionary.c", "type": "python", "setup": "sudo apt-get install -y -qq valgrind > /dev/null; python3 -m pip install -q -r requirements.txt", "run": "python3 -m pytest -q tests/test_c_dictionary.py", "timeout": 300, "points": 5 }
+]

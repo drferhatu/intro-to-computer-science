@@ -1,0 +1,162 @@
+---
+lab: 6
+week: 7
+title: "Build a Hash Table"
+description: "Write a linked list from scratch, a queue that wraps around, and the hash table behind a real spell checker: load 234 000 words, check a text, free everything. Then improve the hash function and watch the lookups get faster."
+assignment: lab06
+status: open
+acceptUrl: "https://classroom50.org/FiratUniversity-IJDP-SoftEng/introduction-to-computer-science/assignments/lab06/accept"
+due: "2026-11-06 23:59"
+duration: "90 min + finish at home"
+points: 10
+language: "C"
+files: ["list.c", "queue.c", "dictionary.c"]
+topics: ["linked list", "queue", "hash table", "hash function", "valgrind", "speller"]
+notebook: { file: "labs/templates/lab06/lab06.ipynb", title: "Lab 6 · Explore: how well does a hash function spread words?" }
+---
+
+## Goal
+
+This is the last lab in C, and it is the one where everything comes together: structs, pointers, `malloc` and `free`, and the data structures from the lecture. You build a linked list with your own hands, a queue that never runs off the end of its array, and then the real thing: the dictionary behind a spell checker, as a hash table. The spell checker itself, `speller.c`, is given; it loads a dictionary of 234 000 words through your code, checks a text word by word through your code, and reports how long each part took. When your hash table is good, the whole thing runs in a fraction of a second.
+
+> [!note] You can start without the instructor
+> Work top to bottom. Part A is the lecture's `list3.c` to `list6.c` put into functions; if you can trace those, you can write it. Each part is graded on its own.
+
+## Steps
+
+<Step n={1} title="Accept Lab 6 and open it in Codespaces" time="4 min" id="accept">
+
+**Accept lab lab06** at the top of this page → **Accept assignment** → **Open repository** → **Code** → **Codespaces** → **Create codespace on main**. When the terminal shows `$`:
+
+<Terminal cmd="python3 check.py" out={`:( list.c: 1 2 3 inserted at the head prints 'List: 3 2 1' and finds 2
+...
+0/9 checks passed`} />
+
+| File | What it is |
+|---|---|
+| `list.c`, `queue.c`, `dictionary.c` | Parts A–C; the comment at the top of each file is the specification |
+| `dictionary.h` | the four functions `speller.c` expects from you; do not edit |
+| `speller.c` | the spell checker (adapted from CS50); do not edit |
+| `dictionaries/small`, `dictionaries/large` | 30 words to debug with, 234 000 words to measure with |
+| `texts/` | `cat.txt`, `typos.txt`, `lecture.txt` |
+| `lab06.ipynb` | the notebook that compares hash functions, not graded |
+| `check.py`, `tests/` | the checks, one test file per part |
+
+</Step>
+
+<Step n={2} title="Part A · list.c (3 points)" time="25 min" id="part-a">
+
+A linked list of numbers. Read numbers until the user types 0, inserting each one at the **head**; print the list; search it for a target; free every node.
+
+<Terminal lines={['make list', './list']} out={`Number (0 to stop): 1
+Number (0 to stop): 2
+Number (0 to stop): 3
+Number (0 to stop): 0
+List: 3 2 1
+Target: 2
+Found`} />
+
+The struct and the four prototypes are written for you. `insert_head` returns the new head, so `main` calls it as `list = insert_head(list, n);`. Inside, three lines, in this order: allocate the node and set its number, point its `next` at the old list, return the new node. `print_list` and `search` are the lecture's `for (node *ptr = list; ptr != NULL; ptr = ptr->next)` walk; print each number with a space in front. `free_list` is `list6.c`: remember `next` before you `free`.
+
+Run `valgrind ./list` when it works. The checks do, and a forgotten `free_list` costs the whole part.
+
+</Step>
+
+<Step n={3} title="Part B · queue.c (2 points)" time="15 min" id="part-b">
+
+A queue of names with room for four, driven by commands:
+
+<Terminal lines={['make queue', './queue']} out={`> add Mario
+> add Luigi
+> next
+Mario
+> next
+Luigi
+> next
+Empty
+> quit`} />
+
+`add NAME` enqueues (print `Full` if there is no room), `next` dequeues and prints the name (`Empty` if nobody is waiting). The struct keeps `front` and `size`; the next free slot is `(front + size) % CAPACITY`, and after a dequeue `front` moves to `(front + 1) % CAPACITY`. That `%` is what makes the array **circular**: after four adds and two removes there is room again at the beginning, and the tests check exactly that.
+
+In `main`, `strncmp(cmd, "add ", 4) == 0` recognizes an add command, and `cmd + 4` is the name after it (pointer arithmetic from week 6, finally useful).
+
+</Step>
+
+<Step n={4} title="Part C · dictionary.c (5 points)" time="40 min" id="part-c">
+
+Four functions that `speller.c` calls: `load`, `check`, `size`, `unload`. Start with the lecture's hash table exactly: `N = 26` buckets and `hash` returning the first letter as 0–25. Get it **correct** first, then make it **fast**.
+
+<Terminal lines={['make speller', './speller dictionaries/small texts/cat.txt']} out={`
+MISSPELLED WORDS
+
+purrs
+
+WORDS MISSPELLED:     1
+WORDS IN DICTIONARY:  30
+WORDS IN TEXT:        23
+TIME IN load:         0.00
+TIME IN check:        0.00
+...`} />
+
+- **load**: `fopen` the dictionary; read one word at a time with `fscanf(file, "%45s", buffer)` until it returns `EOF`; for each word, `malloc` a node, `strcpy` the word into it, prepend it to `table[hash(buffer)]` (two lines, same order as Part A), and count it; `fclose`; return `true`. Return `false` if the file does not open.
+- **check**: walk the bucket `table[hash(word)]` and compare with `strcasecmp`, which ignores case, so that `Cat` and `cat` are both correct. Return `true` on a match.
+- **size**: return the count from `load`.
+- **unload**: free every node in every bucket, Part A's `free_list` inside a loop over the buckets; return `true`.
+
+Test with the small dictionary and `texts/typos.txt` until the misspelled list is exactly the six typos (plus the ordinary words that the tiny dictionary simply does not know). Then run the referee: `valgrind ./speller dictionaries/small texts/cat.txt`.
+
+Now make it fast. Run `./speller dictionaries/large texts/lecture.txt` and look at `TIME IN check`. With 26 buckets and a first-letter hash, each bucket holds thousands of words and every check walks a long list. Open the notebook, compare the three hash functions, then copy **djb2** into `dictionary.c` (three lines) and raise `N` to a few tens of thousands (`#define N 65536`). Run again and watch the time collapse. That difference is the whole point of the week.
+
+> [!tip] Why `#define N 26` and not `const int N = 26`
+> C needs a genuine constant for the size of a global array; a `const int` is a variable that happens not to change, and gcc refuses it. `#define` is text substitution, so `table[N]` becomes `table[26]` before the compiler even sees it. Keep the `#define` when you change the number.
+
+</Step>
+
+<Step n={5} title="Submit" time="2 min" id="submit">
+
+<Terminal lines={['git add -A', 'git commit -m "Lab 6"', 'git push']} />
+
+Your score appears under **Releases** about two to three minutes later (the grader installs valgrind and loads the large dictionary). Push as often as you like before **Friday, November 6, 23:59**; the last push before the deadline counts, and late pushes lose 10% per day for up to five days.
+
+</Step>
+
+## How to submit
+
+> [!note] The short version
+> 1. Accept Lab 6 on Classroom 50 (orange button), open the repository in Codespaces.
+> 2. Edit `list.c`, `queue.c`, `dictionary.c`; `make list`, `make queue`, `make speller`; `valgrind` each; `python3 check.py` to check all.
+> 3. `git add -A && git commit -m "Lab 6" && git push` before **Friday, November 6, 23:59**.
+
+Points: list 3, queue 2, dictionary 5. Grading uses its own copy of `speller.c`, so editing yours does not change anything. The other ways to work and to submit from the browser are the same as in [Lab 2](/labs/lab-02#other-ways-to-work-and-submit); valgrind needs Linux or WSL, so Parts A and C are easiest in the codespace.
+
+## Explore: how well does a hash function spread words?
+
+`lab06.ipynb` is not graded. It loads the large dictionary, hashes every word with three functions (first letter, sum of letters, djb2) into 26, 1 000 and 65 536 buckets, prints the longest bucket for each, and draws the bucket sizes. Five minutes with it tells you more about hash tables than an hour of reading.
+
+<NotebookEmbed file="labs/templates/lab06/lab06.ipynb" title="Lab 6 · Explore: how well does a hash function spread words?" />
+
+## Challenges (optional, not graded)
+
+1. **Count the collisions.** Add a function to `dictionary.c` that prints the longest bucket after `load`, and try three values of `N`.
+2. **A trie instead.** Reimplement `dictionary.c` with the lecture's trie (`children[26]`). Compare `TIME IN check` and the memory valgrind reports at the end.
+3. **A stack of names.** Turn `queue.c` into `stack.c`: same commands, last in first out, no `front` needed.
+
+## Troubleshooting
+
+> [!note] `Could not load dictionaries/small`
+> `load` returned `false`. Check that you return `true` at the end, and that `fopen` got the exact path (`dictionaries/small`, no extension).
+
+> [!note] Segmentation fault in `check` or `unload`
+> A bucket that was never initialized, or walking past `NULL`. Global arrays start as `NULL` automatically; if you `malloc` the table yourself, initialize it. Every walk stops at `ptr != NULL`.
+
+> [!note] WORDS IN DICTIONARY is 0
+> `size` returns 0: count the words in `load` and return that counter.
+
+> [!note] Correct words are reported as misspelled
+> Your `check` compares with `strcmp` (case-sensitive) or hashes `Cat` and `cat` into different buckets. Use `strcasecmp`, and make the hash lowercase every letter before it uses it.
+
+> [!note] `error: variably modified 'table' at file scope`
+> You turned the `#define N` back into a variable. See the tip in Part C.
+
+> [!note] `git push` is rejected
+> Classroom 50 added a commit to your repository. Run `git pull`, then `git push` again.

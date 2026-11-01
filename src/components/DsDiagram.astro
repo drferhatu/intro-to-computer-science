@@ -1,0 +1,120 @@
+---
+/**
+ * Inline SVG diagrams for the data-structures week, themed with the site's CSS variables
+ * (so they look right in light and dark mode). Usage in MDX: <DsDiagram kind="linked-list" />
+ * kinds: array-grow | linked-list | insert-head | bst | hash-table | trie | stack-queue
+ */
+interface Props { kind: string; caption?: string; }
+const { kind, caption } = Astro.props;
+const ink = 'var(--ink)', ink2 = 'var(--ink-2)', ink3 = 'var(--ink-3)', line = 'var(--line-2)', card = 'var(--card)';
+const brand = 'var(--brand)', accent = 'var(--accent)', soft = 'var(--brand-soft)', asoft = 'var(--accent-soft)';
+const mono = 'JetBrains Mono, ui-monospace, monospace';
+const sans = 'Instrument Sans, system-ui, sans-serif';
+
+function box(x: number, y: number, w: number, h: number, text: string, fill = card, stroke = line, tfill = ink, size = 15) {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+  <text x="${x + w / 2}" y="${y + h / 2 + size * 0.36}" text-anchor="middle" font-family="${mono}" font-size="${size}" fill="${tfill}">${text}</text>`;
+}
+function label(x: number, y: number, text: string, anchor = 'start', fill = ink3, size = 12) {
+  return `<text x="${x}" y="${y}" text-anchor="${anchor}" font-family="${sans}" font-size="${size}" fill="${fill}">${text}</text>`;
+}
+function arrow(x1: number, y1: number, x2: number, y2: number, color = brand) {
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2" marker-end="url(#arr)"/>`;
+}
+function node(x: number, y: number, val: string, ptr = '', hl = false) {
+  return box(x, y, 44, 40, val, hl ? asoft : card, hl ? accent : line) + box(x + 44, y, 44, 40, ptr, soft, line, brand, 12);
+}
+const defs = `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>`;
+
+let svg = '', vb = '0 0 760 240';
+if (kind === 'array-grow') {
+  vb = '0 0 760 250';
+  svg = label(20, 30, 'An array of 3, somewhere in memory: three boxes side by side, nothing free after them', 'start', ink2, 13)
+    + [1, 2, 3].map((v, i) => box(20 + i * 50, 45, 46, 44, String(v))).join('')
+    + box(170, 45, 46, 44, 'h', card, line, ink3) + box(220, 45, 46, 44, 'e', card, line, ink3) + box(270, 45, 46, 44, 'l', card, line, ink3) + label(325, 73, '…other data lives right here', 'start', ink3)
+    + label(20, 130, 'To add a 4th number: ask for a new array of 4, copy, free the old one', 'start', ink2, 13)
+    + [1, 2, 3].map((v, i) => box(20 + i * 50, 145, 46, 44, String(v), asoft, accent)).join('')
+    + arrow(175, 167, 330, 167, accent)
+    + [1, 2, 3, 4].map((v, i) => box(340 + i * 50, 145, 46, 44, String(v), i < 3 ? soft : asoft, i < 3 ? brand : accent)).join('')
+    + label(20, 225, 'Copying every element each time the list grows costs O(n). realloc does the same work for you, and may extend in place when there is room.', 'start', ink3);
+} else if (kind === 'linked-list') {
+  vb = '0 0 760 200';
+  svg = label(20, 28, 'A linked list: each node holds a number and the address of the next node. Nodes can be anywhere in memory.', 'start', ink2, 13)
+    + box(20, 60, 52, 40, 'list', soft, brand, brand, 13) + arrow(72, 80, 118, 80)
+    + node(120, 60, '1', '0x456') + arrow(208, 80, 268, 80)
+    + node(270, 60, '2', '0x789') + arrow(358, 80, 418, 80)
+    + node(420, 60, '3', 'NULL')
+    + label(120, 125, 'number   next', 'start', ink3, 11) + label(270, 125, 'number   next', 'start', ink3, 11) + label(420, 125, 'number   next', 'start', ink3, 11)
+    + label(20, 170, 'The head pointer "list" is the only way in. NULL at the end means "nothing follows". Following the arrows one by one is O(n); there is no way to jump to the middle.', 'start', ink3);
+} else if (kind === 'insert-head') {
+  vb = '0 0 760 260';
+  svg = label(20, 26, 'Inserting 4 at the front, in the only safe order', 'start', ink2, 13)
+    + label(20, 52, '1.  n = malloc(sizeof(node));  n->number = 4;', 'start', ink3, 12)
+    + box(20, 62, 52, 40, 'list', soft, brand, brand, 13) + arrow(72, 82, 268, 82)
+    + node(270, 62, '2', '→') + arrow(358, 82, 418, 82) + node(420, 62, '1', 'NULL')
+    + node(120, 130, '4', '?', true) + label(100, 152, 'n', 'end', accent, 13)
+    + label(20, 205, '2.  n->next = list;   (the new node points at the old first node)', 'start', ink3, 12)
+    + `<path d="M208 150 C 240 150, 250 90, 268 86" fill="none" stroke="${accent}" stroke-width="2" marker-end="url(#arr)"/>`
+    + label(20, 228, '3.  list = n;         (only now move the head; doing this first would lose the whole list)', 'start', ink3, 12)
+    + `<path d="M46 102 C 46 130, 90 150, 118 150" fill="none" stroke="${brand}" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arr)"/>`;
+} else if (kind === 'bst') {
+  vb = '0 0 760 260';
+  const n = (x: number, y: number, v: string, hl = false) => `<circle cx="${x}" cy="${y}" r="20" fill="${hl ? asoft : card}" stroke="${hl ? accent : brand}" stroke-width="2"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-family="${mono}" font-size="15" fill="${ink}">${v}</text>`;
+  const e = (x1: number, y1: number, x2: number, y2: number) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${line}" stroke-width="2"/>`;
+  svg = label(20, 26, 'The sorted array 1 2 3 4 5 6 7, folded into a binary search tree: left is smaller, right is larger', 'start', ink2, 13)
+    + [1,2,3,4,5,6,7].map((v, i) => box(560 + i * 27, 40, 25, 26, String(v), v === 4 ? asoft : card, v === 4 ? accent : line, ink, 12)).join('')
+    + e(200, 80, 110, 140) + e(200, 80, 290, 140) + e(110, 140, 65, 200) + e(110, 140, 155, 200) + e(290, 140, 245, 200) + e(290, 140, 335, 200)
+    + n(200, 80, '4', true) + n(110, 140, '2') + n(290, 140, '6') + n(65, 200, '1') + n(155, 200, '3') + n(245, 200, '5') + n(335, 200, '7')
+    + label(400, 110, 'Searching for 7: is 7 < 4? no, go right.', 'start', ink2, 13)
+    + label(400, 132, 'Is 7 < 6? no, go right. Found.', 'start', ink2, 13)
+    + label(400, 165, 'Each question throws away half the tree:', 'start', ink3)
+    + label(400, 185, 'O(log n) when the tree is balanced,', 'start', ink3)
+    + label(400, 205, 'and inserting is just one more node at a leaf.', 'start', ink3)
+    + label(400, 240, 'Insert 1, 2, 3, 4 in order and it degenerates into a linked list: O(n). Balance matters.', 'start', ink3, 11);
+} else if (kind === 'hash-table') {
+  vb = '0 0 760 300';
+  const letters = ['A', 'B', '…', 'L', 'M', '…', 'P', '…', 'T', '…', 'Y', 'Z'];
+  const names: Record<string, string[]> = { L: ['Luigi', 'Lakitu', 'Link'], M: ['Mario'], P: ['Peach'], T: ['Toad'], Y: ['Yoshi'], Z: ['Zelda'] };
+  svg = label(20, 26, 'hash("Luigi") = L → bucket 11. A hash table is an array of 26 linked lists.', 'start', ink2, 13)
+    + letters.map((l, i) => box(20, 40 + i * 20, 28, 18, l, l === 'L' ? asoft : card, l === 'L' ? accent : line, ink, 11)).join('')
+    + letters.map((l, i) => (names[l] || []).map((nm, j) => arrow(j === 0 ? 48 : 60 + (j - 1) * 90 + 78, 49 + i * 20, j === 0 ? 58 : 60 + j * 90 - 2, 49 + i * 20) + box(60 + j * 90, 40 + i * 20, 78, 18, nm, l === 'L' ? asoft : soft, l === 'L' ? accent : line, ink, 11)).join('')).join('')
+    + label(400, 60, 'Lookup: compute the bucket (one step),', 'start', ink2, 13)
+    + label(400, 82, 'then walk only that bucket\'s list.', 'start', ink2, 13)
+    + label(400, 115, 'With a good hash function the lists stay short,', 'start', ink3)
+    + label(400, 135, 'so lookup is almost constant time: the "holy grail".', 'start', ink3)
+    + label(400, 168, 'With a bad one (first letter only) names pile up', 'start', ink3)
+    + label(400, 188, 'in a few buckets and it degrades towards O(n).', 'start', ink3)
+    + label(400, 221, 'Worst case is still O(n); in practice O(1).', 'start', ink3)
+    + label(20, 290, 'Trade-off: more buckets = more memory, shorter lists. The lab asks you to choose both the number of buckets and the hash function.', 'start', ink3, 11);
+} else if (kind === 'trie') {
+  vb = '0 0 760 250';
+  const cell = (x: number, y: number, hl: string[]) => `<rect x="${x}" y="${y}" width="208" height="22" rx="4" fill="${card}" stroke="${line}"/>` + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((c, i) => `<text x="${x + 4 + i * 8}" y="${y + 15}" font-family="${mono}" font-size="9" fill="${hl.includes(c) ? accent : ink3}" font-weight="${hl.includes(c) ? 700 : 400}">${c}</text>`).join('');
+  svg = label(20, 26, '"Toad" and "Tom" in a trie: every node is an array of 26 pointers; the words share the T and the O', 'start', ink2, 13)
+    + label(20, 55, 'root', 'start', ink3, 11) + cell(60, 40, ['T']) + arrow(60 + 4 + 19 * 8 + 3, 62, 60 + 4 + 19 * 8 + 3, 82, accent)
+    + label(20, 100, 'T', 'start', accent, 12) + cell(60, 85, ['O']) + arrow(60 + 4 + 14 * 8 + 3, 107, 60 + 4 + 14 * 8 + 3, 127, accent)
+    + label(20, 145, 'TO', 'start', accent, 12) + cell(60, 130, ['A', 'M'])
+    + arrow(60 + 4 + 3, 152, 60 + 4 + 3, 172, accent) + arrow(60 + 4 + 12 * 8 + 3, 152, 300, 172, accent)
+    + label(20, 190, 'TOA', 'start', accent, 12) + cell(60, 175, ['D']) + arrow(60 + 4 + 3 * 8 + 3, 197, 60 + 4 + 3 * 8 + 3, 217, accent)
+    + label(20, 235, 'TOAD ✓', 'start', accent, 12) + cell(60, 220, [])
+    + label(300, 190, 'TOM ✓', 'start', accent, 12) + cell(300, 175, [])
+    + label(540, 100, 'Searching costs one step per letter,', 'start', ink2, 13)
+    + label(540, 122, 'whatever the number of words: O(1)', 'start', ink2, 13)
+    + label(540, 144, 'in the length of the word.', 'start', ink2, 13)
+    + label(540, 180, 'The price is memory: one node is 26', 'start', ink3)
+    + label(540, 200, 'pointers, 208 bytes, mostly NULL.', 'start', ink3);
+} else if (kind === 'stack-queue') {
+  vb = '0 0 760 220';
+  svg = label(20, 26, 'Queue: first in, first out (a line for a ride)', 'start', ink2, 13)
+    + ['Mario', 'Luigi', 'Peach'].map((nm, i) => box(20 + i * 95, 40, 90, 36, nm, i === 0 ? asoft : card, i === 0 ? accent : line, ink, 13)).join('')
+    + label(20, 100, 'enqueue at the back →', 'start', ink3, 11) + label(305, 100, '← dequeue from the front: Mario rides first', 'end', ink3, 11)
+    + label(420, 26, 'Stack: last in, first out (a pile of trays)', 'start', ink2, 13)
+    + ['Peach', 'Luigi', 'Mario'].map((nm, i) => box(420, 40 + i * 40, 110, 36, nm, i === 0 ? asoft : card, i === 0 ? accent : line, ink, 13)).join('')
+    + label(545, 62, '← push and pop both happen here', 'start', ink3, 11) + label(545, 142, 'Mario, placed first, leaves last', 'start', ink3, 11)
+    + label(20, 150, 'Both are abstract data types: they say WHAT you can do (add, remove, in which order),', 'start', ink3)
+    + label(20, 170, 'not HOW. Underneath, each can be an array of fixed capacity or a linked list that grows.', 'start', ink3);
+}
+---
+<figure class="not-prose my-6 overflow-hidden rounded-2xl border border-line bg-card p-3 shadow-soft">
+  <svg viewBox={vb} class="h-auto w-full" role="img" aria-label={caption ?? kind} set:html={defs + svg} />
+  {caption && <figcaption class="mt-2 px-1 text-center font-mono text-[11px] text-ink-3">{caption}</figcaption>}
+</figure>

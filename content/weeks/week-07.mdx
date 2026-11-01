@@ -1,0 +1,190 @@
+---
+week: 7
+title: "Data Structures: Linked Lists, Hash Tables and Trees"
+description: "Now that you can allocate memory, you can build your own structures: linked lists that grow, hash tables that find things in constant time, binary search trees, tries, stacks and queues. And the trade-offs between them."
+module: m3
+status: ready
+lab: lab-06
+reading: "CS50 Week 5 notes; K&R 6.5–6.6 (self-referential structures)"
+notebook:
+  file: "labs/templates/lab06/lab06.ipynb"
+  title: "Lab 6 · Explore: how well does a hash function spread words?"
+cs50:
+  week: "5"
+  title: "Data Structures"
+  video: "https://youtu.be/PmAI76OGE_E"
+  notes: "https://cs50.harvard.edu/x/2026/notes/5/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/5/lecture5.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/5/src5.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/5/"
+prep:
+  - "Watch the lecture with paper: draw every linked-list operation as boxes and arrows."
+  - "Watch <a href=\"https://www.youtube.com/watch?v=ItAG3s6KIEI\" target=\"_blank\" rel=\"noopener\">Jack Learns the Facts</a> (4 minutes), the short film Malan shows at the start of this lecture. It is the whole idea of a stack and a queue, told as a story."
+  - "Midterm is next week. Start your review sheet: one page per week, weeks 2–7."
+objectives:
+  - "Explain why arrays are fast to index but slow to grow, and how a linked list trades one for the other."
+  - "Implement a singly linked list in C: node struct, insert at head, search, free."
+  - "Describe stacks (LIFO) and queues (FIFO) and where each is used."
+  - "Explain hash tables: hash function, buckets, collisions, chaining, and why lookup is O(1) on average."
+  - "Describe binary search trees and tries, and their running times."
+  - "Choose a data structure for a problem by reasoning about its operations."
+wow:
+  title: "A hash table finds one word among 140 000 in the time it takes an array to check three."
+  text: "CS50's speller loads a dictionary of 143 091 words. With linear search, checking one word costs up to 143 091 comparisons; with a hash table, about one. A ten-page essay is checked in milliseconds. The trick is a function that turns a word into a bucket number, and it is the same trick behind Python dictionaries, JavaScript objects, database indexes and the cache in your CPU."
+industry:
+  - { "t": "Everything is a hash table", "d": "Python dicts, Java HashMaps, Redis, Memcached, DNS caches, Git's object store (keyed by SHA-1). Learning to build one is learning how most of the software world stores things." }
+  - { "t": "Linked lists in the kernel", "d": "The Linux scheduler, network buffers and file systems use linked lists and trees, written in exactly the C you write this week." }
+  - { "t": "Tries power autocomplete", "d": "Your keyboard's suggestions, search-as-you-type and IP routing tables are tries: each keystroke walks one level down." }
+  - { "t": "Stacks and queues are architecture", "d": "The call stack you met in week 5, undo history, browser back buttons: stacks. Print jobs, message queues like Kafka and RabbitMQ, event loops: queues." }
+resources:
+  - { "title": "CS50x 2026 · Week 5 notes", "url": "https://cs50.harvard.edu/x/2026/notes/5/" }
+  - { "title": "VisuAlgo", "url": "https://visualgo.net/en", "note": "Animated linked lists, hash tables, BSTs and tries." }
+  - { "title": "Jack Learns the Facts (Shannon Duvall, Elon University)", "url": "https://www.youtube.com/watch?v=ItAG3s6KIEI", "note": "The four-minute film from the lecture: stacks and queues as a story." }
+  - { "title": "Data Structures: Trade-offs and Performance (instructor slides, 2025)", "url": "https://ferhatucar.notion.site/intro2compsci", "note": "In the previous course site's lecture 9." }
+tags: ["linked list", "hash table", "hash function", "collision", "stack", "queue", "binary search tree", "trie", "abstract data type"]
+---
+
+## Why this week matters
+
+Everything you have stored so far went into a variable or an array. That is enough for small programs, and it stops being enough the moment data starts to arrive without warning: a thousand names, a million words, a photo library that grows every day. **Data structures** are the ways of arranging data in memory so that the things you do most often, adding, finding, removing, are fast. The right structure makes a program feel instant; the wrong one makes the same program crawl. This week you learn five of them, and more importantly, you learn the questions that tell you which one to reach for.
+
+This is also our last week in C. From week 9 we switch to Python, where every structure on this page comes built in. You will appreciate them properly only because you built them yourself first, out of nothing but structs and pointers.
+
+The programs are from CS50's Week 5 lecture (`list0.c` to `list9.c`), plus five written for this course that turn the lecture's pictures of stacks, queues, trees, hash tables and tries into running C. Each orange box is followed by its full source.
+
+## Two ideas before any code: stacks and queues
+
+Before we build anything, two ways of organizing a line of people. They are so common that they have names everywhere in computing, and the short film Malan shows, [Jack Learns the Facts](https://www.youtube.com/watch?v=ItAG3s6KIEI), tells both as a story.
+
+A **queue** is a line for a ride at an amusement park: the first person to arrive is the first to get on. First in, first out, **FIFO**. The two operations are **enqueue**, join the back of the line, and **dequeue**, serve the person at the front. Your printer has one; so does every message app, so that your messages arrive in the order you sent them.
+
+A **stack** is a pile of trays in a cafeteria: you put a clean tray on top, and the next person takes the one on top, which is the one that arrived last. Last in, first out, **LIFO**. The operations are **push** and **pop**. The Back button in your browser is a stack, Undo is a stack, and, as you saw in week 5, the function calls of a running program are a stack too.
+
+<DsDiagram kind="stack-queue" caption="A queue serves the oldest item first; a stack serves the newest. Both are abstract data types: a promise about order, not a particular layout in memory." />
+
+> [!code] queue.c and stack.c · the same struct, two different rules
+> [queue.c](/c/week-07/queue.c) and [stack.c](/c/week-07/stack.c) both store names in an array of fixed capacity inside a struct, with a `size`. The only difference is which end you take from. The queue also remembers `front`, and uses `% CAPACITY` so that the array wraps around like a clock face instead of running off the end. Both have a problem you can already name: a fixed capacity. Fifty people fit; the fifty-first is turned away, and if only three ever come, forty-seven slots were wasted. The rest of this week is about structures that grow.
+
+<CodeFiles dir="week-07" files={["queue.c", "stack.c"]} />
+
+These two are **abstract data types**: they describe *what* you can do (add, remove, in a particular order) without saying *how* it is stored. The queue in `queue.c` happens to use an array. It could use the linked list you are about to meet, and the people in line would never know.
+
+## Arrays, and the cost of growing
+
+An array is the structure you already know: a row of boxes, side by side in memory, which is exactly why `numbers[3]` is instant; the computer multiplies 3 by the size of a box and jumps there. The weakness is the other side of the same coin. Because the boxes are side by side, there is no room to add a fourth one if something else already lives next door.
+
+<DsDiagram kind="array-grow" caption="Growing an array means asking for a bigger one somewhere else and copying everything over." />
+
+> [!code] list0.c → list2.c · from a fixed array to realloc
+> [list0.c](/c/week-07/list0.c) is an array of three numbers, nothing new. [list1.c](/c/week-07/list1.c) wants a fourth and has to do it the honest way: `malloc` a new array of four, copy the three numbers over in a loop, add the fourth, `free` the old array, and point `list` at the new one. It works, and it is a lot of ceremony for one extra number. [list2.c](/c/week-07/list2.c) uses **`realloc`**, a library function that does exactly that work for you, and, if there happens to be free memory right after the array, simply extends it in place without copying at all.
+
+<CodeFiles dir="week-07" files={["list0.c", "list1.c", "list2.c"]} />
+
+Even with `realloc`, growing an array can mean copying every element, which is O(n). Do that for every new number and a list of a million costs a trillion steps. We need a structure where adding is cheap, which means giving up the boxes-side-by-side rule.
+
+## Linked lists
+
+Here is the idea. Instead of insisting that the numbers sit next to each other, let each number live wherever memory has room, and let each one carry the **address of the next one**. Think of a treasure hunt: each clue tells you where the next clue is. You need to know only where the first clue is, and you can follow the trail to the end.
+
+<DsDiagram kind="linked-list" caption="Each node is a number plus the address of the next node. The head pointer is the only way in; NULL marks the end." />
+
+To build it in C we need a struct that contains a pointer to *another struct of the same kind*. That requires one small piece of new syntax:
+
+```c
+typedef struct node
+{
+    int number;
+    struct node *next;
+} node;
+```
+
+The name `node` appears twice because the struct has to refer to itself before the `typedef` has finished giving it its short name. Each such struct is a **node**: a value plus a pointer. A pointer to a `node` is our **list**, and an empty list is just `NULL`.
+
+> [!code] list3.c · building a list by inserting at the front
+> [list3.c](/c/week-07/list3.c) reads three numbers and, for each, allocates a node with `malloc(sizeof(node))`, fills in the number, and inserts it at the **front** of the list with two lines: `n->next = list; list = n;`. The arrow operator `->` is how you reach a field through a pointer; `n->number` means `(*n).number`, "the number inside the node that n points to". Inserting at the front is O(1): two assignments, however long the list already is.
+
+<CodeFiles dir="week-07" files={["list3.c"]} />
+
+Look at the order of those two lines; it is the single most important detail of the week. If you wrote `list = n` first, the old list would be gone, because nothing would point at it anymore. The new node has to grab the old first node before the head is moved.
+
+<DsDiagram kind="insert-head" caption="Insert at the head in the only safe order: connect the new node to the list first, then move the head pointer." />
+
+> [!code] list4.c → list6.c · walking the list, and freeing it
+> To print the list you follow the arrows. [list4.c](/c/week-07/list4.c) does it with a `while` loop and a temporary pointer `ptr` that starts at `list` and moves with `ptr = ptr->next` until it becomes `NULL`. [list5.c](/c/week-07/list5.c) says the same with a `for` loop, which is the idiom you will see everywhere: `for (node *ptr = list; ptr != NULL; ptr = ptr->next)`. [list6.c](/c/week-07/list6.c) frees the list, and here the order matters again: you must save `ptr->next` *before* you `free(ptr)`, because after the free the node's memory is no longer yours to read.
+
+<CodeFiles dir="week-07" files={["list4.c", "list5.c", "list6.c"]} />
+
+> [!code] list7.c → list9.c · appending, keeping order, and cleaning up on error
+> Inserting at the front puts the numbers in reverse. [list7.c](/c/week-07/list7.c) appends at the **end** instead: walk to the last node, the one whose `next` is `NULL`, and hang the new node there. That keeps the arrival order but costs a walk of the whole list, O(n). [list8.c](/c/week-07/list8.c) keeps the list **sorted**: walk until you find the first node larger than the new number and splice the new node in just before it, which is also O(n) but gives you an always-sorted list for free. [list9.c](/c/week-07/list9.c) moves the freeing into a function, `unload`, and calls it also when `malloc` fails halfway, so that an error never leaks the nodes created before it.
+
+<CodeFiles dir="week-07" files={["list7.c", "list8.c", "list9.c"]} />
+
+So what did we trade? Growing is now cheap and the list is never "full". But we lost the array's superpower: there is no `list[500]`. To reach the 500th number you follow 500 arrows, and binary search, which needs to jump to the middle, is impossible. Each node also costs an extra 8 bytes for the pointer. Search is O(n), the same as an unsorted array, and that is a step backwards from week 5.
+
+## Trees: a sorted list you can halve
+
+We want the growth of a linked list and the binary search of a sorted array. The trick is to let each node point to **two** others: one for everything smaller, one for everything larger. Take the sorted numbers 1 to 7, put 4 in the middle at the top, 2 and 6 below it, and so on. That is a **binary search tree**.
+
+<DsDiagram kind="bst" caption="A binary search tree: left is smaller, right is larger. Searching for 7 asks two questions and is done." />
+
+Searching is the game of twenty questions. Is the number you want smaller than the one at the top? Go left; otherwise go right. Each question throws away half of what remains, so a balanced tree of a million numbers answers in about twenty steps: O(log n), the week 5 curve, and yet inserting a new number is just hanging one more node on a leaf, no copying.
+
+> [!code] tree.c · a binary search tree in C
+> [tree.c](/c/week-07/tree.c) defines a node with `left` and `right` pointers, inserts the numbers 4, 2, 6, 1, 3, 5, 7 so that the tree comes out balanced, prints them in order (visit the left subtree, then the node, then the right subtree, and the numbers come out sorted; try to see why), and searches with the lecture's recursive `search`: if the tree is empty, false; if the number is smaller, search left; if larger, search right; otherwise found. Recursion is the natural language of trees, because a tree is made of smaller trees.
+
+<CodeFiles dir="week-07" files={["tree.c"]} />
+
+There is a catch, and it is in the caption of the picture. Insert 1, 2, 3, 4 in that order and every new number goes right: the "tree" is a linked list in disguise, and search is back to O(n). Real-world trees rebalance themselves as they grow (you will meet their names, red-black trees and B-trees, in later courses); the idea is the same.
+
+## Hash tables: almost instant
+
+O(log n) is good. What would it take to find something in O(1), one step, no matter how much data there is? Think of how a post office sorts mail: not by searching every letter, but by looking at the first letter of the name and dropping the envelope into one of 26 pigeonholes. To find "Luigi", you go straight to the L pigeonhole and look through a handful of envelopes instead of all of them.
+
+That pigeonhole rule is a **hash function**: a function that takes a value and returns a number, the index of the bucket where it belongs. A **hash table** is an array of buckets, and since several names can hash to the same bucket, each bucket is a linked list. Two structures you already know, combined.
+
+<DsDiagram kind="hash-table" caption="hash(name) picks the bucket; the bucket is a short linked list. Luigi, Lakitu and Link collide in L." />
+
+> [!code] hashtable.c · 26 buckets of Nintendo characters
+> [hashtable.c](/c/week-07/hashtable.c) is a `node *table[26]`, the lecture's hash function `toupper(name[0]) - 'A'`, an `insert` that prepends to the right bucket in O(1), and a `lookup` that walks only one bucket. Run it and look at the output: L has three names on it, a **collision** chain, while most letters are empty. With a hash function this crude, a dictionary of 140 000 words would pile thousands of words into S and almost none into X.
+
+<CodeFiles dir="week-07" files={["hashtable.c"]} />
+
+So a hash table's speed depends entirely on its hash function and on how many buckets you give it. A good function spreads the data evenly, like a fair shuffle, and with enough buckets every list stays a few nodes long. Then lookup is one hash plus a couple of comparisons: constant time in practice, even though the theoretical worst case, everything in one bucket, is still O(n). The price is memory for the array of buckets, and that is the knob you turn in the lab. The notebook at the end lets you try three hash functions on a real word list and watch the buckets fill.
+
+## Tries: the word is the address
+
+One more structure, the strangest and in a sense the purest. A **trie** (from re*trie*val, pronounced "try") is a tree in which every node is an array of 26 pointers, one per letter. To store "Toad" you start at the root, follow the T pointer (creating the node if it is missing), then O, then A, then D, and mark the last node as the end of a word. To store "Tom" you follow T and O, which already exist, then M.
+
+<DsDiagram kind="trie" caption="Toad and Tom share the path T → O. Looking a word up costs one step per letter, no matter how many words are stored." />
+
+> [!code] trie.c · Toad, Tom and Toadette
+> [trie.c](/c/week-07/trie.c) stores three names and looks one up. `insert` and `search` are the same walk: for each letter, turn it into an index 0–25 and follow that child. The search for a four-letter word takes four steps whether the trie holds three names or three million, which is as close to a guaranteed O(1) as this week gets. The bill arrives in memory: every node is 26 pointers, 208 bytes, most of them `NULL`. Your phone's keyboard pays that bill gladly, because it is why suggestions appear after one keystroke.
+
+<CodeFiles dir="week-07" files={["trie.c"]} />
+
+## Which one, when?
+
+This is the question that matters in practice, and it comes down to asking what you will do most often with the data.
+
+| You mostly need to… | Reach for | Because | Watch out for |
+|---|---|---|---|
+| Jump to item number *i*, and the size is known | **Array** | `a[i]` is one multiplication: O(1) | Growing means copying everything |
+| Add and remove often, size unknown, order of arrival matters | **Linked list** | Insert at the front is two assignments | No jumping to the middle; search is O(n) |
+| Keep things sorted and search them as they grow | **Binary search tree** | Search and insert are O(log n) when balanced | Unlucky order makes it a list; real trees rebalance |
+| Look things up by a key as fast as possible | **Hash table** | One hash, then a short list: O(1) in practice | Needs a good hash function and memory for buckets |
+| Look up strings, prefixes, autocomplete | **Trie** | One step per letter, independent of the number of words | Very memory-hungry |
+| Serve requests in arrival order | **Queue** | First in, first out, by definition | Choose array or list underneath |
+| Undo, back, matching brackets, function calls | **Stack** | Last in, first out, by definition | Same |
+
+Two rules of thumb carry most of the weight. First, if you do not know how much data is coming, do not start with a fixed array. Second, if you look things up by name far more often than you add them, a hash table is almost always the answer, which is why Python's dictionaries, JavaScript's objects and every database index you will ever meet are hash tables or balanced trees underneath.
+
+## Summary
+
+- A data structure is a way of arranging data so that the operations you do most are fast; the choice is always a trade-off between time and memory.
+- Stacks (LIFO) and queues (FIFO) are abstract data types: rules about order, implemented with an array or a list.
+- Arrays index in O(1) but grow by copying; `realloc` helps.
+- A linked list is nodes with `next` pointers: O(1) insert at the head, O(n) search, no jumping. Connect the new node before moving the head; save `next` before freeing.
+- A binary search tree is a sorted structure you can halve: O(log n) search and insert when balanced.
+- A hash table is an array of linked lists chosen by a hash function: O(1) in practice, if the function spreads the data and there are enough buckets.
+- A trie looks up a word in as many steps as it has letters, at a steep memory cost.
+- The lab, [Lab 6: Build a Hash Table](/labs/lab-06), has you write a linked list, a circular queue and the hash table behind a spell checker, then improve its hash function and watch it speed up.

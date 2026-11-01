@@ -419,12 +419,84 @@ Run `./filter grayscale images/tiny.bmp images/out.bmp` in the terminal, then po
 Then try `firat.bmp` and `smiley.bmp`. If you want a real photo, convert any JPEG to 24-bit BMP (`convert photo.jpg -type truecolor photo.bmp` with ImageMagick, or an online converter) and run your filter on it."""),
 ]
 
+# ---------------------------------------------------------------------------
+# LAB 6 · how well does a hash function spread words?
+# ---------------------------------------------------------------------------
+LAB06 = [
+md("""# Lab 6 · Explore: how well does a hash function spread words?
+
+**Introduction to Computer Science (YMT113)** · Fall 2026
+
+Nothing here is graded. A hash table is fast only when its buckets stay short. Here you take a real word list,
+try three hash functions, and *see* how evenly each one spreads the words. Use what you learn to improve `dictionary.c`.
+
+> Where to run it: in your codespace (the `dictionaries/` folder is right there) or in Colab after uploading `dictionaries/large`."""),
+md("""## 1 · Load the words"""),
+code("""from pathlib import Path
+path = Path("dictionaries/large") if Path("dictionaries/large").exists() else Path("large")
+words = [w.strip() for w in path.read_text(errors="ignore").split() if w.strip()]
+print(len(words), "words, e.g.", words[:5], "…", words[-3:])"""),
+md("""## 2 · Three hash functions
+
+The lecture's function looks at the first letter only. The second adds up all the letters. The third is **djb2**, a classic
+that multiplies as it goes, so that the order of letters matters too ("tab" and "bat" land in different buckets)."""),
+code("""def h_first(word, n):          # the lecture: first letter → 0..25
+    return (ord(word[0].upper()) - ord("A")) % n
+
+def h_sum(word, n):            # sum of letters
+    return sum(ord(c) for c in word.lower()) % n
+
+def h_djb2(word, n):           # djb2: h = h * 33 + c
+    h = 5381
+    for c in word.lower():
+        h = (h * 33 + ord(c)) & 0xFFFFFFFF
+    return h % n
+
+for f in (h_first, h_sum, h_djb2):
+    print(f.__name__, f("tab", 26), f("bat", 26), f("Luigi", 26))"""),
+md("""## 3 · Count the bucket sizes
+
+With N buckets and W words, a perfect spread would put W/N words in every bucket. The *longest* bucket is what decides the worst-case lookup."""),
+code("""from collections import Counter
+
+def profile(f, n):
+    counts = Counter(f(w, n) for w in words)
+    sizes = sorted(counts.values(), reverse=True)
+    return sizes, max(sizes), len(words) / n
+
+for n in (26, 1000, 65536):
+    print(f"N = {n:>6}  ideal per bucket ≈ {len(words)/n:8.1f}")
+    for f in (h_first, h_sum, h_djb2):
+        sizes, longest, ideal = profile(f, n)
+        used = sum(1 for s in sizes if s > 0)
+        print(f"   {f.__name__:8}  longest bucket {longest:>7}   buckets used {used:>6}/{n}")"""),
+md("""Read the table slowly. With 26 buckets nothing can be good: 234 000 words divided by 26 is 9 000 per bucket at best, and the
+first-letter hash is far worse, because far more words start with S than with X. With 65 536 buckets djb2 keeps every bucket tiny,
+and the sum-of-letters hash still has long chains, because many words share the same letters."""),
+md("""## 4 · Draw it"""),
+code("""import matplotlib.pyplot as plt
+
+n = 26
+fig, ax = plt.subplots(1, 3, figsize=(12, 3), sharey=True)
+for a, f in zip(ax, (h_first, h_sum, h_djb2)):
+    counts = Counter(f(w, n) for w in words)
+    a.bar(range(n), [counts.get(i, 0) for i in range(n)])
+    a.set_title(f"{f.__name__}, N = {n}"); a.set_xlabel("bucket")
+ax[0].set_ylabel("words in bucket")
+plt.tight_layout(); plt.show()"""),
+md("""## 5 · Your turn
+
+Copy djb2 into `dictionary.c` (it is three lines of C), raise `N` to a few tens of thousands, and run `./speller dictionaries/large texts/lecture.txt`
+before and after. Watch `TIME IN check` drop. Then try `N = 1000003` and think about what you paid for the speed."""),
+]
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
     "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
     "lab03": (ROOT / "labs" / "templates" / "lab03" / "lab03.ipynb", LAB03),
     "lab04": (ROOT / "labs" / "templates" / "lab04" / "lab04.ipynb", LAB04),
     "lab05": (ROOT / "labs" / "templates" / "lab05" / "lab05.ipynb", LAB05),
+    "lab06": (ROOT / "labs" / "templates" / "lab06" / "lab06.ipynb", LAB06),
 }
 
 
@@ -448,10 +520,11 @@ def execute(path):
     from nbclient import NotebookClient
     nb = nbformat.read(path, as_version=4)
     with tempfile.TemporaryDirectory() as tmp:
-        images = path.parent / "images"
-        if images.exists():
-            import shutil
-            shutil.copytree(images, Path(tmp) / "images")
+        import shutil
+        for extra in ("images", "dictionaries"):
+            d = path.parent / extra
+            if d.exists():
+                shutil.copytree(d, Path(tmp) / extra)
         client = NotebookClient(nb, timeout=300, kernel_name="python3", allow_errors=True,
                                 skip_cells_with_tag=SKIP_TAG, resources={"metadata": {"path": tmp}})
         client.execute()
