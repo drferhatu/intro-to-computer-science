@@ -183,7 +183,7 @@
       {
         "name": "Midterm exam",
         "weight": 40,
-        "note": "In-class written exam in week 8. The official date is announced by the faculty."
+        "note": "Written exam in the midterm week starting November 16 (week 9). The exact day and room are announced by the faculty."
       },
       {
         "name": "Final",
@@ -301,7 +301,7 @@
       "title": "CS50's Introduction to Programming with Python",
       "org": "Harvard University",
       "url": "https://cs50.harvard.edu/python/",
-      "note": "Free. If you want more Python after week 9."
+      "note": "Free. If you want more Python after week 8."
     }
   ],
   "tools": [

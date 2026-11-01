@@ -36,13 +36,13 @@ Our Monday lecture assumes you did this. It does not repeat the lecture; it goes
 
 | Our week | CS50x 2026 | Our week | CS50x 2026 |
 |---|---|---|---|
-| 2 | Week 0 · Scratch | 9 | Week 6 · Python |
+| 2 | Week 0 · Scratch | 9 | Midterm |
 | 3 | Week 1 · C | 10 | Artificial Intelligence |
 | 4 | Week 2 · Arrays | 11 | Week 7 · SQL |
 | 5 | Week 3 · Algorithms | 12 | Week 8 · HTML, CSS, JavaScript |
 | 6 | Week 4 · Memory | 13 | CS50 Cybersecurity, lectures 0–1 |
 | 7 | Week 5 · Data Structures | 14 | Week 9 · Flask (optional) |
-| 8 | Midterm | 15 | Week 10 · The End |
+| 8 | Week 6 · Python | 15 | Week 10 · The End |
 
 Weeks 1 (introduction), 13 (hardware and security) and 14 (HCI and industry practice) add material that CS50x does not cover in the same way; their week pages carry their own reading.
 

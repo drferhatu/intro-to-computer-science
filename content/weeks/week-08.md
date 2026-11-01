@@ -1,40 +1,52 @@
 ---
 week: 8
-title: "Midterm Exam"
-description: "Written, in class, covering weeks 1–7: representation, algorithms, C, arrays and strings, searching and sorting, memory and data structures. The official date and room are announced by the faculty."
-module: m3
-exam: true
-status: ready
+title: "Python: The Same Ideas in a Tenth of the Lines"
+description: "Every C program you wrote, rewritten in Python: no types to declare, no semicolons, no memory to free, and a library for everything. What you gain, what you give up, and how to learn any new language in a day."
+module: m4
+status: draft
+lab: lab-07
+reading: "CS50 notes; Python tutorial chapters 3–5"
+cs50:
+  week: "6"
+  title: "Python"
+  video: "https://youtu.be/Rl0ludWTLxs"
+  notes: "https://cs50.harvard.edu/x/2026/notes/6/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/6/lecture6.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/6/src6.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/6/"
 prep:
-  - "Review one week per day: re-read the week page, redo the lab from a blank file, and try the CS50 problem set of that week without looking at your old code."
-  - "Practice on paper. The exam is written: you will trace code, draw memory, write short C functions and explain trade-offs, without a compiler."
-  - "Bring: pen, student ID. No notes, no devices."
+  - "Watch the lecture and, for each program, write the C version in your head first. The point of the week is the comparison."
+  - "Run <code>python3</code> in your codespace terminal and type <code>print(\"hello, world\")</code>. That is the whole setup."
 objectives:
-  - "Convert between binary, decimal and hexadecimal; explain ASCII and RGB."
-  - "Trace a C program with loops, functions, arrays and strings and give its output."
-  - "Write short C functions from a specification (validation loops, string processing, searching)."
-  - "Compare algorithms with Big O and trace selection, bubble and merge sort."
-  - "Draw memory for pointer code, explain swap, malloc/free, and identify leaks and segfaults."
-  - "Implement linked-list operations and explain hash tables and their trade-offs."
+  - "Translate C programs with variables, conditions, loops and functions into Python."
+  - "Use Python's built-in types: int, float, str, bool, list, dict, tuple, and explain dynamic typing."
+  - "Handle input and exceptions with try/except and write input-validation loops."
+  - "Import and use modules (random, csv, sys) and install packages with pip."
+  - "Explain what an interpreter is, and why Python is slower than C but faster to write."
+  - "Recognize when C is the right tool and when Python is."
+wow:
+  title: "CS50's speller: 200 lines of C become 20 lines of Python, and the Python version is still a hash table."
+  text: "Python's set is a hash table written in C. Everything you built by hand in week 7 is one line: words = set(open('dictionary').read().split()). You did not waste week 7: you now know what that line costs and why it is fast. That is the difference between using a tool and understanding it, and it is the difference employers pay for."
+industry:
+  - { "t": "Python is the language of AI and data", "d": "PyTorch, TensorFlow, pandas, scikit-learn: every machine-learning system is driven from Python, while the heavy lifting runs in C and CUDA underneath." }
+  - { "t": "Glue and automation", "d": "Most companies run thousands of Python scripts that move data, call APIs, generate reports and test systems. Knowing Python means never doing a repetitive task by hand again." }
+  - { "t": "Interpreters and the speed trade-off", "d": "Instagram, YouTube and Dropbox run on Python, and each has rewritten hot paths in C or Rust. Knowing both is the actual industry skill." }
+  - { "t": "pip and the supply chain", "d": "A one-line install pulls code written by strangers. The 2024 xz backdoor showed why professionals pin versions and read what they install." }
 resources:
-  - { "title": "Last year's midterms (A and B) with solution guides", "url": "https://ferhatucar.notion.site/intro2compsci", "note": "On the previous course site. The format is the same; the questions are not." }
-  - { "title": "CS50x problem sets 1–5", "url": "https://cs50.harvard.edu/x/2026/psets/", "note": "The best written practice there is." }
-tags: ["midterm", "exam", "review"]
+  - { "title": "CS50x 2026 · Week 6 notes", "url": "https://cs50.harvard.edu/x/2026/notes/6/" }
+  - { "title": "The Python Tutorial (official)", "url": "https://docs.python.org/3/tutorial/", "note": "Chapters 3–5 cover this week." }
+  - { "title": "CS50's Introduction to Programming with Python", "url": "https://cs50.harvard.edu/python/", "note": "A whole free course if you want more." }
+tags: ["Python", "interpreter", "dynamic typing", "list", "dict", "exceptions", "modules", "pip"]
 ---
 
-## Format
+## Topics
 
-- Duration and room: announced by the faculty and posted under [announcements](/announcements).
-- Roughly: 30% short answers (representation, definitions, Big O), 40% code tracing and memory diagrams, 30% writing C functions.
-- Everything on this site from week 1 to week 7 is fair game; the [lab](/labs) programs are the best predictor of the coding questions.
+1. **Hello, again**: `print("hello, world")`; running with `python3`; no compile step; the interpreter.
+2. **Types without declarations**: `int`, `float`, `str`, `bool`; `input()` returns a string; `int(input())`; `try`/`except ValueError`.
+3. **Conditions and loops**: indentation instead of braces; `if/elif/else`; `while`; `for i in range(n)`; `for c in s`.
+4. **Lists and dicts**: `scores = [72, 73, 33]`, `sum(scores) / len(scores)`; `people = {"Carter": "+1-617"}`; the hash table from week 7, built in.
+5. **Functions and modules**: `def`, default arguments, `import random`, `from cs50 import get_int`, `sys.argv`, `sys.exit`.
+6. **Files**: `open`, `csv.reader`, `csv.DictWriter`.
+7. **C versus Python**: overflow gone, floats still imprecise, speed 10–100× slower, and why that is usually fine.
 
-## How to review
-
-1. **One page per week.** Write the key ideas of each week on one sheet, by hand. If it does not fit, you do not yet know what matters.
-2. **Redo, do not reread.** Open a blank file and rewrite Lab 2's calculator, Lab 3's cipher, Lab 4's binary search, Lab 5's swap and Lab 6's linked list from memory. Compile them. That is the exam, with a compiler.
-3. **Trace on paper.** Take three short programs from the CS50 notes and write their output without running them. Then run them.
-4. **Explain to someone.** Pointers, hash tables and Big O to a friend who is not in the course. If they get it, so do you.
-
-## No lab this week
-
-The lab slot is used for the exam or for questions, depending on the faculty's schedule. Use the time you save to push a commit to your project.
+Full notes are published before the lecture. The lab, [Lab 7: C to Python](/labs/lab-07), rewrites three earlier labs in Python and times the difference.

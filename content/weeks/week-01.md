@@ -61,7 +61,7 @@ All three steps are in the [lab setup guide](/guides/lab-setup). Ten minutes, no
 
 ## Grading, briefly
 
-- **Midterm** (week 8): 40%.
+- **Midterm** (week 9, the week of November 16): 40%.
 - **Final**: 60%, made of the final exam (85% of that) and the **semester project** (15% of that).
 - **Labs**: autograded, tracked, and the practice ground for everything else. A student who does every lab has never failed this course.
 - The [semester project](/project) framework is published in week 2. You receive your personal project in week 5, you build until week 15, you demo on the last Monday.
@@ -72,8 +72,8 @@ All three steps are in the [lab setup guide](/guides/lab-setup). Ten minutes, no
 |---|---|---|
 | 1–2 | Foundations | See how everything becomes bits; program in Scratch |
 | 3–4 | The C language | Write real programs: variables, loops, functions, arrays, strings |
-| 5–8 | Algorithms, memory, data structures | Search, sort, use pointers, build linked lists and hash tables; midterm in week 8 |
-| 9–11 | Python, AI and data | Do in ten lines what took fifty in C; understand LLMs; query databases |
+| 5–7 | Algorithms, memory, data structures | Search, sort, use pointers, build linked lists and hash tables |
+| 8–11 | Python, AI and data | Do in ten lines what took fifty in C; midterm in week 9; understand LLMs; query databases |
 | 12–13 | The web | Build a page with HTML, CSS and JavaScript; see how the Internet moves it |
 | 14–15 | Humans and projects | Design for people; demo your project |
 

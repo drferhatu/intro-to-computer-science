@@ -1,12 +1,12 @@
 ---
 lab: 7
-week: 9
+week: 8
 title: "C to Python"
 description: "Rewrite three earlier labs in Python, use lists and dictionaries instead of arrays and hash tables, and time C against Python on the same task."
 assignment: lab07
 status: draft
 acceptUrl: ""
-due: "2026-11-20 23:59"
+due: "2026-11-13 23:59"
 duration: "90 min + finish at home"
 points: 10
 language: "Python"
@@ -16,7 +16,7 @@ topics: ["Python", "lists", "dicts", "exceptions", "sys.argv", "timing"]
 
 ## Plan
 
-This lab opens in week 9. The full step-by-step page, the starter repository and the tests are published before that Monday; the plan below is final.
+This lab opens in week 8. The full step-by-step page, the starter repository and the tests are published before that Monday; the plan below is final.
 
 1. **mario.py**, **caesar.py**: the week 3 and 4 programs, now in Python, with `try`/`except` for input.
 2. **speller.py**: the week 7 spell checker in 20 lines using a `set`; time it against your C version and explain the result.
