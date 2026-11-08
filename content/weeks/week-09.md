@@ -1,40 +1,38 @@
 ---
 week: 9
-title: "Midterm Exam"
-description: "Written, in class, covering weeks 1–7 (the C part of the course; nothing from the Python week): representation, algorithms, C, arrays and strings, searching and sorting, memory and data structures. Exam week starts Monday, November 16; the exact day and room are announced by the faculty."
+title: "Python in Practice: Data, Charts, APIs and Your Project"
+description: "Last week was the language; this week is the work. Read a spreadsheet with pandas, draw it with matplotlib, pull live data from a web API, organize a real project into files and an environment, and test it. The toolkit of the AI and data weeks ahead, and of your semester project."
 module: m4
-exam: true
-status: ready
+status: draft
+lab: lab-07
+reading: "CS50P notes on libraries and file I/O; pandas 10-minute tutorial"
+cs50:
+  week: "P"
+  title: "No CS50x lecture this week: CS50P lectures 4 (Libraries) and 6 (File I/O) are the closest match"
+  video: "https://cs50.harvard.edu/python/weeks/4/"
+  notes: "https://cs50.harvard.edu/python/notes/4/"
+  slides: ""
+  source: ""
+  pset: "https://cs50.harvard.edu/python/psets/4/"
 prep:
-  - "Review one week per day: re-read the week page, redo the lab from a blank file, and try the CS50 problem set of that week without looking at your old code."
-  - "Practice on paper. The exam is written: you will trace code, draw memory, write short C functions and explain trade-offs, without a compiler."
-  - "Bring: pen, student ID. No notes, no devices."
+  - "Finish Lab 7 (due Friday, November 13). This week's lecture builds on it."
+  - "Have Python working locally with Miniconda and VS Code, as set up on the week 8 page, and bring your laptop. This is the first week where your own machine matters."
+  - "The midterm is Wednesday, November 25, 12:00–13:00, rooms A304–A305, weeks 1–7 only: see the <a href=\"/guides/midterm\">midterm page</a>. Start the one-page-per-week sheet now."
 objectives:
-  - "Convert between binary, decimal and hexadecimal; explain ASCII and RGB."
-  - "Trace a C program with loops, functions, arrays and strings and give its output."
-  - "Write short C functions from a specification (validation loops, string processing, searching)."
-  - "Compare algorithms with Big O and trace selection, bubble and merge sort."
-  - "Draw memory for pointer code, explain swap, malloc/free, and identify leaks and segfaults."
-  - "Implement linked-list operations and explain hash tables and their trade-offs."
-resources:
-  - { "title": "Last year's midterms (A and B) with solution guides", "url": "https://ferhatucar.notion.site/intro2compsci", "note": "On the previous course site. The format is the same; the questions are not." }
-  - { "title": "CS50x problem sets 1–5", "url": "https://cs50.harvard.edu/x/2026/psets/", "note": "The best written practice there is." }
-tags: ["midterm", "exam", "review"]
+  - "Load a CSV into a pandas DataFrame, select columns and rows, compute summaries and group by a column."
+  - "Draw line, bar and scatter charts with matplotlib and read them critically."
+  - "Call a web API with requests, parse JSON, and handle errors and rate limits."
+  - "Organize a program into modules and functions, keep secrets out of code, and write a first test with pytest."
+  - "Set up a project folder: environment, requirements.txt, README, Git, and run it from a clean clone."
+tags: ["pandas", "matplotlib", "requests", "JSON", "modules", "pytest", "virtual environment", "project"]
 ---
 
-## Format
+## Plan
 
-- Duration and room: announced by the faculty and posted under [announcements](/announcements).
-- Roughly: 30% short answers (representation, definitions, Big O), 40% code tracing and memory diagrams, 30% writing C functions.
-- Everything on this site from week 1 to week 7 is fair game (week 8, Python, is not); the [lab](/labs) programs are the best predictor of the coding questions.
+1. **A spreadsheet in three lines**: `pd.read_csv`, `.head()`, `.describe()`; columns, filters, `groupby`; the lab scores of this course as the running example.
+2. **Charts you can trust**: `plot`, `bar`, `scatter`, labels and titles; what a chart hides.
+3. **Live data**: `requests.get`, status codes, `.json()`, a loop over pages; the GitHub API and a public weather API.
+4. **From a script to a project**: functions in modules, `if __name__ == "__main__"`, `requirements.txt`, a `.env` file for keys, a `tests/` folder with one pytest test, `README.md`.
+5. **Project clinic**: the lab slot is for your semester project. Milestone 3 (prototype) is due in week 11; bring your repository and leave with a running skeleton and a commit.
 
-## How to review
-
-1. **One page per week.** Write the key ideas of each week on one sheet, by hand. If it does not fit, you do not yet know what matters.
-2. **Redo, do not reread.** Open a blank file and rewrite Lab 2's calculator, Lab 3's cipher, Lab 4's binary search, Lab 5's swap and Lab 6's linked list from memory. Compile them. That is the exam, with a compiler.
-3. **Trace on paper.** Take three short programs from the CS50 notes and write their output without running them. Then run them.
-4. **Explain to someone.** Pointers, hash tables and Big O to a friend who is not in the course. If they get it, so do you.
-
-## No lab this week
-
-The lab slot is used for the exam or for questions, depending on the faculty's schedule. Use the time you save to push a commit to your project.
+No new graded lab this week: finish [Lab 7](/labs/lab-07), work on your project in the lab slot, and review for the [midterm](/guides/midterm). Full notes are published before the lecture.

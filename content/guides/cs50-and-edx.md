@@ -36,7 +36,7 @@ Our Monday lecture assumes you did this. It does not repeat the lecture; it goes
 
 | Our week | CS50x 2026 | Our week | CS50x 2026 |
 |---|---|---|---|
-| 2 | Week 0 · Scratch | 9 | Midterm |
+| 2 | Week 0 · Scratch | 9 | (CS50P 4, 6 · Libraries, File I/O) |
 | 3 | Week 1 · C | 10 | Artificial Intelligence |
 | 4 | Week 2 · Arrays | 11 | Week 7 · SQL |
 | 5 | Week 3 · Algorithms | 12 | Week 8 · HTML, CSS, JavaScript |
