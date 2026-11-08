@@ -1,0 +1,153 @@
+---
+lab: 7
+week: 8
+title: "C to Python"
+description: "Rewrite three of your earlier labs in Python: the pyramid with input validation, the Caesar cipher with a command-line key, and the spell checker's dictionary as a set. Then time C against Python on the same task and explain what you see."
+assignment: lab07
+status: open
+acceptUrl: "https://classroom50.org/FiratUniversity-IJDP-SoftEng/introduction-to-computer-science/assignments/lab07/accept"
+due: "2026-11-13 23:59"
+duration: "75 min + finish at home"
+points: 10
+language: "Python"
+files: ["mario.py", "caesar.py", "dictionary.py"]
+topics: ["Python", "input validation", "try/except", "sys.argv", "str methods", "set", "timing"]
+notebook: { file: "labs/templates/lab07/lab07.ipynb", title: "Lab 7 · Explore: C and Python on the same task, timed" }
+---
+
+## Goal
+
+You have already solved these three problems, in C, in Labs 2, 3 and 6. This week you solve them again in Python, and the point is the comparison: the same ideas, a fraction of the lines, and a few things that work differently (no `argc`, no `\0`, no `malloc`, exceptions instead of return codes). There is nothing to compile: `python mario.py` runs the file. The checks are the same as the C checks were, so your old solutions are the specification. Open them side by side.
+
+> [!note] You can start without the instructor
+> Work top to bottom. Every program on the [week 8 page](/weeks/week-08) is copyable; `validate.py` is most of Part A, `greet.py` and `exit.py` are the skeleton of Part B, and `dictionary.py` from the lecture is Part C almost word for word. Each part is graded on its own.
+
+## Steps
+
+<Step n={1} title="Accept Lab 7 and open it in Codespaces" time="4 min" id="accept">
+
+**Accept lab lab07** at the top of this page → **Accept assignment** → **Open repository** → **Code** → **Codespaces** → **Create codespace on main**. The codespace is smaller this time: no gcc needed for the lab, just Python. When the terminal shows `$`:
+
+<Terminal cmd="python3 check.py" out={`:( mario.py prints a right-aligned pyramid of height 4
+...
+0/10 checks passed`} />
+
+| File | What it is |
+|---|---|
+| `mario.py`, `caesar.py`, `dictionary.py` | Parts A–C; the comment at the top of each file is the specification |
+| `speller.py` | CS50's spell checker in Python; it imports your `dictionary.py`; do not edit |
+| `dictionaries/`, `texts/` | the same word lists and texts as Lab 6 |
+| `lab07.ipynb` | the notebook that times C against Python, not graded |
+| `check.py`, `tests/` | the checks, one test file per part |
+
+Two habits for Python work: run a file with `python mario.py` (no `make`), and when something fails, read the **traceback from the bottom up**: the last line is the error, the line above it is where.
+
+</Step>
+
+<Step n={2} title="Part A · mario.py (3 points)" time="15 min" id="part-a">
+
+Lab 2's right-aligned pyramid, with the same rules: prompt `Height: `, accept only an integer from 1 to 8, re-prompt on anything else, then print the pyramid.
+
+<Terminal lines={['python mario.py']} out={`Height: cat
+Height: 0
+Height: 4
+   #
+  ##
+ ###
+####`} />
+
+The shape is `validate.py` from the lecture. The loop is `while True:`; inside it, `int(input("Height: "))` in a `try:` with `except ValueError:` and `continue` for `cat`; then `if 1 <= height <= 8: break`. The pyramid is one line per row: `" " * (height - i - 1) + "#" * (i + 1)`. Compare the length of this file with your `mario.c`.
+
+</Step>
+
+<Step n={3} title="Part B · caesar.py (3 points)" time="20 min" id="part-b">
+
+Lab 3's Caesar cipher. The key is a command-line argument; the text is typed in.
+
+<Terminal lines={['python caesar.py 13']} out={`plaintext:  HELLO, world
+ciphertext: URYYB, jbeyq`} />
+<Terminal lines={['python caesar.py', 'echo $?']} out={`Usage: python caesar.py key
+1`} />
+
+Rules, the same as the C version: exactly one argument, digits only, otherwise print `Usage: python caesar.py key` and `sys.exit(1)`; rotate by `key % 26`; keep the case; leave punctuation, digits and spaces alone; prompt `plaintext:  ` (two spaces, so the two lines align) and print `ciphertext: ` followed by the result.
+
+`sys.argv` is `argv` as a list: `len(sys.argv) != 2` replaces `argc != 2`, and `sys.argv[1].isdigit()` replaces the loop that checked every character. In `rotate`, `ord(c)` gives the ASCII code and `chr(n)` turns one back into a character, so an upper-case letter becomes `chr((ord(c) - ord("A") + key) % 26 + ord("A"))`; `c.isupper()` and `c.islower()` decide which alphabet. Build the result character by character, either with a loop and `+=` or in one line with `"".join(rotate(c, key) for c in plaintext)`.
+
+</Step>
+
+<Step n={4} title="Part C · dictionary.py (4 points)" time="20 min" id="part-c">
+
+Lab 6's dictionary, the four functions that `speller.py` calls: `load`, `check`, `size`, `unload`. This time the hash table is given to you: it is a Python `set`.
+
+<Terminal lines={['python speller.py dictionaries/small texts/cat.txt']} out={`
+MISSPELLED WORDS
+
+purrs
+
+WORDS MISSPELLED:     1
+WORDS IN DICTIONARY:  30
+WORDS IN TEXT:        23
+TIME IN load:         0.00
+TIME IN check:        0.00
+...`} />
+
+- **load**: open the file with `with open(dictionary) as file:` and put every line into the set: `words.update(file.read().splitlines())`. Return `True`. If the file does not exist, `open` raises `FileNotFoundError` (an `OSError`): catch it and return `False`, which is what the last test checks.
+- **check**: `return word.lower() in words`. The dictionary is lowercase, the text is not; `in` on a set is the hash lookup you wrote by hand in Lab 6.
+- **size**: `len(words)`.
+- **unload**: there is no memory to free; `words.clear()` and `return True`.
+
+Then the measurement, which is the real content of the lab: run the Python speller on the large dictionary and `texts/lecture.txt`, and run your C speller from Lab 6 on the same files (open your Lab 6 codespace, or copy `dictionary.c` and `speller.c` across and `make speller`). Write the two `TIME IN load` and `TIME IN check` lines into the notebook's last cell, with one sentence on why they differ.
+
+</Step>
+
+<Step n={5} title="Submit" time="2 min" id="submit">
+
+<Terminal lines={['git add -A', 'git commit -m "Lab 7"', 'git push']} />
+
+Your score appears under **Releases** about a minute later. Push as often as you like before **Friday, November 13, 23:59**; the last push before the deadline counts, and late pushes lose 10% per day for up to five days.
+
+</Step>
+
+## How to submit
+
+> [!note] The short version
+> 1. Accept Lab 7 on Classroom 50 (orange button), open the repository in Codespaces.
+> 2. Edit `mario.py`, `caesar.py`, `dictionary.py`; run each with `python`; `python3 check.py` to check all.
+> 3. `git add -A && git commit -m "Lab 7" && git push` before **Friday, November 13, 23:59**.
+
+Points: mario 3, caesar 3, dictionary 4. Grading uses its own copy of `speller.py`, so editing yours does not change anything. The other ways to work and to submit from the browser are the same as in [Lab 2](/labs/lab-02#other-ways-to-work-and-submit); this lab needs nothing but Python 3, so a local VS Code with conda (set up as on the [week 8 page](/weeks/week-08#3-on-your-own-computer-miniconda-vs-code)) works as well as the codespace. Run `pip install pytest` once, then `python3 check.py`.
+
+## Explore: C and Python on the same task, timed
+
+`lab07.ipynb` is not graded. It compiles and runs a ten-million-step loop in C, runs the same loop in Python, then shows Python catching up with `sum(range(n))` and NumPy, and finishes with the string case where Python is not slow at all. Ten minutes with it answers the question everyone asks this week: *if Python is so slow, why does everyone use it?*
+
+<NotebookEmbed file="labs/templates/lab07/lab07.ipynb" title="Lab 7 · Explore: C and Python on the same task, timed" />
+
+## Challenges (optional, not graded)
+
+1. **readability.py.** Lab 3's Coleman-Liau index in Python: `len`, `str.count`, and `sum(1 for c in text if c.isalpha())` do most of the work.
+2. **A phonebook that remembers.** Combine `save1.py` and `phonebook2.py` from the lecture: store names and numbers in a CSV file, load it into a dict at start, look names up, add new ones.
+3. **The slowest and the fastest.** In `dictionary.py`, replace the set with a list and run the large dictionary again. Then explain the `TIME IN check` you get, in terms of week 7.
+
+## Troubleshooting
+
+> [!note] `IndentationError` or `unexpected indent`
+> Python blocks are made of indentation. Every line inside a `def`, `if`, `for` or `while` must be indented by the same amount (four spaces); mixing tabs and spaces fails. VS Code's *Format Document* (Shift+Alt+F) fixes most of it.
+
+> [!note] `NameError: name 'sys' is not defined`
+> You used `sys.argv` without `import sys` at the top of the file.
+
+> [!note] `ValueError: invalid literal for int()`
+> `int("cat")`. Wrap the conversion in `try:` / `except ValueError:`; Part A is about exactly that.
+
+> [!note] Part A re-prompts forever on a valid number
+> The `break` is missing, or it is inside the `except` instead of after the range check. Order: convert, then check `1 <= height <= 8`, then `break`.
+
+> [!note] `caesar.py` says Usage for `python caesar.py 13`
+> You checked `len(sys.argv) != 1`. The program name is `sys.argv[0]`, so with one key the length is 2, as in C.
+
+> [!note] WORDS IN DICTIONARY is 0, or `Could not load`
+> `load` returned `False` or never filled the set. Return `True` at the end, and make sure `words` is the module-level set, not a new local variable (`words = set()` inside `load` creates a different one; use `words.update(...)`).
+
+> [!note] `git push` is rejected
+> Classroom 50 added a commit to your repository. Run `git pull`, then `git push` again.

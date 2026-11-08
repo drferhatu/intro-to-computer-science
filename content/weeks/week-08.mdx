@@ -1,0 +1,437 @@
+---
+week: 8
+title: "Python: The Same Ideas in a Tenth of the Lines"
+description: "Every program you wrote in C, rewritten in Python: no types to declare, no semicolons, no memory to free, and a library for everything. Six ways to run it, what you gain, what you give up, and why this is the language of AI."
+module: m4
+status: ready
+lab: lab-07
+reading: "CS50 Week 6 notes; The Python Tutorial, chapters 3–5"
+notebook:
+  file: "labs/templates/lab07/lab07.ipynb"
+  title: "Lab 7 · Explore: C and Python on the same task, timed"
+cs50:
+  week: "6"
+  title: "Python"
+  video: "https://youtu.be/Rl0ludWTLxs"
+  notes: "https://cs50.harvard.edu/x/2026/notes/6/"
+  slides: "https://cdn.cs50.net/2025/fall/lectures/6/lecture6.pdf"
+  source: "https://cdn.cs50.net/2025/fall/lectures/6/src6.zip"
+  pset: "https://cs50.harvard.edu/x/2026/psets/6/"
+prep:
+  - "Watch the lecture and, for each program, picture the C version first. The whole week is a comparison, and you already know one side of it."
+  - "Open <a href=\"https://colab.research.google.com\" target=\"_blank\" rel=\"noopener\">Google Colab</a>, click <em>New notebook</em>, type <code>print(\"hello, world\")</code> in the cell and press Shift+Enter. That is Python, installed nowhere, running already."
+  - "Midterm week starts November 16. Python is not on the midterm; weeks 1–7 are. Keep your one-page-per-week review sheet going."
+objectives:
+  - "Explain the difference between a compiler and an interpreter, and what it changes for how you work."
+  - "Run Python six ways: the REPL, a script, VS Code locally with conda, a Jupyter notebook, Google Colab, and an online editor; choose the right one for a task."
+  - "Translate C programs with variables, conditions, loops and functions into Python."
+  - "Use Python's built-in types: int, float, str, bool, list, dict, tuple, set, None; explain dynamic typing."
+  - "Validate input with try/except and handle exceptions."
+  - "Read and write files with csv and json, import modules, install packages with pip, and call a web API."
+  - "Explain why Python is slower than C, why it usually does not matter, and why NumPy is fast anyway."
+wow:
+  title: "Lab 6 was 150 lines of C and a week of valgrind. In Python it is one line, and it is still a hash table."
+  text: "words = set(open('dictionaries/large').read().split()). Python's set is a hash table written in C, by people who did exactly what you did in Lab 6, once, very carefully, so that nobody has to do it again. You did not waste week 7: you now know what that line costs, why it is fast, and what to do when it is not. That is the difference between using a tool and understanding it, and it is what employers pay for."
+industry:
+  - { "t": "Python is the language of AI", "d": "PyTorch, TensorFlow, scikit-learn, pandas, Hugging Face: every model you have heard of is trained and served from Python, while the heavy lifting runs in C and CUDA underneath. ChatGPT's training code is Python." }
+  - { "t": "Glue, scripts and automation", "d": "Most companies run thousands of Python scripts that move data, call APIs, generate reports and test systems. Knowing Python means never doing a repetitive task by hand again." }
+  - { "t": "The speed trade-off, in production", "d": "Instagram, YouTube, Dropbox, Spotify and Netflix run on Python, and each has rewritten its hottest paths in C, C++ or Rust. Knowing both sides is the actual industry skill." }
+  - { "t": "pip and the supply chain", "d": "One line installs code written by strangers. The 2024 xz backdoor and the steady stream of malicious PyPI packages are why professionals pin versions, read what they install, and keep secrets out of code." }
+resources:
+  - { "title": "CS50x 2026 · Week 6 notes", "url": "https://cs50.harvard.edu/x/2026/notes/6/" }
+  - { "title": "The Python Tutorial (official)", "url": "https://docs.python.org/3/tutorial/", "note": "Chapters 3–5 cover this week; keep it open while you write." }
+  - { "title": "Python Tutor", "url": "https://pythontutor.com/python-compiler.html", "note": "Runs your code one line at a time and draws every variable. The week 6 memory diagrams, for Python." }
+  - { "title": "Google Colab", "url": "https://colab.research.google.com", "note": "Python in the browser, nothing to install, free GPU for AI work." }
+  - { "title": "Miniconda", "url": "https://www.anaconda.com/docs/getting-started/miniconda/install", "note": "The local installation we use: Python plus an environment manager." }
+  - { "title": "VS Code · Python tutorial", "url": "https://code.visualstudio.com/docs/python/python-tutorial", "note": "Install the Python extension, pick the interpreter, run, debug." }
+  - { "title": "CS50's Introduction to Programming with Python", "url": "https://cs50.harvard.edu/python/", "note": "A whole free course if you want more." }
+  - { "title": "Automate the Boring Stuff with Python", "url": "https://automatetheboringstuff.com/", "note": "Free online book: files, spreadsheets, web, email, all in Python." }
+tags: ["Python", "interpreter", "REPL", "conda", "Jupyter", "Colab", "dynamic typing", "list", "dict", "set", "exceptions", "csv", "json", "pip", "NumPy"]
+---
+
+## Why this week matters
+
+For seven weeks you have been writing C: declaring every type, ending every line with a semicolon, counting to the `\0`, asking for memory and giving it back. It was hard on purpose. You now know what a variable *is*, what a string *is*, what a function call *costs*. This week you get your reward. **Python** is a language built by people who had done all of that and wanted to stop. Every idea you learned stays; most of the ceremony goes.
+
+Python is also, at this moment in history, the most useful language you can know. It is the language of AI: every model you have heard of is trained from Python. It is the language of data, of automation, of science, of the scripts that keep companies running. It is also the language of the second half of this course: AI next, then SQL, then the web.
+
+Here is the one sentence to keep: **Python is C with the hard parts hidden**. Hidden, not gone. When Python is fast, it is because C is doing the work underneath. When Python is slow, you now know why, and you are one of the few people in the room who can do something about it.
+
+This page follows CS50's Week 6 lecture program by program, with the C version next to the Python one so you can see what changed. Then it goes past the lecture: six ways to run Python, the pieces of the language Malan does not have time for, and a handful of programs from the field, real work in twelve lines each. Every orange box is followed by its full source.
+
+## Compiled versus interpreted
+
+Think of a book and a conversation. A **compiler** is a translator who takes your whole book, translates it once, and hands you a finished copy in the machine's language. That is `make hello`: slow to prepare, fast to read, and if there is a mistake on page 200, the translator refuses to deliver anything at all. An **interpreter** is the person standing next to you at a meeting, translating sentence by sentence as you speak. Nothing to prepare; you start talking immediately; a mistake stops you at that sentence and not before.
+
+Python is the second kind. There is no `make`. You write `hello.py` and run it with `python hello.py`; the program called `python` reads your file line by line and does what each line says. The price is speed: every line is translated every time it runs. The gain is everything else: you try an idea in seconds, you fix and rerun without a build step, and you can type a line and see its result immediately.
+
+> [!code] hello0.c → hello0.py · the whole program
+> The C version needs an `#include`, a `main`, braces, a semicolon and a `\n`. The Python version is one line. There is no `main` because the file *is* the program: Python starts at the top and runs down. There is no `#include <stdio.h>` because printing is built in. `print` adds the newline for you.
+
+<CodeFiles dir="week-08" files={["hello0.py", "hello0.c"]} />
+
+<Terminal lines={['python hello0.py']} out={`hello, world`} />
+
+Three things to notice before we go on, because they decide how every Python program looks:
+
+- **No semicolons.** A line ends where the line ends.
+- **No braces.** A block is marked by **indentation**: four spaces. In C, indentation was for humans and the braces were for the compiler. In Python the indentation *is* the syntax. Get it wrong and the program means something else, or does not run.
+- **No type declarations.** `x = 50` creates `x`. Python figures out that it is an int. We will come back to what that really means.
+
+> [!tip] `python` or `python3`?
+> On most systems today `python` is Python 3; on some older ones `python` is the long-dead Python 2 and `python3` is the one you want. In the codespace and in Colab both work. If `python --version` prints `3.something`, you are fine.
+
+## Six ways to run Python
+
+In C you had one way to work: a terminal, a compiler, an editor. Python gives you several, and professionals use all of them, for different jobs. Here are the six you should know, each with the exact steps. Try at least three this week.
+
+### 1 · The REPL: talk to Python directly
+
+Type `python` with no file name and you get a prompt, `>>>`. Type an expression, press Enter, see the result. This is the **REPL** (read, evaluate, print, loop), and it is where Python programmers test an idea before they write it into a file.
+
+<Terminal lines={['python']} out={`Python 3.12.4 (main) [GCC 13.2.0] on linux
+>>> 2 ** 100
+1267650600228229401496703205376
+>>> "hello".upper()
+'HELLO'
+>>> len("Fırat")
+5
+>>> exit()`} />
+
+Use it as a calculator, to check what a method does, to look at a value. Leave with `exit()` or Ctrl+D.
+
+### 2 · A script in your codespace (what the labs use)
+
+Exactly what you did in C, minus the compile step. In the codespace terminal (or on cs50.dev):
+
+<Terminal lines={['code hello.py', 'python hello.py']} out={`hello, world`} />
+
+VS Code in the browser gives you the editor, the terminal, and a **Run** triangle at the top right that does `python hello.py` for you. The debugger works too: click left of a line number to set a breakpoint, press F5, and step through the program watching the variables, exactly like gdb but with a mouse.
+
+### 3 · On your own computer: Miniconda + VS Code
+
+This is the professional setup and the one we recommend for your project. **Conda** is a tool that installs Python and keeps separate, named **environments**, so that the Python for this course and the Python for some other project never fight over package versions. Think of an environment as a clean desk for each project.
+
+1. Install **Miniconda** from [the official page](https://www.anaconda.com/docs/getting-started/miniconda/install) (choose your operating system; accept the defaults). On Windows, use the *Anaconda Prompt* it installs, or let it add conda to PowerShell.
+2. Open a terminal and create an environment for the course:
+   ```bash
+   conda create -n ics python=3.12
+   ```
+3. Switch to it (you do this once per terminal session; the prompt shows `(ics)` while it is active):
+   ```bash
+   conda activate ics
+   ```
+4. Install what the labs and the notebooks use:
+   ```bash
+   pip install pytest jupyterlab matplotlib numpy requests
+   ```
+5. Install [VS Code](https://code.visualstudio.com) and its **Python** extension (Ctrl+Shift+X, search "Python", by Microsoft). Open your lab folder, press Ctrl+Shift+P, type *Python: Select Interpreter*, and pick the one that says `ics`. From now on the Run triangle, the terminal and the debugger all use that environment.
+
+Two commands you will use forever: `conda env list` shows your environments; `conda deactivate` leaves one. If you ever break an environment, delete it with `conda env remove -n ics` and make it again. That is the point of environments: nothing you do inside one can hurt your computer or your other projects.
+
+> [!note] Why not just install Python from python.org?
+> You can, and it works. Conda earns its place the first time two projects need two different versions of the same library, which in AI work happens on day one. The habit of one environment per project is worth learning now, while the projects are small.
+
+### 4 · Jupyter: code in cells, results underneath
+
+A **notebook** mixes text, code and output in one document. You run one **cell** at a time, see its result right under it, change it, run it again. It is how data scientists and AI researchers work, because exploring data is a conversation, not a program. You have used our notebooks since week 2; now you know what they are.
+
+Locally, with the environment above:
+
+```bash
+jupyter lab
+```
+
+This opens JupyterLab in your browser at `localhost:8888`. **New → Python 3** gives you an empty notebook. Shift+Enter runs a cell. The file is saved as `.ipynb`, which is just JSON (you will meet JSON below). VS Code opens `.ipynb` files directly too, with the Jupyter extension, which is often the nicest way: your code, your notebook and your terminal in one window.
+
+### 5 · Google Colab: a notebook in the cloud, nothing to install
+
+[Colab](https://colab.research.google.com) is Jupyter running on Google's computers. Open the page, sign in, **New notebook**, and you have Python 3 with NumPy, pandas, matplotlib, scikit-learn and PyTorch already installed, plus a free GPU when you ask for one (*Runtime → Change runtime type*). This is where most students first train a neural network, and it is what we will use in the AI week. Our week and lab notebooks have an *Open in Colab* button for exactly this reason.
+
+Two things to know: your files live in the session, which ends after some idle time, so save to Google Drive or download what matters; and a cell that starts with `!` runs a shell command, so `!pip install cowsay` installs a package and `!gcc hello.c -o hello && ./hello` compiles and runs C. Yes, Colab is also where our C notebooks ran.
+
+### 6 · Online editors: for a quick try, or to *see* memory
+
+- [Python Tutor](https://pythontutor.com/python-compiler.html) runs your program one line at a time and **draws every variable, list and dict** as boxes and arrows, the diagrams of week 6 and 7, generated live. Paste any program from this page into it. It is the single best tool for understanding what a line does.
+- [Programiz](https://www.programiz.com/python-programming/online-compiler/), [Replit](https://replit.com) and [OnlineGDB](https://www.onlinegdb.com/online_python_compiler) are editors in a browser tab: paste, run, done. Good for a quick test on a computer that is not yours, not for a project.
+- On a phone, **Pydroid 3** (Android) and **Pythonista** (iOS) run real Python. Not for serious work, but a bus ride is enough to try a `for` loop.
+
+### Which one, when?
+
+| You want to… | Use |
+|---|---|
+| check what a function returns, do arithmetic | the REPL |
+| do a lab, write a program that runs more than once | a script, in the codespace or in VS Code locally |
+| explore data, draw charts, try an AI model step by step | Jupyter locally or Colab |
+| work on something heavy, or on a computer with nothing installed | Colab |
+| understand what a program does line by line | Python Tutor |
+| build your semester project | VS Code + conda, with a Git repository |
+
+## Hello, with input
+
+Now the programs, in the order of the lecture. First, asking the user something. CS50 has a Python library too, with the same `get_string` and `get_int` you know; but Python has `input` built in, and from the third version on we use that.
+
+> [!code] hello1.py → hello4.py · four ways to say hello
+> `hello1.py` uses CS50's `get_string` and glues strings with `+`. `hello2.py` uses an **f-string**: put an `f` before the quotes and anything in curly braces is evaluated and inserted; this replaces every `%s` and `%i` you ever wrote. `hello3.py` drops the CS50 library: `input(prompt)` prints the prompt and returns what the user typed, always as a string. `hello4.py` shows that `print` has a hidden second argument, `end`, which is `"\n"` unless you say otherwise.
+
+<CodeFiles dir="week-08" files={["hello1.py", "hello2.py", "hello3.py", "hello4.py"]} />
+
+Notice what is missing from `hello3.py`: no `#include`, no `string` type, no `\n`, no `main`, no `return 0`. Three lines of C became two lines of Python, and the two lines read like English.
+
+## Numbers, and the first surprise
+
+> [!code] calculator0.c → calculator0.py → calculator1.py · addition
+> The C version declares `int x`, calls `get_int`, prints with `%i`. `calculator0.py` is the same with CS50's `get_int`. `calculator1.py` removes the library: `input` gives a string, `int(...)` converts it, and that is the general pattern, `int(input("x: "))`. If the user types `cat`, `int` fails loudly; we fix that in the section on exceptions.
+
+<CodeFiles dir="week-08" files={["calculator1.py", "calculator0.py", "calculator0.c"]} />
+
+> [!code] calculator2.py → calculator3.py · division, and floats
+> In C, `1 / 3` was `0`, because int divided by int truncates. In Python, `/` always gives a float: `1 / 3` is `0.3333…`. If you want the C behaviour, integer division, there is a separate operator, `//`. `calculator3.py` prints the result with fifty decimals, `f"{z:.50f}"`, and shows you that the **float imprecision of week 3 is still there**: Python uses the same 64-bit floats as C, because it is C underneath.
+
+<CodeFiles dir="week-08" files={["calculator2.py", "calculator3.py"]} />
+
+<Terminal lines={['python calculator3.py']} out={`x: 1
+y: 3
+0.33333333333333331482961625624739099293947219848633`} />
+
+Integers, on the other hand, are better than in C. There is no overflow: a Python int grows as large as it needs to.
+
+> [!code] bigint.py · 2 to the power of 200, no problem
+> `2 ** 31` is already past a C `int`; `2 ** 200` is fine. Python checks every integer operation and, when the number no longer fits in a machine word, switches to a slower representation that can hold any size. That check is one of the reasons Python arithmetic is slower than C. Floats stay what they were.
+
+<CodeFiles dir="week-08" files={["bigint.py"]} />
+
+### Types, without declarations
+
+In C a variable was a box of a fixed size and type: `int x` was four bytes, forever an int. In Python a variable is a **name tag**. `x = 50` creates the value `50` somewhere in memory and hangs the tag `x` on it. `x = "fifty"` creates a string and moves the tag. The value has a type; the name does not. This is **dynamic typing**.
+
+> [!code] nametags.py · the same name, three types
+> `type(x)` tells you what the tag is currently on. Then the lines that matter: `1 + 2` is `3`, `"1" + "2"` is `"12"` (two strings glued), and `"1" + 2` is an error, because Python does not guess. It is dynamic, not sloppy. You convert explicitly, `int("1") + 2`, the way `calculator1.py` did.
+
+<CodeFiles dir="week-08" files={["nametags.py"]} />
+
+> [!warning] Never name a file after a module
+> This program was first called `types.py`, and it broke every other program in the folder: `types` is a module of Python's standard library, and `import csv` loads `csv`, which loads `re`, which loads `enum`, which does `from types import …` and found our file instead. The same happens with `random.py`, `string.py`, `copy.py`, `math.py`, `test.py`. If an import fails with a message that makes no sense, look at the names of your own files first.
+
+The built-in types you will use this week, all of them available without an `#include`:
+
+| Type | Example | Notes |
+|---|---|---|
+| `int` | `50`, `2 ** 200` | no overflow |
+| `float` | `3.14`, `1 / 3` | same imprecision as C |
+| `str` | `"hello"`, `'hello'` | immutable; no `\0`; dozens of methods |
+| `bool` | `True`, `False` | capital letters |
+| `list` | `[72, 73, 33]` | an array that grows; any types inside |
+| `dict` | `{"Kelly": "+1-617"}` | a hash table: key → value |
+| `tuple` | `(3, 4)` | a fixed list; cannot change |
+| `set` | `{"cat", "dog"}` | each value once; instant `in` |
+| `None` | `None` | "no value"; what `NULL` wanted to be |
+
+## Conditions
+
+The same `if`, `else`, and the operators you know (`==`, `!=`, `<`, `<=`, `and`, `or`, `not`, in words instead of `&&`, `||`, `!`). What changes is the shape: a colon instead of braces, indentation for the body, and `elif` instead of `else if`.
+
+> [!code] compare3.c → compare3.py · if, elif, else
+> Line for line the same program. Count the characters: the Python version is about a third of the C. Note `elif`, and that the condition has no parentheses, though it may have them.
+
+<CodeFiles dir="week-08" files={["compare3.py", "compare3.c"]} />
+
+> [!code] agree0.py → agree2.py · or, in, and lower()
+> `agree0.py` checks `s == "Y" or s == "y"`. `agree1.py` says the same thing better: `s in ["y", "yes"]`, where `in` asks whether a value is inside a list. `agree2.py` applies `.lower()` to the input first, so `YES` and `Yes` and `yes` all agree. A **method** is a function that belongs to a value; `s.lower()` is "s, give me your lowercase version". Strings have about fifty of them, and `agree2.c` shows what the same logic costs in C: `strcasecmp` and `string.h`.
+
+<CodeFiles dir="week-08" files={["agree0.py", "agree1.py", "agree2.py", "agree2.c"]} />
+
+> [!definition] Truthiness
+> In an `if`, Python treats `0`, `0.0`, `""`, `[]`, `{}` and `None` as false and everything else as true. So `if name:` means "if the name is not empty", and `while items:` means "while the list has something in it". You will see it everywhere in real code.
+
+## Loops, and the end of `i++`
+
+> [!code] cat0.py → cat3.py · meow three times, four ways
+> `cat0.py` copies and pastes. `cat1.py` is a `while` loop, with `i += 1` because Python has no `++`. `cat2.py` is the first real novelty: `for i in [0, 1, 2]` walks a list, giving `i` each value in turn. `cat3.py` replaces the hand-written list with `range(3)`, which produces 0, 1, 2 without building the list. **`for i in range(n)` is the Python `for` loop.** You will write it a hundred times.
+
+<CodeFiles dir="week-08" files={["cat0.py", "cat1.py", "cat2.py", "cat3.py"]} />
+
+> [!code] cat4.py → cat6.py · functions, and where main went
+> `def meow():` defines a function; no return type, no parameter types. `cat4.py` puts the loop in `main` and calls `meow()` from it; because Python reads top to bottom, `main()` is *called* at the very end, after everything is defined. `cat5.py` gives `meow` a parameter, `n`. `cat6.py` is the professional form: `if __name__ == "__main__": main()` runs `main` only when the file is run directly, not when another file imports it. You will see those two lines at the bottom of most Python files in the world; now you know what they do.
+
+<CodeFiles dir="week-08" files={["cat4.py", "cat5.py", "cat6.py"]} />
+
+> [!code] mario0.py → mario5.py · bricks, and multiplying a string
+> `mario1.py` is the validation loop you know, with `while True` and `break` (Python has no do-while). `mario2.py` prints four `?` with `end=""`, then a bare `print()` for the newline. `mario3.py` is the one to remember: `"?" * 4` is `"????"`. Multiplying a string repeats it, and a whole inner loop disappears. `mario4.py` and `mario5.py` do the 3×3 grid both ways; compare them with `mario1.c`.
+
+<CodeFiles dir="week-08" files={["mario1.py", "mario3.py", "mario4.py", "mario5.py", "mario1.c"]} />
+
+> [!code] validate.py · the right-aligned pyramid of Lab 2, in Python
+> Everything from this section in one program: `while True`, `try`/`except` (explained below), `continue`, `break`, chained comparison `1 <= height <= 8` (legal in Python, and it means what it says), and `" " * (height - i - 1) + "#" * (i + 1)` for each row. Compare with your `mario.c` from Lab 2. This is Lab 7, Part A, almost.
+
+<CodeFiles dir="week-08" files={["validate.py"]} />
+
+## Strings, without the pain
+
+In week 4 a string was an array of chars ending in `\0`; in week 6 it was a pointer; copying one took `malloc`, `strcpy` and `free`. In Python a string is a value. You cannot change it in place, and you never have to free it.
+
+> [!code] uppercase0.py → uppercase1.py → uppercase2.c · one character at a time, or all at once
+> `for c in before` walks a string character by character, no `strlen`, no index. `c.upper()` replaces `toupper`. Then `uppercase1.py` does the whole thing in one call, `before.upper()`. Look at `uppercase2.c` next to it.
+
+<CodeFiles dir="week-08" files={["uppercase0.py", "uppercase1.py", "uppercase2.c"]} />
+
+> [!code] copy5.c → capitalize.py · the week 6 copy program, in three lines
+> `copy5.c` was the end of a long story: `malloc`, `NULL` check, `strcpy`, `toupper`, `free`. `capitalize.py` is `t = s.capitalize()`. There is no copy to manage because Python strings never change; `capitalize` returns a new string and `t` is the tag on it. `compare2.c` and `compare2.py` tell the same story for `strcmp`: in Python `s == t` compares the characters, because there are no pointers to compare by accident.
+
+<CodeFiles dir="week-08" files={["capitalize.py", "copy5.c", "compare2.py", "compare2.c"]} />
+
+> [!code] strings.py · the string toolbox
+> Beyond the lecture: `len`, indexing from the end with `s[-1]`, **slicing** with `s[0:5]` (start included, end excluded, like `range`), `replace`, `split` (string to list), `join` (list to string), `strip`, `startswith`, substring test with `in`, and alphabetical comparison with `<`. Half of all string processing in the world is `split`, `strip` and `join`.
+
+<CodeFiles dir="week-08" files={["strings.py"]} />
+
+## Lists and dictionaries: week 7, built in
+
+This is where Python pays you back for week 7. A **list** is an array that grows by itself, the `realloc` story handled for you. A **dict** is a hash table: a key, a value, and a lookup that costs about one step. Both are written in C inside the interpreter, by people who did exactly what you did in Lab 6, once, very carefully.
+
+> [!code] scores0.py → scores2.py · a list, its sum and its length
+> `scores = [72, 73, 33]` is a list. `sum(scores)` and `len(scores)` are built in; the average is one line. `scores1.py` starts with an empty list `[]` and grows it with `.append(score)`, no capacity, no `realloc`. `scores2.py` grows it with `+=`, which glues lists the way `+` glues strings.
+
+<CodeFiles dir="week-08" files={["scores0.py", "scores1.py", "scores2.py"]} />
+
+> [!code] phonebook0.py → phonebook1.py · linear search, then just `in`
+> `phonebook0.py` is week 5's linear search: a `for` over the names with a `break` when found. The strange part is the `else` on the loop: it runs if the loop finished *without* a break, which is exactly "not found". `phonebook1.py` replaces the whole loop with `if name in names`. Same algorithm underneath, O(n), one line.
+
+<CodeFiles dir="week-08" files={["phonebook0.py", "phonebook1.py"]} />
+
+> [!code] phonebook2.py → phonebook4.py · dictionaries
+> `people = {"Kelly": "+1-617-…", …}` is a dict: names are keys, numbers are values. `name in people` asks the hash table, about one step however many people are in it; `people[name]` fetches the value. `phonebook3.py` stores a **list of dicts**, one per person, which is how real data arrives (every row of a spreadsheet, every record from an API). `phonebook4.py` uses the value directly inside the f-string. Note the quotes: `person['number']` with single quotes inside the double-quoted f-string.
+
+<CodeFiles dir="week-08" files={["phonebook2.py", "phonebook3.py", "phonebook4.py"]} />
+
+> [!code] extras.py · enumerate, zip, tuples, sets, comprehensions
+> Five tools beyond the lecture that you will use every week from now on. `enumerate` gives index and value together. `zip` walks two lists in step. A **tuple** is a fixed pair that Python unpacks for you, `x, y = point`. A **set** keeps each value once and answers `in` instantly. A **list comprehension**, `[n * n for n in range(10)]`, builds a list in one readable line, and with an `if` it filters too. The last line sorts pairs by score using a `key` function written inline with `lambda`.
+
+<CodeFiles dir="week-08" files={["extras.py"]} />
+
+> [!code] json0.py · dicts and lists are JSON, and JSON is the web
+> **JSON** is the text format that web APIs, configuration files and notebooks use, and it is nothing but nested dicts and lists written down. `json.dumps` turns a dict into text; `json.loads` turns it back. When you call an API next week, this is what comes back.
+
+<CodeFiles dir="week-08" files={["json0.py"]} />
+
+## Exceptions: what happens when `int("cat")` fails
+
+In C, a function told you about failure by returning a special value: `NULL`, `-1`, `false`, and you had to remember to check. Python raises an **exception**: the program stops at that line with a message, unless you catch it.
+
+> [!code] integer0.py → integer3.py · is it a number?
+> `integer0.py` asks the string, `n.isnumeric()`. `integer1.py` just calls `int(...)` and crashes on `cat` with `ValueError`. `integer2.py` wraps the call in `try:` and catches `except ValueError:`, the Python way of saying "attempt this; if that specific thing goes wrong, do this instead". `integer3.py` adds `else:`, the block that runs only if nothing went wrong, keeping the happy path and the sad path visibly apart.
+
+<CodeFiles dir="week-08" files={["integer0.py", "integer1.py", "integer2.py", "integer3.py"]} />
+
+<Terminal lines={['python integer1.py']} out={`Input: cat
+Traceback (most recent call last):
+  File "integer1.py", line 4, in <module>
+    n = int(input("Input: "))
+ValueError: invalid literal for int() with base 10: 'cat'`} />
+
+Read a **traceback** from the bottom up: the last line is what went wrong, the lines above say where. It is the Python equivalent of the segfault, except that it tells you the file, the line and the reason. You will come to like it.
+
+## Command-line arguments and exit codes
+
+> [!code] greet.py → exit.py · sys.argv and sys.exit
+> `argv` lives in the `sys` module: `from sys import argv` or `import sys` and then `sys.argv`. It is a list; `len(argv)` replaces `argc`, and `argv[0]` is still the program's name. `sys.exit(1)` is `return 1` from `main`: the way a program tells the shell it failed. Lab 7's `caesar.py` is built on exactly these two programs.
+
+<CodeFiles dir="week-08" files={["greet.py", "exit.py"]} />
+
+## Files
+
+> [!code] save0.py → save2.py · writing a CSV, three times better
+> `open("phonebook.csv", "a")` opens a file for appending, like `fopen` with `"a"`. `csv.writer(file).writerow([...])` writes one line with the commas and quotes handled for you. `save1.py` uses `with open(...) as file:`, which **closes the file automatically** at the end of the block, even if something goes wrong in between; it is the Python answer to forgetting `fclose`. `save2.py` writes by column name with `DictWriter`, so the order of the columns can never be mixed up.
+
+<CodeFiles dir="week-08" files={["save0.py", "save1.py", "save2.py"]} />
+
+> [!industry] grades.py and survey.py · two scripts from an ordinary Tuesday
+> `grades.py` reads a CSV of lab scores with `csv.DictReader`, which gives you each row as a dict keyed by the header, and prints every student's average: twelve lines, and the kind of script every teacher, analyst and manager writes. `survey.py` counts answers with `collections.Counter`, a dict that counts for you, and draws a bar chart out of `#` characters. That is the first chart of your career; the real one is three sections down.
+
+<CodeFiles dir="week-08" files={["grades.py", "survey.py"]} />
+
+## Libraries: where Python's real power is
+
+Malan's point in the lecture, and the point of this section: Python's superpower is not its syntax. It is that for almost anything you want to do, someone has written a **package**, and `pip install name` puts it on your computer in ten seconds. Python ships with a large **standard library** (`csv`, `json`, `sys`, `random`, `math`, `statistics`, `datetime`, `os`, `re`, and hundreds more), and the Python Package Index, **PyPI**, has half a million more.
+
+> [!code] cow0.py → qr.py · a talking cow and a QR code
+> `pip install cowsay` and then `cowsay.cow("hello, world")` draws a cow. Silly, and it makes the point: three lines, a library, done. `qr.py` is the serious version: `pip install qrcode`, `qrcode.make(url)`, `img.save("qr.png")`. The QR codes on this site's home page were made exactly like that, by a Python script.
+
+<CodeFiles dir="week-08" files={["cow0.py", "qr.py"]} />
+
+> [!code] blur.py and edges.py · Lab 5 in three lines
+> `pip install pillow` gives you `PIL`, the Python Imaging Library. `Image.open`, `.filter(ImageFilter.BoxBlur(1))`, `.save`. Your `filter.c` from Lab 5 walked every pixel by hand, with `malloc` and a header struct, to do what `blur.py` does in one call. Pillow does the same walk, in C, underneath. You know what it costs; now you get to not pay it.
+
+<CodeFiles dir="week-08" files={["blur.py", "edges.py"]} />
+
+> [!industry] github.py · talking to a web API
+> `pip install requests` (already there in Colab and the codespace). `requests.get(url)` fetches a web page; GitHub's API answers with JSON; `.json()` turns it into Python lists and dicts; the rest is `phonebook3.py`. Try your own username. This is the shape of most of the code that connects systems in a company: fetch, parse, sort, print, in fifteen lines.
+
+<CodeFiles dir="week-08" files={["github.py"]} />
+
+> [!industry] plot.py · a chart in four lines
+> `matplotlib` is the chart library of science and industry. `plt.plot(x, y)`, a title, two labels, `show()`. In a notebook the chart appears under the cell. Every figure in every data report you will ever read started this way.
+
+<CodeFiles dir="week-08" files={["plot.py"]} />
+
+> [!industry] spam.py · AI in fifteen lines
+> This is why Python is the language of AI. `scikit-learn` turns six example messages into word counts (`CountVectorizer`, a dict of words underneath), trains a classic learning algorithm on them (`MultinomialNB`, which counts how often each word appears in spam versus not), and then **predicts** labels for messages it has never seen. No rules were written; the model learned from examples. Run it in Colab, where scikit-learn is preinstalled. Add your own messages. Week 10 is about what is going on inside.
+
+<CodeFiles dir="week-08" files={["spam.py"]} />
+
+> [!warning] pip installs code written by strangers
+> `pip install` downloads a package and runs it on your machine with your permissions. Almost always that is fine, because the packages above are used by millions and watched closely. But malicious packages with look-alike names are uploaded to PyPI every week (`requests` is real; `request` and `reqeusts` have been traps). Type package names carefully, prefer what a course, a textbook or the official documentation names, and never put a password or a key in code you will push to GitHub. The 2024 **xz backdoor**, where a volunteer maintainer slipped a hidden entry point into a library used by nearly every Linux server, is why companies now audit what they install.
+
+## Speller in twenty lines, and the price of comfort
+
+In Lab 6 you wrote `dictionary.c`: a hash table with buckets, nodes, `malloc` for every word, `strcasecmp`, a hash function, and `unload` to free everything. Here is the Python version, by CS50.
+
+> [!code] dictionary.py and speller.py · the whole dictionary is a set
+> `words = set()` makes a hash table. `load` opens the file and `words.update(file.read().splitlines())`, one line for the whole dictionary. `check` is `word.lower() in words`. `size` is `len(words)`. `unload` has nothing to do, because Python frees memory itself (it counts how many tags point at each value and throws the value away when the count hits zero; that is the "garbage collection" you may have heard of). `speller.py` is the C `speller.c` translated line by line, for you to compare.
+
+<CodeFiles dir="week-08" files={["dictionary.py", "speller.py"]} />
+
+Run both on the same text and compare the times. Python's `load` is slower than a good C version, and `check` is about as fast, because the set is a C hash table. So which is better? Wrong question. The right one: **what is the cost of a programmer's hour, and what is the cost of a millisecond?** For a spell checker that runs once, the Python version wins by a week of your time. For the spell checker inside a phone keyboard, running on every keystroke on a battery, the C version wins. Professionals know both and pick.
+
+> [!code] timing.py and timing.c · measure, do not guess
+> Adding the numbers from 0 to ten million. The Python `for` loop takes about half a second; the same loop in C takes about a hundredth. That is the famous "Python is 50 times slower". Then two more lines: `sum(range(n))` is six times faster than the loop, because the loop now runs inside the interpreter's C code; and NumPy's `arange(n).sum()` is faster still, because NumPy *is* C with a Python steering wheel. The rule of Python performance: **do not loop in Python over millions of things; call the library that loops in C.** Every AI framework is built on that rule.
+
+<CodeFiles dir="week-08" files={["timing.py", "timing.c"]} />
+
+<Terminal lines={['python timing.py']} out={`for loop       0.460 s   total = 49999995000000
+sum(range)     0.080 s   total = 49999995000000
+numpy          0.012 s   total = 49999995000000`} />
+
+## C versus Python, on one page
+
+| | C | Python |
+|---|---|---|
+| Runs by | compiling to machine code | interpreting, line by line |
+| Types | declared, fixed | inferred, dynamic |
+| Block | `{ }` | indentation |
+| Strings | `char *`, `\0`, `strlen`, `strcpy` | a value with fifty methods |
+| Arrays | fixed size, `realloc` to grow | `list`, grows by itself |
+| Hash table | you write it (Lab 6) | `dict`, `set` |
+| Memory | `malloc` / `free`, valgrind | automatic |
+| Integers | overflow at 2³¹ | unlimited |
+| Floats | imprecise | imprecise (same hardware) |
+| Errors | return values you must check | exceptions |
+| Libraries | some, installed by hand | half a million, `pip install` |
+| Speed | the yardstick | 10–100× slower in loops; C speed through libraries |
+| Best for | operating systems, embedded, games, the engine under everything | AI, data, scripts, web backends, prototypes, almost everything else |
+
+The lesson of the semester, in one line: **learn the slow, exact language first, and the fast, comfortable language becomes transparent.** You are now someone who can read a traceback and picture the memory. Most Python programmers cannot.
+
+## Summary
+
+- Python is **interpreted**: no compile step, instant feedback, slower execution. `python file.py` runs a file; `python` alone is the REPL.
+- You can run it in the **codespace**, locally with **Miniconda + VS Code** (one environment per project), in **Jupyter**, in **Colab** (nothing to install, free GPU), or in **Python Tutor** to see the memory. Choose by the task.
+- The syntax drops semicolons, braces and declarations: blocks are **indented**, `for i in range(n)` is the loop, `def` makes a function, `if __name__ == "__main__": main()` ends the file.
+- Built-in types: `int` (no overflow), `float` (same imprecision), `str` (immutable, many methods), `bool`, `list`, `dict`, `tuple`, `set`, `None`. Variables are **name tags** on values.
+- `input()` returns a string; convert with `int()` inside `try`/`except ValueError`.
+- `list` is a growing array; `dict` and `set` are hash tables: week 7, built in.
+- `with open(...) as file:` and the `csv` and `json` modules handle files; `sys.argv` and `sys.exit` handle the command line.
+- **Libraries** are the superpower: `pip install`, then `import`. Pillow, requests, matplotlib, NumPy, scikit-learn. Install carefully.
+- Python is slow in loops and fast through libraries written in C. That is not a contradiction; it is the design.
+
+This week's lab, [Lab 7: C to Python](/labs/lab-07), rewrites three of your earlier labs in Python and times the C and Python spell checkers against each other. The notebook on that page runs the same loop in both languages side by side. Next week is the midterm (weeks 1–7). After that: artificial intelligence, in Python.

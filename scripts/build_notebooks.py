@@ -490,6 +490,98 @@ Copy djb2 into `dictionary.c` (it is three lines of C), raise `N` to a few tens 
 before and after. Watch `TIME IN check` drop. Then try `N = 1000003` and think about what you paid for the speed."""),
 ]
 
+# ---------------------------------------------------------------------------
+# LAB 7 · C and Python on the same task, timed
+# ---------------------------------------------------------------------------
+LAB07 = [
+md("""# Lab 7 · Explore: C and Python on the same task, timed
+
+**Introduction to Computer Science (YMT113)** · Fall 2026
+
+Nothing here is graded. The question of the week is *how much slower is Python, and when does it matter?*
+Here you run the same job in C and in Python, time both, and then see how Python catches up by calling C.
+
+> Runs in Colab (gcc is preinstalled) and in your codespace."""),
+md("""## 1 · The same loop, in C"""),
+code("""%%writefile sumloop.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main(int argc, char *argv[])
+{
+    long n = argc > 1 ? atol(argv[1]) : 10000000;
+    clock_t start = clock();
+    long total = 0;
+    for (long i = 0; i < n; i++)
+    {
+        total += i;
+    }
+    printf("C for loop     %.3f s   total = %ld\\n", (double) (clock() - start) / CLOCKS_PER_SEC, total);
+}"""),
+code("""!gcc -o sumloop sumloop.c && ./sumloop 10000000"""),
+md("""## 2 · The same loop, in Python
+
+`time.perf_counter()` is the stopwatch. Run the cell two or three times: the numbers wobble, the ratio does not."""),
+code("""import time
+
+n = 10_000_000
+
+start = time.perf_counter()
+total = 0
+for i in range(n):
+    total += i
+py_loop = time.perf_counter() - start
+print(f"Python for loop  {py_loop:.3f} s   total = {total}")"""),
+md("""Roughly 30 to 100 times slower than C, depending on the machine. Every `total += i` in Python means: look up what `total` is,
+check that it is an int, check that it has not grown past a machine word, make a new int object, re-tag `total`. C does one add."""),
+md("""## 3 · Let C do the loop for you
+
+`sum(range(n))` runs the loop inside the interpreter's own C code. NumPy goes further: an array of 10 million 64-bit ints,
+summed by a C routine, with Python only asking the question."""),
+code("""start = time.perf_counter()
+total = sum(range(n))
+builtin = time.perf_counter() - start
+print(f"sum(range(n))    {builtin:.3f} s   total = {total}")
+
+import numpy as np
+start = time.perf_counter()
+total = int(np.arange(n, dtype=np.int64).sum())
+numpy_t = time.perf_counter() - start
+print(f"numpy            {numpy_t:.3f} s   total = {total}")"""),
+md("""## 4 · Draw it"""),
+code("""import matplotlib.pyplot as plt
+
+labels = ["Python loop", "sum(range)", "numpy"]
+times = [py_loop, builtin, numpy_t]
+plt.bar(labels, times)
+plt.ylabel("seconds for 10 million additions")
+plt.title("Same job, three ways (C: about 0.01 s)")
+for i, t in enumerate(times):
+    plt.text(i, t, f"{t:.3f}", ha="center", va="bottom")
+plt.show()"""),
+md("""## 5 · Strings: where Python is *not* slow
+
+Uppercase a long text one character at a time (the C way, in Python), then with one method call. The method is C underneath."""),
+code("""text = "the quick brown fox jumps over the lazy dog " * 5_000   # about 225 000 characters
+
+start = time.perf_counter()
+out = ""
+for c in text:
+    out += c.upper()
+print(f"character loop   {time.perf_counter() - start:.3f} s")
+
+start = time.perf_counter()
+out = text.upper()
+print(f"text.upper()     {time.perf_counter() - start:.3f} s")"""),
+md("""## 6 · Your turn
+
+1. Change `n` to 100 million in cells 1 and 2. Does the ratio stay the same?
+2. Run `python speller.py dictionaries/large texts/lecture.txt` in the terminal, and the C speller from Lab 6 on the same text.
+   Compare `TIME IN load` and `TIME IN check`. Which one is the hash table in C, and which one is Python asking a C hash table?
+3. Write the rule in your own words: *when does it matter that Python is slow, and what do you do about it?*"""),
+]
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
     "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
@@ -497,6 +589,7 @@ NOTEBOOKS = {
     "lab04": (ROOT / "labs" / "templates" / "lab04" / "lab04.ipynb", LAB04),
     "lab05": (ROOT / "labs" / "templates" / "lab05" / "lab05.ipynb", LAB05),
     "lab06": (ROOT / "labs" / "templates" / "lab06" / "lab06.ipynb", LAB06),
+    "lab07": (ROOT / "labs" / "templates" / "lab07" / "lab07.ipynb", LAB07),
 }
 
 

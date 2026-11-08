@@ -11,7 +11,8 @@ import { href } from '@/lib/site';
 interface Props { dir: string; files: string[]; }
 const { dir, files } = Astro.props;
 const root = join(process.cwd(), 'public', 'c', dir);
-const sources = files.map((f) => ({ name: f, code: readFileSync(join(root, f), 'utf-8').replace(/\s+$/, '') }));
+const LANG: Record<string, string> = { c: 'c', h: 'c', py: 'python', sh: 'bash', csv: 'csv', txt: 'text', json: 'json', html: 'html', js: 'javascript', sql: 'sql' };
+const sources = files.map((f) => ({ name: f, code: readFileSync(join(root, f), 'utf-8').replace(/\s+$/, ''), lang: LANG[f.split('.').pop() ?? ''] ?? 'text' }));
 const id = `cf-${dir}-${files[0].replace(/\W/g, '')}`;
 ---
 <div class="codefiles not-prose my-5 overflow-hidden rounded-xl border border-line-2 bg-card shadow-soft" data-codefiles>
@@ -31,7 +32,7 @@ const id = `cf-${dir}-${files[0].replace(/\W/g, '')}`;
   </div>
   {sources.map((s, i) => (
     <div data-panel={`${id}-${i}`} class:list={['cf-panel text-[13.5px]', i !== 0 && 'hidden']}>
-      <Code code={s.code} lang="c" themes={{ light: 'github-light', dark: 'github-dark' }} wrap />
+      <Code code={s.code} lang={s.lang as any} themes={{ light: 'github-light', dark: 'github-dark' }} wrap />
     </div>
   ))}
 </div>
