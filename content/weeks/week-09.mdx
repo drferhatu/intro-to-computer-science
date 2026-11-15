@@ -1,0 +1,350 @@
+---
+week: 9
+title: "Python in Practice: Data, Charts, APIs and Your Project"
+description: "Last week was the language; this week is the work. Read a table with pandas, draw it with matplotlib, pull live data from a web API, split a program into modules, test it with pytest, and set your semester project up the way professionals do."
+module: m4
+status: ready
+reading: "pandas: 10 minutes to pandas; CS50P notes on Libraries, File I/O and Unit Tests"
+notebook:
+  file: "notebooks/week-09-data.ipynb"
+  title: "Week 9 · Explore: a table, three charts and a live API"
+cs50:
+  week: "P"
+  title: "No CS50x lecture this week. Closest match: CS50P lectures 4 (Libraries), 5 (Unit Tests) and 6 (File I/O)"
+  video: "https://cs50.harvard.edu/python/weeks/4/"
+  notes: "https://cs50.harvard.edu/python/notes/4/"
+  slides: ""
+  source: ""
+  pset: "https://cs50.harvard.edu/python/psets/4/"
+prep:
+  - "Have Python working on your own laptop with Miniconda and VS Code, as on the week 8 page, and run <code>pip install pandas matplotlib requests pytest python-dotenv</code> in your <code>ics</code> environment. Colab works too, but this is the week your own machine starts to matter."
+  - "Open your semester project repository and read your own README. The lab slot is a project clinic: come with a question."
+  - "The midterm is Wednesday, November 25, 12:00–13:00, rooms A304–A305, weeks 1–7 only: see the <a href=\"/guides/midterm\">midterm page</a>. One review sheet per day from today gets you there."
+objectives:
+  - "Describe the four steps of a data job: get, clean, compute, show."
+  - "Load a CSV into a pandas DataFrame; select columns, filter rows, add columns, group and summarize."
+  - "Draw line, bar and scatter charts with matplotlib, and spot a misleading axis."
+  - "Call a web API with requests: parameters, status codes, JSON, timeouts and errors."
+  - "Keep keys and passwords out of code with environment variables and .gitignore."
+  - "Split a program into a module and a main file, and write unit tests with pytest."
+  - "Set up a project: environment, requirements.txt, folder layout, README, small commits."
+wow:
+  title: "The checks that have graded you since Lab 2 are forty lines of the Python you can now read."
+  text: "Every :) and :( you have seen came from pytest: a function whose name starts with test_, one assert inside, and a runner that finds them all. Open tests/ in any of your lab repositories tonight. You will understand every line, and from this week you write them yourself, for your own project. Netflix runs millions of these a day; no change reaches production without them."
+industry:
+  - { "t": "pandas is the spreadsheet of industry", "d": "Banks, hospitals, e-commerce, sports analytics: when data fits in memory, it is cleaned and summarized in pandas. It is the most asked-for library in data job postings, and the first step of nearly every machine-learning project." }
+  - { "t": "Everything is an API", "d": "Weather, maps, payments (Stripe, iyzico), messaging (Twilio, WhatsApp Business), AI models (Claude, GPT): companies sell their services as web APIs, and using one is the requests-and-JSON pattern from this page." }
+  - { "t": "Leaked keys are found in minutes", "d": "Bots scan every public GitHub push for API keys. Researchers have measured stolen cloud keys being used within minutes of a commit, and students have received four-figure bills. A .env file and one line in .gitignore are the whole defence." }
+  - { "t": "Tests are how teams move fast", "d": "Google, Netflix and every serious open-source project run their test suite on each change (continuous integration). The green check on your lab commits is the same mechanism." }
+resources:
+  - { "title": "10 minutes to pandas", "url": "https://pandas.pydata.org/docs/user_guide/10min.html", "note": "The official short tour; everything in this week's table section and a little more." }
+  - { "title": "matplotlib · Quick start", "url": "https://matplotlib.org/stable/users/explain/quick_start.html" }
+  - { "title": "Requests · Quickstart", "url": "https://requests.readthedocs.io/en/latest/user/quickstart/" }
+  - { "title": "Open-Meteo", "url": "https://open-meteo.com/en/docs", "note": "The free weather API used on this page: no account, no key." }
+  - { "title": "Public APIs (list)", "url": "https://github.com/public-apis/public-apis", "note": "Hundreds of free APIs by topic, if your project needs data." }
+  - { "title": "pytest · Get started", "url": "https://docs.pytest.org/en/stable/getting-started.html" }
+  - { "title": "CS50P · Unit Tests", "url": "https://cs50.harvard.edu/python/weeks/5/", "note": "A full lecture on what the last section of this page introduces." }
+  - { "title": "Midterm page", "url": "/guides/midterm", "note": "Wednesday, November 25, 12:00–13:00. Weeks 1–7." }
+tags: ["pandas", "DataFrame", "matplotlib", "requests", "API", "JSON", "environment variables", "modules", "pytest", "requirements.txt", "project"]
+---
+
+## Why this week matters
+
+Last week you learned Python the language: variables, loops, lists, dicts, functions. That is grammar. Nobody is hired for grammar. People are hired because they can take a messy file, or a stream of data from somewhere on the Internet, and turn it into an answer someone needs: *which students are falling behind, which product sells on Fridays, will it rain on demo day.*
+
+That work has the same four steps every time, whether it is done by a first-year student or by a data team at a bank:
+
+1. **Get** the data: from a file, a database, or a web API.
+2. **Clean** it: fix the types, drop what is broken, name things.
+3. **Compute**: filter, group, count, average.
+4. **Show**: a table, a chart, a sentence.
+
+Think of a kitchen: buy the ingredients, wash and chop, cook, put it on a plate. Nobody admires the chopping, and no meal happens without it. This week you do all four steps, with the three libraries that the working world uses for them: **pandas** for tables, **matplotlib** for charts, **requests** for the web.
+
+Then the second half, which is about you: how a program grows from one file into a **project**, with modules, tests and an environment, because your semester project is past the point where one file is enough. The lab slot this week is a project clinic.
+
+There is no CS50x lecture behind this page; it is written for this course. All programs are short, all are copyable, and all of them run in Colab as well as on your laptop. The data file they read, [scores.csv](/c/week-09/scores.csv), is a small invented class: twelve students, two sections, six lab scores.
+
+## A table is a list of dicts, and pandas knows it
+
+Remember `phonebook3.py` from last week: a list of dicts, one dict per person. That *is* a table, one dict per row, one key per column. You can process it with a loop, and for one number that is fine:
+
+> [!code] table0.py · last week's way
+> `csv.DictReader` gives one dict per row; a loop adds up one column; divide by the count. Ten lines for one average. Now imagine the questions that follow: the average of *every* lab, per section, sorted, only for students who missed two labs. Each one is another loop. This is where a library earns its place.
+
+<CodeFiles dir="week-09" files={["table0.py", "scores.csv"]} />
+
+**pandas** is a library for tables. Its central object is the **DataFrame**: think of a spreadsheet that you drive with code instead of a mouse. The difference from Excel is that every step is written down, so you can rerun it tomorrow on new data, and someone else can read exactly what you did.
+
+> [!code] table1.py · load, look, summarize
+> `pd.read_csv("scores.csv")` reads the file, takes the column names from the first line, and works out that the lab columns are numbers, so there is no `int(...)` anywhere. `df.head()` shows the first five rows: always look at your data before you compute on it. `df.shape` is rows and columns. `df["lab7"]` is one column, and `.mean()` is its average: the whole of `table0.py` in one expression. `df.describe()` gives count, mean, min, max and quartiles for every numeric column at once.
+
+<CodeFiles dir="week-09" files={["table1.py"]} />
+
+<Terminal lines={['python table1.py']} out={`     name section  lab2  lab3  lab4  lab5  lab6  lab7
+0     Ada       A    10     9     8    10    10    10
+1    Alan       A     9    10     7     8     2     9
+2   Grace       A    10    10    10    10    10    10
+3   Linus       A     6     7     5     0     0     3
+4  Margaret     A    10     8     9    10     8    10
+(12, 8)
+8.416666666666666
+...`} />
+
+The numbers 0, 1, 2 on the left are the **index**, pandas's row labels. The name `df` is a convention, like `i` in a loop, and `pd` is the conventional short name for the library; you will see both in every tutorial in the world.
+
+> [!tip] No file at hand? Read it from a URL
+> `pd.read_csv` accepts a web address as well as a file name. In Colab, `pd.read_csv("https://drferhatu.github.io/intro-to-computer-science/c/week-09/scores.csv")` loads this week's data with nothing to upload.
+
+### Asking questions: select and filter
+
+> [!code] table2.py · columns by name, rows by a condition
+> `df[["name", "lab6", "lab7"]]` (note the double brackets: a list of names inside the selection) gives a smaller table. The important line is `df[df["lab6"] < 5]`. Read it inside out: `df["lab6"] < 5` compares the *whole column* at once and produces a column of `True` and `False`; putting that inside `df[...]` keeps the rows where it is `True`. No loop, no `if`. Two conditions are joined with `&` (and) or `|` (or), each in its own parentheses. `sort_values("lab6", ascending=False).head(3)` is "the top three".
+
+<CodeFiles dir="week-09" files={["table2.py"]} />
+
+<Terminal lines={['python table2.py']} out={`...
+     name section  lab2  lab3  lab4  lab5  lab6  lab7
+1    Alan       A     9    10     7     8     2     9
+3   Linus       A     6     7     5     0     0     3
+7     Ken       B     7     6     8     5     4    10
+9   Guido       B     5     8     6     7     2    10
+11    Tim       B     0     4     6     0     0     0
+...`} />
+
+That table is a real answer to a real question: *who struggled with the hash-table lab?* It took one line.
+
+> [!why] Why not write the loop?
+> Two reasons. The line says what you want, not how to get it, so it is hard to get wrong. And it is fast: pandas stores each column as a NumPy array and does the comparison in C, the rule from last week: do not loop in Python over many things, call the library that loops in C. On a million rows the loop takes seconds and the pandas line takes milliseconds.
+
+### New columns, groups, and a file out
+
+> [!code] table3.py · compute and summarize
+> `df[labs].sum(axis=1)` adds across each row (`axis=1` means "along the columns"; the default, `axis=0`, goes down each column). Assigning it to `df["total"]` creates a new column, like typing a formula into a spreadsheet and dragging it down. `(df[labs] == 0).sum(axis=1)` counts zeros per student, because `True` counts as 1. Then the most useful method in pandas: **`groupby`**. `df.groupby("section")[labs].mean()` splits the rows by section, averages each group, and puts the results back together as a small table, one row per section. `df.to_csv("report.csv", index=False)` writes the result to a new file.
+
+<CodeFiles dir="week-09" files={["table3.py"]} />
+
+<Terminal lines={['python table3.py']} out={`         name  total  average  missing
+2       Grace     60    10.00        0
+8   Katherine     59     9.83        0
+6     Barbara     59     9.83        0
+...
+3       Linus     21     3.50        2
+11        Tim     10     1.67        4
+         lab2  lab3  lab4  lab5  lab6  lab7
+section
+A        8.83  8.83  8.17  7.83  6.67  8.67
+B        6.83  7.83  8.17  6.83  6.00  8.17
+lab2    7.83
+lab3    8.33
+lab4    8.17
+lab5    7.33
+lab6    6.33
+lab7    8.42`} />
+
+Three questions answered in three lines: who is ahead and who is behind, how the sections compare, which lab was hardest (Lab 6, the hash table, as you may remember). That is step 3 of the data job. Now step 4.
+
+> [!definition] The five pandas moves
+> **Load** (`read_csv`), **look** (`head`, `describe`), **select** (`df[cols]`, `df[condition]`), **compute** (new columns, `sum`, `mean`, `groupby`), **save** (`to_csv`). Nine data tasks out of ten are these five, in that order.
+
+## Charts: showing what the table says
+
+A table of numbers answers the question you asked. A chart shows you the question you did not think to ask. **matplotlib** is the standard charting library; you met four lines of it last week.
+
+> [!code] chart0.py · a line chart, and saving it to a file
+> `df[labs].mean()` is the average of each lab; `plt.plot(x, y, marker="o")` draws it. Every chart needs a **title** and **labels on both axes**, with units; a chart without them is a decoration. `plt.savefig("average.png", dpi=150)` writes an image you can put in a report or in your project's README; `plt.show()` opens a window, or draws under the cell in a notebook.
+
+<CodeFiles dir="week-09" files={["chart0.py"]} />
+
+![A line chart of the class average for labs 2 to 7: around 8 for most labs, dipping to 6.3 at Lab 6](/img/week-09/chart0.png)
+
+The dip at Lab 6 was a number in a list a moment ago. Now nobody can miss it.
+
+> [!code] chart1.py · a bar chart with a message
+> One bar per student, sorted, horizontal so that the names are readable (`barh`). A list comprehension picks the color: red under 30 points, blue otherwise. `axvline` draws the class mean as a dashed line, and `legend()` explains it. Notice the title: not "Totals" but the question the chart answers. A chart should have a point, and the title should say it.
+
+<CodeFiles dir="week-09" files={["chart1.py"]} />
+
+![A horizontal bar chart of each student's total of six labs, sorted; three students below 30 points are drawn in red](/img/week-09/chart1.png)
+
+> [!code] chart2.py · a scatter plot and a correlation
+> Each dot is a student: Lab 5 score across, Lab 6 score up. If the dots climb from bottom left to top right, the two go together. `df["lab5"].corr(df["lab6"])` puts a number on it, from −1 to 1; here it is about 0.8, which is strong. `annotate` writes each name next to its dot.
+
+<CodeFiles dir="week-09" files={["chart2.py"]} />
+
+![A scatter plot of Lab 5 against Lab 6 scores with each student labelled; the points rise from lower left to upper right](/img/week-09/chart2.png)
+
+> [!warning] Correlation is not causation
+> Students who did well on pointers did well on hash tables. Did Lab 5 *cause* the Lab 6 score? Maybe: Lab 6 needs pointers. Or maybe both are caused by a third thing, such as hours of practice, or simply showing up. The chart cannot tell you which. The classic example: ice-cream sales and drownings rise and fall together, and nobody thinks ice cream drowns people; summer causes both. When you see two lines moving together, ask what third thing might be moving them.
+
+> [!code] chart3.py · the same two numbers, honest and dishonest
+> Two sections with means 8.6 and 8.2. On the left the y-axis starts at 0 and the bars are nearly equal, which is the truth. On the right the axis starts at 8.1 and one bar towers over the other. Same data, same code, one line changed: `set_ylim`. You will see the right-hand version in advertisements, in election coverage and in company slides for the rest of your life. Read the axis before you read the chart.
+
+<CodeFiles dir="week-09" files={["chart3.py"]} />
+
+![Two bar charts of the same data: with the axis from 0 the bars look equal; with the axis from 8.1 one looks four times taller](/img/week-09/chart3.png)
+
+> [!note] Which chart for which question
+> **Line**: how something changes over an ordered axis, usually time. **Bar**: comparing separate things. **Scatter**: the relationship between two measurements. **Histogram** (`plt.hist`): how one measurement is spread. If you cannot say which question your chart answers, it is the wrong chart.
+
+## Web APIs: data that is alive
+
+A file is a photograph of data: it was true when it was saved. Much of the data that matters changes by the minute: weather, prices, traffic, messages. You get it from a **web API**.
+
+Think of a restaurant. You do not walk into the kitchen and cook; you read the **menu**, tell the waiter what you want in the words the menu uses, and a plate comes back. An API (application programming interface) is a program's menu: a list of things you may ask for, the exact form of the request, and the form of the answer. The request is a URL; the answer is JSON, the dicts-and-lists format from last week.
+
+We use [Open-Meteo](https://open-meteo.com/en/docs), a free weather service that needs no account and no key.
+
+> [!code] api0.py · one request, one answer
+> The URL has two parts: the address of the service, then, after the `?`, the **parameters** as `name=value` pairs joined by `&`: latitude and longitude of Elazığ, and which measurements we want. `requests.get(url, timeout=10)` sends it and waits at most ten seconds. `response.status_code` is the server's verdict as a number, and `response.json()` turns the JSON text into a Python dict. From there it is last week's `people[name]`: `data["current"]["temperature_2m"]`.
+
+<CodeFiles dir="week-09" files={["api0.py"]} />
+
+<Terminal lines={['python api0.py']} out={`200
+dict_keys(['latitude', 'longitude', 'generationtime_ms', 'utc_offset_seconds', 'timezone', 'timezone_abbreviation', 'elevation', 'current_units', 'current'])
+{'time': '2026-11-15T14:45', 'interval': 900, 'temperature_2m': 12.3, 'wind_speed_10m': 7.0}
+Elazığ now: 12.3 °C, wind 7.0 km/h`} />
+
+Paste that URL into your browser's address bar: you get the same JSON, as text. A browser and `requests.get` do the same thing; one shows the answer to a person, the other hands it to a program.
+
+The status codes worth knowing by heart:
+
+| Code | Meaning | Whose fault |
+|---|---|---|
+| 200 | OK, here is your answer | nobody's |
+| 400 | bad request: a parameter is wrong or missing | yours |
+| 401 / 403 | no key, wrong key, or not allowed | yours |
+| 404 | no such address | yours (a typo, usually) |
+| 429 | too many requests: slow down | yours |
+| 500–503 | the server broke or is overloaded | theirs; try again later |
+
+> [!code] api1.py · the way real code does it
+> Four improvements, each one a habit. **Parameters in a dict**: `requests.get(url, params={...})` builds the `?a=b&c=d` part for you and escapes special characters. **A function**: `current_weather(latitude, longitude)` hides the API behind a name, so the rest of the program does not care where the numbers come from. **`raise_for_status()`**: turns a 404 or 500 into an exception instead of letting you parse an error page. **Every failure handled**: no internet, a slow server, a refusal, each with its own `except` and its own message. Networks fail; a program that assumes they do not is a program that crashes during the demo.
+
+<CodeFiles dir="week-09" files={["api1.py"]} />
+
+<Terminal lines={['python api1.py']} out={`Elazığ      12.3 °C   wind  7.0 km/h
+İstanbul    12.1 °C   wind 15.4 km/h
+Ankara      12.3 °C   wind  3.2 km/h
+Houston     11.5 °C   wind 20.6 km/h`} />
+
+> [!code] api2.py · get, clean, compute, show: the whole job
+> The four steps from the top of this page, in twenty lines. **Get**: ask for three days of hourly temperatures. **Clean**: the answer contains two parallel lists, `time` and `temperature_2m`, and a dict of lists is exactly what `pd.DataFrame(...)` wants; `pd.to_datetime` turns the time strings into real dates. **Compute**: the minimum, and *when* it happens (`idxmin` gives the row of the smallest value). **Show**: a line chart. This is the skeleton of a weather app, a stock tracker, a sensor dashboard; only the URL changes.
+
+<CodeFiles dir="week-09" files={["api2.py"]} />
+
+![A line chart of the hourly temperature forecast for Elazığ over 72 hours, rising each afternoon and falling each night](/img/week-09/api2.png)
+
+> [!tip] Be a polite guest
+> An API is someone else's computer. Do not call it in a tight loop: one request per second is plenty, and `time.sleep(1)` between calls costs you nothing. Save answers you will need again to a file instead of asking twice. Read the service's limits (Open-Meteo allows about 10 000 calls a day for free). A 429 means you were not polite.
+
+### Keys, and where they must never go
+
+Most APIs want to know who is asking, so they give each user a **key**: a long random string you send with every request. A key is a password. Anyone who has it can use the service as you, and if the service costs money, on your bill.
+
+> [!code] keys.py · read the secret from the environment
+> The key lives in a file named `.env` that sits next to your program and is **never committed**: one line in `.gitignore` sees to that. `load_dotenv()` reads it, `os.environ.get("API_KEY")` fetches the value, and the program stops with a clear message if it is missing. You commit a second file, `.env.example`, with the names but not the values, so that anyone who clones the project knows what to create.
+
+<CodeFiles dir="week-09" files={["keys.py"]} />
+
+> [!warning] If a key ever reaches GitHub, it is burned
+> Bots scan every public push for anything that looks like a key, and they find it within minutes. Deleting the file in the next commit does not help: the key is still in the history. The only fix is to **revoke** the key on the service's website and create a new one. Put `.env` in `.gitignore` *before* your first commit, and you will never need this paragraph.
+
+## From a script to a project
+
+Every program on this page so far is a **script**: one file, top to bottom. That is right for twenty lines. Your semester project is not twenty lines, and a file that reads input, computes, calls the web and prints, all mixed together, becomes impossible to change without breaking. The way out is the same in every language: separate the part that **thinks** from the part that **talks**.
+
+### Modules: your own library
+
+> [!code] convert.py and main.py · the thinking and the talking
+> `convert.py` is a **module**: two functions, no `input`, no `print`, no `sys.argv`. It knows about temperatures and nothing else. `main.py` is the program: it reads the command line, checks it, calls the module with `from convert import celsius_to_fahrenheit, describe`, and prints. That `import` is the same mechanism as `import csv`; a module is just a `.py` file, and yours work exactly like the standard library's. Now you see what `if __name__ == "__main__":` is for: it lets a file be both, a program when run and a module when imported.
+
+<CodeFiles dir="week-09" files={["convert.py", "main.py"]} />
+
+<Terminal lines={['python main.py 21.5']} out={`21.5 °C = 70.7 °F, mild`} />
+
+Why bother? Because a function that only takes values and returns values can be **tested**, reused in another program, and replaced without touching anything else. A function that calls `input` can only be tested by a person typing.
+
+### Tests: check.py, from the other side
+
+Since Lab 2, every push you made was judged by a program. That program is **pytest**, and its rules fit in one sentence: any function whose name starts with `test_`, in any file whose name starts with `test_`, is a test; it passes if it finishes and fails if an `assert` inside it is false.
+
+> [!code] test_convert.py · three tests
+> `assert celsius_to_fahrenheit(0) == 32` reads as a sentence: zero Celsius must be thirty-two Fahrenheit. The third test checks the **boundaries** of `describe`: is 0 freezing or cold? Is 12 cold or mild? Boundaries are where bugs live (remember the off-by-one errors of week 4), so that is where tests go. Run `pytest` in the folder and it finds and runs everything.
+
+<CodeFiles dir="week-09" files={["test_convert.py"]} />
+
+<Terminal lines={['pytest']} out={`collected 3 items
+
+test_convert.py ...                                      [100%]
+
+3 passed in 0.01s`} />
+
+Now change `celsius < 12` to `celsius <= 12` in `convert.py` and run `pytest` again. One test fails, and it tells you the line, the value it got and the value it wanted. That is the real use of tests: not proving that the code works today, but **telling you the moment a later change breaks it**. Open the `tests/` folder of your Lab 7 repository tonight. You can read it now.
+
+### The rest of a project
+
+A project is a folder that someone else can clone and run in five minutes. That takes four more small things:
+
+```text
+my-project/
+├── README.md            what it does, how to install, how to run, an example
+├── requirements.txt     the libraries it needs, one per line
+├── .gitignore           what Git must not track: .env, __pycache__/, data you downloaded
+├── .env.example         the names of the secrets, without the values
+├── src/
+│   ├── main.py          the program: input, output, command line
+│   └── convert.py       the modules: functions that think
+└── tests/
+    └── test_convert.py  one test file per module
+```
+
+> [!code] requirements.txt · the shopping list
+> One library per line. Anyone, including you on a new laptop, or the instructor on demo day, runs `pip install -r requirements.txt` inside a fresh environment and has everything. Write a library here the moment you `pip install` it, not at the end when you have forgotten which ones you used.
+
+<CodeFiles dir="week-09" files={["requirements.txt"]} />
+
+The full routine for starting, or repairing, a Python project, with the environment from week 8:
+
+```bash
+conda create -n myproject python=3.12
+conda activate myproject
+pip install -r requirements.txt
+pytest
+python src/main.py
+```
+
+If those five lines work on a computer that has never seen your project, you have a project. If they work only on yours, you have a folder.
+
+> [!try] The clean-clone test
+> Clone your own repository into a new, empty folder (`git clone <url> test-clone`), make a fresh environment, and follow your own README word by word. Whatever you had to do that the README did not say, a file that was only on your machine, a library you forgot to list, is a bug in the project. Professionals call this "works on my machine", and it is not a compliment.
+
+## The lab slot: project clinic
+
+There is no new graded lab this week. The lab slot is yours and your project's, and the instructor comes to you. Milestone 3, the **prototype**, is due in week 11 (Monday, November 30): something that runs, does the smallest useful version of the task, and is tagged `m3-prototype`. Work through this list in the lab; every item is a commit.
+
+1. **Open your project repository** in VS Code (locally) or in a codespace. Run `git pull`. Read your README as a stranger would.
+2. **Make it start.** A `main` that runs and prints something true, however small. Python: `python src/main.py`. C: `make && ./program`. Commit: `git commit -m "program starts and prints usage"`.
+3. **Separate thinking from talking.** Move one real computation into a function that takes values and returns a value, in its own file (`src/something.py`, or `something.c` with `something.h`). Commit.
+4. **Write one test** for that function. Python: `tests/test_something.py` and `pytest`. C: a small `tests/test.c` with `assert()` from `<assert.h>`, run by `make test`. One test that passes is worth more than ten you plan to write. Commit.
+5. **List what it needs.** Python: `requirements.txt`. C: the `Makefile` builds with one `make`. Add a `.gitignore` (`__pycache__/`, `.env`, compiled programs). Commit.
+6. **Update the README**: the task list with honest ticks, how to build and run, one real example run pasted in. Commit and `git push`.
+7. **Show the instructor** your repository page on GitHub: the commit list is your progress report.
+
+If your project needs data, ask now: a public API from this page's resources, a CSV, or a file you create. If you are stuck on *what the first small version is*, that is exactly the question the clinic is for.
+
+> [!note] The midterm is in ten days
+> **Wednesday, November 25, 12:00–13:00, rooms A304 and A305.** Weeks 1–7 only; nothing from this page or from week 8. Written, on paper. The [midterm page](/guides/midterm) has the format, a week-by-week checklist and last year's exams with solutions. A plan that works: one week's page and its lab per day, from a blank sheet, starting today.
+
+## Summary
+
+- A data job is **get, clean, compute, show**. The tools change; the four steps do not.
+- **pandas**: a `DataFrame` is a table you drive with code. `read_csv`, `head`, `describe`; select with `df[cols]` and `df[condition]`; add columns; `groupby(...).mean()`; `to_csv`.
+- **matplotlib**: line for change, bar for comparison, scatter for relationships. Title, axis labels, units, always. Check where the axis starts. Correlation is not causation.
+- **Web APIs**: a URL with parameters goes out, JSON comes back; `requests.get(url, params=..., timeout=10)`, check the status, `.json()`. Handle failures; be polite.
+- **Secrets** live in `.env`, which lives in `.gitignore`. A key that reached GitHub must be revoked.
+- **Modules** separate the code that thinks from the code that talks; `import` works on your own files.
+- **pytest**: functions named `test_*` with `assert`. Tests tell you when a later change breaks earlier work.
+- A **project** is a folder a stranger can clone and run: README, `requirements.txt`, `.gitignore`, `src/`, `tests/`, small commits.
+
+Next week: artificial intelligence, what it actually is and how it works, in Python. And on Wednesday of that week, the midterm.

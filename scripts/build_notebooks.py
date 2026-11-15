@@ -582,8 +582,93 @@ md("""## 6 · Your turn
 3. Write the rule in your own words: *when does it matter that Python is slow, and what do you do about it?*"""),
 ]
 
+# ---------------------------------------------------------------------------
+# WEEK 9 · a table, three charts and a live API
+# ---------------------------------------------------------------------------
+WEEK09 = [
+md("""# Week 9 · Explore: a table, three charts and a live API
+
+**Introduction to Computer Science (YMT113)** · Fall 2026
+
+Nothing here is graded. This is the week 9 lecture as a notebook: run each cell (`Shift+Enter`), read the output,
+change one thing, run it again. Everything is preinstalled in Colab."""),
+md("""## 1 · Get: write the data file
+
+In a real job the file arrives by email or from a database. Here we create it, so that the notebook runs anywhere."""),
+code("""%%writefile scores.csv
+name,section,lab2,lab3,lab4,lab5,lab6,lab7
+Ada,A,10,9,8,10,10,10
+Alan,A,9,10,7,8,2,9
+Grace,A,10,10,10,10,10,10
+Linus,A,6,7,5,0,0,3
+Margaret,A,10,8,9,10,8,10
+Dennis,A,8,9,10,9,10,10
+Barbara,B,10,10,9,10,10,10
+Ken,B,7,6,8,5,4,10
+Katherine,B,10,10,10,9,10,10
+Guido,B,5,8,6,7,2,10
+Radia,B,9,9,10,10,10,9
+Tim,B,0,4,6,0,0,0"""),
+md("""## 2 · Load and look"""),
+code("""import pandas as pd
+
+df = pd.read_csv("scores.csv")
+df.head()"""),
+code("""df.describe().round(2)"""),
+md("""## 3 · Ask questions
+
+Change the condition and run again: who scored 10 on every lab from 5 to 7? Who is in section B and below 5 on Lab 6?"""),
+code("""df[df["lab6"] < 5]"""),
+code("""labs = ["lab2", "lab3", "lab4", "lab5", "lab6", "lab7"]
+df["total"] = df[labs].sum(axis=1)
+df["missing"] = (df[labs] == 0).sum(axis=1)
+df.sort_values("total", ascending=False)[["name", "section", "total", "missing"]]"""),
+code("""df.groupby("section")[labs].mean().round(2)"""),
+md("""## 4 · Show"""),
+code("""import matplotlib.pyplot as plt
+
+means = df[labs].mean()
+plt.plot(labs, means, marker="o")
+plt.title("Class average by lab"); plt.xlabel("lab"); plt.ylabel("mean score (out of 10)")
+plt.ylim(0, 10); plt.grid(alpha=0.3)
+plt.show()"""),
+code("""ordered = df.sort_values("total")
+colors = ["tab:red" if t < 30 else "tab:blue" for t in ordered["total"]]
+plt.barh(ordered["name"], ordered["total"], color=colors)
+plt.axvline(df["total"].mean(), linestyle="--", color="gray", label="class mean")
+plt.xlabel("total of six labs (out of 60)"); plt.title("Who needs a conversation?"); plt.legend()
+plt.show()"""),
+code("""plt.scatter(df["lab5"], df["lab6"], s=80, alpha=0.7)
+plt.xlabel("Lab 5 · pointers"); plt.ylabel("Lab 6 · hash table")
+plt.title(f"Correlation: {df['lab5'].corr(df['lab6']):.2f}")
+plt.show()"""),
+md("""## 5 · Live data from a web API
+
+Open-Meteo needs no key. The cell asks for three days of hourly temperature for Elazığ, makes a table and draws it.
+Change the latitude and longitude to your home town."""),
+code("""import requests
+
+params = {"latitude": 38.67, "longitude": 39.22, "hourly": "temperature_2m", "forecast_days": 3, "timezone": "Europe/Istanbul"}
+response = requests.get("https://api.open-meteo.com/v1/forecast", params=params, timeout=10)
+print(response.status_code)
+
+weather = pd.DataFrame(response.json()["hourly"])
+weather["time"] = pd.to_datetime(weather["time"])
+weather.head()"""),
+code("""plt.plot(weather["time"], weather["temperature_2m"])
+plt.title("Elazığ · temperature, next 72 hours"); plt.ylabel("°C"); plt.xticks(rotation=30)
+plt.show()"""),
+md("""## 6 · Your turn
+
+1. Add a column `improved` that is `True` when `lab7` is greater than `lab6`. How many students improved? (`df["improved"].sum()`)
+2. Draw a histogram of the totals: `plt.hist(df["total"], bins=6)`. What does its shape tell you about the class?
+3. Ask the API for `wind_speed_10m` as well (`"hourly": "temperature_2m,wind_speed_10m"`) and plot both. Do they move together?
+4. Find one free API in the [public-apis list](https://github.com/public-apis/public-apis) that could feed your semester project, and make one request to it."""),
+]
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
+    "week-09-data": (ROOT / "notebooks" / "week-09-data.ipynb", WEEK09),
     "lab02": (ROOT / "labs" / "templates" / "lab02" / "lab02.ipynb", LAB02),
     "lab03": (ROOT / "labs" / "templates" / "lab03" / "lab03.ipynb", LAB03),
     "lab04": (ROOT / "labs" / "templates" / "lab04" / "lab04.ipynb", LAB04),
