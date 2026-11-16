@@ -29,7 +29,22 @@ This is the last lab in C, and it is the one where everything comes together: st
 **Accept lab lab06** at the top of this page → **Accept assignment** → **Open repository** → **Code** → **Codespaces** → **Create codespace on main**. When the terminal shows `$`:
 
 <Terminal cmd="python3 check.py" out={`:( list.c: 1 2 3 inserted at the head prints 'List: 3 2 1' and finds 2
-...
+    got 'List:\\nTarget: Not found\\n'
+:( list.c: a missing target is 'Not found'; an empty list prints 'List:' and 'Not found'
+    got 'List:\\nTarget: Not found\\n'
+:( list.c frees every node: valgrind reports no errors and no leaks
+:( queue.c: names come out in the order they went in; 'next' on an empty queue prints Empty
+    got '> > > > > > '
+:( queue.c: a 5th 'add' prints Full; after removing, new names fit again (circular array)
+    got '> > > > > > > > > > > > > > > '
+:( speller + dictionary.c on dictionaries/small: 30 words loaded, 23 words in cat.txt, 1 misspelling (purrs)
+    speller exited with 1: 'Could not load dictionaries/small.\\n'
+:( check() ignores case: 'Caterpillar' is correct; typos.txt has exactly the 6 typos
+    IndexError: list index out of range
+:( load/check/size work on the large dictionary within 60 seconds
+    size() should be 234454, got {}
+:( unload() frees everything: valgrind reports no leaks and no invalid accesses (small dictionary)
+
 0/9 checks passed`} />
 
 | File | What it is |
@@ -96,7 +111,9 @@ WORDS IN DICTIONARY:  30
 WORDS IN TEXT:        23
 TIME IN load:         0.00
 TIME IN check:        0.00
-...`} />
+TIME IN size:         0.00
+TIME IN unload:       0.00
+TIME IN TOTAL:        0.00`} />
 
 - **load**: `fopen` the dictionary; read one word at a time with `fscanf(file, "%45s", buffer)` until it returns `EOF`; for each word, `malloc` a node, `strcpy` the word into it, prepend it to `table[hash(buffer)]` (two lines, same order as Part A), and count it; `fclose`; return `true`. Return `false` if the file does not open.
 - **check**: walk the bucket `table[hash(word)]` and compare with `strcasecmp`, which ignores case, so that `Cat` and `cat` are both correct. Return `true` on a match.

@@ -70,9 +70,35 @@ VS Code opens in your browser. The first start takes a couple of minutes while `
 
 In the terminal:
 
-<Terminal cmd="python3 check.py" out={`:| hello.c prints "hello, world"
+<Terminal cmd="python3 check.py" out={`:( hello.c prints "hello, world"
     expected 'hello, world\\n', got 'hello, TODO\\n'
-...
+:( greet.c greets the name it reads
+    expected output to end with 'hello, Firat\\n', got "What's your name? hello, \\n"
+:( greet.c works for a name with spaces
+    expected output to end with 'hello, Ada Lovelace\\n', got "What's your name? hello, \\n"
+:( bits.c prints 73 as 01001001
+    assert '????????' == '01001001'
+:( bits.c prints 0, 255 and 170 correctly
+    assert '????????' == '00000000'
+:( mario.c prints a right-aligned pyramid of height 4
+    expected:
+:( mario.c handles heights 1 and 8
+    assert '' == '#'
+:( mario.c re-prompts on 0, 9 and -3, then accepts 3
+    after rejecting 0, 9 and -3 the pyramid of height 3 should follow; got:
+:( calculator.c prints 9 5 14 3.50 1 for x=7, y=2
+    got []
+:( calculator.c: x=1, y=3 gives 4 -2 3 0.33 1 (real division, not truncated)
+    got []
+:( calculator.c prints undefined twice when y is 0 instead of crashing
+    got []
+:( cash.c: 41 cents is 4 coins
+    assert '' == '4'
+:( cash.c: 0, 1, 25, 99 and 160 cents
+    0 cents should be 0 coins, got ''
+:( cash.c re-prompts on a negative amount, then accepts 30 (a quarter and a nickel)
+    assert '' == '2'
+
 0/14 checks passed`} />
 
 Everything fails because nothing is done yet. Your job is to turn the list green, part by part.

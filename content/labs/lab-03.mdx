@@ -36,9 +36,41 @@ Still not a member of the organization? Accept the invitation at [github.com/Fir
 
 Green **Code** button → **Codespaces** → **Create codespace on main**. When the terminal shows a `$` prompt:
 
-<Terminal cmd="python3 check.py" out={`:| scores.c: 72, 73, 33 → Min 33, Max 73, Average 59.33
-    got 'How many scores? Score: Score: Score: '
-...
+<Terminal cmd="python3 check.py" out={`:( scores.c: 72, 73, 33 → Min 33, Max 73, Average 59.33
+    got ''
+:( scores.c works for 1 score and for 10 scores
+    got ''
+:( scores.c re-prompts on 0 and 11 before accepting 2
+    got ''
+:( readability.c: the first four CS50 texts (Before Grade 1 to Grade 5)
+    expected 'Before Grade 1' for 'One fish. Two fish. Red fish. '…, got ''
+:( readability.c: the first four CS50 texts (Before Grade 1 to Grade 5)
+    expected 'Grade 2' for 'Would you like them here or th'…, got ''
+:( readability.c: the first four CS50 texts (Before Grade 1 to Grade 5)
+    expected 'Grade 3' for 'Congratulations! Today is your'…, got ''
+:( readability.c: the first four CS50 texts (Before Grade 1 to Grade 5)
+    expected 'Grade 5' for 'Harry Potter was a highly unus'…, got ''
+:( readability.c: the remaining CS50 texts (Grade 7 to Grade 16+)
+    expected 'Grade 7' for 'In my younger and more vulnera'…, got ''
+:( readability.c: the remaining CS50 texts (Grade 7 to Grade 16+)
+    expected 'Grade 8' for 'Alice was beginning to get ver'…, got ''
+:( readability.c: the remaining CS50 texts (Grade 7 to Grade 16+)
+    expected 'Grade 8' for 'When he was nearly thirteen, m'…, got ''
+:( readability.c: the remaining CS50 texts (Grade 7 to Grade 16+)
+    expected 'Grade 9' for 'There are more things in Heave'…, got ''
+:( readability.c: the remaining CS50 texts (Grade 7 to Grade 16+)
+    expected 'Grade 10' for 'It was a bright cold day in Ap'…, got ''
+:( readability.c: the remaining CS50 texts (Grade 7 to Grade 16+)
+    expected 'Grade 16+' for 'A large class of computational'…, got ''
+:( caesar.c prints the usage message and returns 1 without a key, with two keys, or with a non-numeric key
+    args (): expected the usage message, got ''
+:( caesar.c 13: HELLO, world → URYYB, jbeyq (case kept, punctuation unchanged)
+    got ''
+:( caesar.c wraps around the alphabet and handles keys above 26
+    key 3 on 'xyz XYZ' → got ''
+:( caesar.c labels its output with "ciphertext: "
+    expected 'ciphertext: b' in the output, got ''
+
 0/17 checks passed`} />
 
 | File | What it is |

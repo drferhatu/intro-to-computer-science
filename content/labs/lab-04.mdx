@@ -28,8 +28,31 @@ This week's lecture was about algorithms; this lab is about making them real. Yo
 
 Click **Accept lab lab04** at the top of this page → **Accept assignment** → **Open repository** → green **Code** → **Codespaces** → **Create codespace on main**. When the terminal shows `$`:
 
-<Terminal cmd="python3 check.py" out={`:| search.c finds 50 at index 4: linear in 5 comparisons, binary in 3
-...
+<Terminal cmd="python3 check.py" out={`:( search.c finds 50 at index 4: linear in 5 comparisons, binary in 3
+    got 'How many numbers? Number: Number: Number: Number: Number: Number: Number: Target: '
+:( search.c: first element (linear 1 comparison) and last element (binary 3 comparisons)
+    IndexError: list index out of range
+:( search.c: a missing target is 'not found' after 7 (linear) and at most 3 (binary) comparisons
+    IndexError: list index out of range
+:( search.c: 100 numbers, binary search needs at most 7 comparisons
+    IndexError: list index out of range
+:( sort.c prints the usage line and returns 1 for no, two, or an unknown argument
+    args (): got 'How many numbers? ', exit -11
+:( ./sort selection sorts 6 3 8 1 2 → 1 2 3 6 8
+    got 'How many numbers? Number: Number: Number: Number: Number: '
+:( ./sort bubble sorts 6 3 8 1 2 → 1 2 3 6 8
+    got 'How many numbers? Number: Number: Number: Number: Number: '
+:( both sorts handle duplicates, negatives, one element and 100 random numbers
+    selection on [5, 5, 5]…: got ''
+:( recursion.c draws a left-aligned pyramid of height 3 and of height 1
+    got ''
+:( recursion.c: 5! = 120, 0! = 1, 20! = 2432902008176640000
+    n=5: got ''
+:( recursion.c re-prompts on a height of 21 and -1, and on n = 25
+    got ''
+:( factorial has no loop and draw calls itself (recursion is the point)
+    factorial must call itself
+
 0/12 checks passed`} />
 
 | File | What it is |

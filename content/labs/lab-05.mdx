@@ -29,7 +29,24 @@ Four short programs, each about one idea from the lecture. In `swap.c` you turn 
 **Accept lab lab05** at the top of this page → **Accept assignment** → **Open repository** → **Code** → **Codespaces** → **Create codespace on main**. The codespace installs `valgrind` along with `gcc`; wait for the `$` prompt, then:
 
 <Terminal cmd="python3 check.py" out={`:( swap.c really swaps x and y
-...
+    got 'x: y: x is 1, y is 2\\nx is 1, y is 2\\n'
+:( swap.c declares void swap(int *a, int *b) and calls swap(&x, &y)
+    the parameters must be pointers: int *a, int *b
+:( copy.c prints the original unchanged and the copy in uppercase
+    got 's: '
+:( copy.c handles an empty string and digits/punctuation
+    got 's: '
+:( copy.c has no memory errors and no leaks under valgrind
+:( leaks.c prints the right sum (n = 4 → 10, n = 100 → 5050) with 0 valgrind errors and no leaks
+:( leaks.c allocates n * sizeof(int), loops with i < n, and frees
+    malloc(n) allocates n BYTES, not n ints
+:( grayscale: every pixel becomes the rounded average of its r, g, b (tiny.bmp and firat.bmp)
+    grayscale wrong on tiny.bmp
+:( reflect: every row is mirrored (tiny.bmp has padding, smiley.bmp does not)
+    reflect wrong on tiny.bmp
+:( reflecting twice gives the original image back
+    reflect changed nothing: the gradient image is not symmetric
+
 0/10 checks passed`} />
 
 | File | What it is |

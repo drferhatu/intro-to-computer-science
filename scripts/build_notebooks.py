@@ -737,10 +737,18 @@ def main():
     force = "--force" in sys.argv
     run = "--execute" in sys.argv
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    missing = []
     for name, (path, cells) in NOTEBOOKS.items():
         build(path, cells, force)
         nb = execute(path) if run else None
         to_html(name, path, nb)
+        if nb is not None:
+            missing += [f"{path.name}: {o.get('evalue')}" for c in nb.cells if c.cell_type == "code"
+                        for o in c.get("outputs", []) if o.get("output_type") == "error"
+                        and o.get("ename") in ("ModuleNotFoundError", "ImportError")]
+    if missing:
+        # a library is not installed where the notebooks are built: never publish that as the notebook's output
+        sys.exit("✗ missing libraries (add them to scripts/requirements-notebooks.txt):\n  " + "\n  ".join(missing))
 
 
 if __name__ == "__main__":

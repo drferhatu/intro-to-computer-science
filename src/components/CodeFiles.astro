@@ -5,14 +5,20 @@
  *   <CodeFiles dir="week-04" files={["scores0.c", "scores1.c"]} />
  */
 import { Code } from 'astro:components';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { href } from '@/lib/site';
+import { href, REPO } from '@/lib/site';
 interface Props { dir: string; files: string[]; }
 const { dir, files } = Astro.props;
 const root = join(process.cwd(), 'public', 'c', dir);
 const LANG: Record<string, string> = { c: 'c', h: 'c', py: 'python', sh: 'bash', csv: 'csv', txt: 'text', json: 'json', html: 'html', js: 'javascript', sql: 'sql' };
 const sources = files.map((f) => ({ name: f, code: readFileSync(join(root, f), 'utf-8').replace(/\s+$/, ''), lang: LANG[f.split('.').pop() ?? ''] ?? 'text' }));
+// "Open in Colab": every Python program has a one-program notebook in notebooks/code/<dir>/ (scripts/build_code_notebooks.py)
+const colabOf = (f: string) => {
+  if (!f.endsWith('.py')) return null;
+  const nb = `notebooks/code/${dir}/${f.replace(/\.py$/, '.ipynb')}`;
+  return existsSync(join(process.cwd(), nb)) ? `https://colab.research.google.com/github/${REPO}/blob/main/${nb}` : null;
+};
 const id = `cf-${dir}-${files[0].replace(/\W/g, '')}`;
 ---
 <div class="codefiles not-prose my-5 overflow-hidden rounded-xl border border-line-2 bg-card shadow-soft" data-codefiles>
@@ -22,6 +28,9 @@ const id = `cf-${dir}-${files[0].replace(/\W/g, '')}`;
         class="cf-tab rounded-md px-2.5 py-1 font-mono text-[12px] text-ink-2 hover:text-ink aria-selected:bg-card aria-selected:text-ink aria-selected:shadow-soft">{s.name}</button>
     ))}
     <span class="ml-auto flex items-center gap-1">
+      {sources.map((s, i) => colabOf(s.name) && (
+        <a href={colabOf(s.name)} target="_blank" rel="noopener" data-panel-link={`${id}-${i}`} title="Open this program as a notebook in Google Colab and run it there" class:list={['rounded-md border border-accent/40 bg-accent-soft px-2 py-0.5 font-mono text-[11px] text-accent hover:border-accent', i !== 0 && 'hidden']}>Open in Colab ↗</a>
+      ))}
       {sources.map((s, i) => (
         <a href={href(`/c/${dir}/${s.name}`)} download data-panel-link={`${id}-${i}`} class:list={['rounded-md border border-line-2 px-2 py-0.5 font-mono text-[11px] text-ink-2 hover:border-ink hover:text-ink', i !== 0 && 'hidden']}>download</a>
       ))}

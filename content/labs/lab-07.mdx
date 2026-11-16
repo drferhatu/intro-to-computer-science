@@ -29,7 +29,26 @@ You have already solved these three problems, in C, in Labs 2, 3 and 6. This wee
 **Accept lab lab07** at the top of this page → **Accept assignment** → **Open repository** → **Code** → **Codespaces** → **Create codespace on main**. The codespace is smaller this time: no gcc needed for the lab, just Python. When the terminal shows `$`:
 
 <Terminal cmd="python3 check.py" out={`:( mario.py prints a right-aligned pyramid of height 4
-...
+    expected:
+:( mario.py handles heights 1 and 8
+    assert '' == '#'
+:( mario.py re-prompts on 'cat', 0, 9 and -3, then accepts 3
+    expected 5 prompts (4 rejected inputs), got 0
+:( caesar.py prints the usage message and exits with 1 without a key, with two keys, or with a non-numeric key
+    caesar.py crashed: EOFError: EOF when reading a line
+:( caesar.py 13: HELLO, world → URYYB, jbeyq (case kept, punctuation unchanged)
+    got ''
+:( caesar.py wraps around the alphabet and handles keys above 26
+    key 3 on 'xyz XYZ' → got ''
+:( caesar.py labels its output with "ciphertext: "
+    expected 'ciphertext: b' in the output, got 'plaintext:  ciphertext: \\n'
+:( speller.py + dictionary.py on dictionaries/small: 30 words loaded, 23 words in cat.txt, 1 misspelling (purrs)
+    speller exited with 1: 'Could not load dictionaries/small.\\n'
+:( check() ignores case: 'Caterpillar' is correct; typos.txt has exactly the 6 typos
+    IndexError: list index out of range
+:( load/check/size work on the large dictionary within 60 seconds, and load() returns False for a missing file
+    size() should be 234454, got {}
+
 0/10 checks passed`} />
 
 | File | What it is |
@@ -89,7 +108,9 @@ WORDS IN DICTIONARY:  30
 WORDS IN TEXT:        23
 TIME IN load:         0.00
 TIME IN check:        0.00
-...`} />
+TIME IN size:         0.00
+TIME IN unload:       0.00
+TOTAL TIME:           0.00`} />
 
 - **load**: open the file with `with open(dictionary) as file:` and put every line into the set: `words.update(file.read().splitlines())`. Return `True`. If the file does not exist, `open` raises `FileNotFoundError` (an `OSError`): catch it and return `False`, which is what the last test checks.
 - **check**: `return word.lower() in words`. The dictionary is lowercase, the text is not; `in` on a set is the hash lookup you wrote by hand in Lab 6.
