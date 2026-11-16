@@ -8,6 +8,7 @@
 Usage:
   /opt/miniconda3/envs/ferhat_ml/bin/python scripts/build_notebooks.py [--execute] [--force]
 """
+import os
 import sys
 from pathlib import Path
 
@@ -666,6 +667,9 @@ md("""## 6 · Your turn
 4. Find one free API in the [public-apis list](https://github.com/public-apis/public-apis) that could feed your semester project, and make one request to it."""),
 ]
 
+# notebooks that call a live web API: executed locally only, published with their saved outputs
+NEEDS_NETWORK = {"week-09-data"}
+
 NOTEBOOKS = {
     "week-02-bits": (ROOT / "notebooks" / "week-02-bits.ipynb", WEEK02),
     "week-09-data": (ROOT / "notebooks" / "week-09-data.ipynb", WEEK09),
@@ -737,18 +741,31 @@ def main():
     force = "--force" in sys.argv
     run = "--execute" in sys.argv
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    missing = []
+    failed = []
     for name, (path, cells) in NOTEBOOKS.items():
         build(path, cells, force)
-        nb = execute(path) if run else None
-        to_html(name, path, nb)
+        nb = None
+        if run and name in NEEDS_NETWORK and os.environ.get("CI"):
+            # Calls a live web API: the build server may be throttled or offline, so publish the outputs
+            # that were saved into the .ipynb when it was last executed locally.
+            nb = nbformat.read(path, as_version=4)
+            print(f"· {path.name}: not executed on CI, saved outputs used")
+        elif run:
+            nb = execute(path)
+            if name in NEEDS_NETWORK and not errors_of(nb):
+                nbformat.write(nb, path)                      # keep the outputs in the repository
+                print(f"✓ {path.name}: outputs saved into the notebook")
         if nb is not None:
-            missing += [f"{path.name}: {o.get('evalue')}" for c in nb.cells if c.cell_type == "code"
-                        for o in c.get("outputs", []) if o.get("output_type") == "error"
-                        and o.get("ename") in ("ModuleNotFoundError", "ImportError")]
-    if missing:
-        # a library is not installed where the notebooks are built: never publish that as the notebook's output
-        sys.exit("✗ missing libraries (add them to scripts/requirements-notebooks.txt):\n  " + "\n  ".join(missing))
+            failed += [f"{path.name}: {e}" for e in errors_of(nb)]
+        to_html(name, path, nb)
+    if failed:
+        # never publish a notebook whose output is an error message
+        sys.exit("✗ notebooks with error cells (fix, or add the library to scripts/requirements-notebooks.txt):\n  " + "\n  ".join(failed))
+
+
+def errors_of(nb):
+    return [f"{o.get('ename')}: {str(o.get('evalue'))[:120]}" for c in nb.cells if c.cell_type == "code"
+            for o in c.get("outputs", []) if o.get("output_type") == "error"]
 
 
 if __name__ == "__main__":
